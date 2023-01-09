@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>✨ journey ✨</title>
+  <link rel="stylesheet" href="css/dropdown.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.js"></script> -->
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <script src="js/particle.js"></script>
+  <script src="js/fanBlade.js"></script>
+  <script src="js/fan.js"></script>
+  <script src="js/nullElement.js"></script>
+  <!-- <script src="js/constants.js"></script> -->
+  <script src="js/utils.js"></script>
+  <script src="js/bezier.js"></script>
+  <script src="js/sketch.js"></script>
+
+  <div id="ui-controls" class="controls">
+    <div class="wut">
+      <input id="frame-number" type="range" name="framenumber" min="0" max="383">
+      <label for="frame-number">frame</label>
+      <button id="animation-mode">play</button>
+    </div>
+    <div class="wut">
+      <input id="balance" type="range" name="balance" min="0" max="100">
+      <label for="balance">balance</label>
+    </div>
+    <div class="wut">
+      <input id="diff" type="range" name="diff" min="0" max="100">
+      <label for="diff">diff</label>
+    </div>
+    <div class="ui-row">
+      <div class="button-group">
+        <button id="show-path">⚫ path</button>
+        <button id="show-geom">⚫ geom</button>
+        <button id="show-particles">⚪ particles</button>
+        <button id="show-color">⚫ colors</button>
+        <button id="change-palette">🍭</button>
+        <button id="show-background">⚫ background</button>
+        <button id="change-background">></button>
+        <button id="save-comp">save comp</button>
+      </div>
+      <button id="download-comp">💾</button>
+    </div>
+    <div id="dropdown-container" class="dropdown">
+      <button onclick="toggleDropdown()" class="dropbtn ui-row">load comp ▾</button>
+      <div id="comp-select" class="dropdown-content"></div>
+    </div>
+  </div>
+  <canvas id="canv" width="1280" height="720"></canvas>
+  <script>
+    const numParticles = 320;
+
+    // Timing
+    const fps = 24;
+    const durationSec = 16;
+    const durationFrames = fps * durationSec;
+    let currentCycleFrame = 192;
+    let animationMode = 1;  // 0 = auto, 1 = scrub
+    let frameCount = 0;
+
+    // Collections of things
+    // const pts = [];
+    const nullElements = [];
+    const particlesFront = [];
+    const particlesBack = [];
+
+    // Geometry
+    const radius = 108; // 48;
+    const numLoops = 320; // 160; // 200; // 160; // 60;
+    let balance = 0.5;
+    let diff = 4.5;
+
+    // Display of geometry and guides
+    let showFan = true;
+    let showPoints = false;
+    let showBezier = true;
+    let showParticles = false;
+    let showColor = true;
+    let showBackground = true;
+    let bgIndex = 0;
+
+    // Colors
+    let allColors = [];
+    let palette = [];
+    const tickSequence = [];
+    const maxTicks = 40;
+    const numColors = 5;
+
+    // Canvas
+    // PGraphics canv;
+    const wd = 1280;
+    const ht = 720;
+    const cX = wd / 2;
+    const cY = ht / 2;
+
+    // Bezier Curve variables
+    let dragging;
+    let lastDragState = false;
+    let mouseDX = 0;
+    let mouseDY = 0;
+    let bezi;
+
+    // Listen for the event.
+    window.addEventListener('look', (e) => {
+      buildSelectMenu();
+    }, false);
+  </script>
+  <script>
+    // const setupCanv = () => {
+    //   const canvas = document.getElementById("canv");
+    //   canvas.style.width = `${wd}px`;
+    //   canvas.style.height = `${ht}px`;
+
+    //   const scale = window.devicePixelRatio;
+    //   canvas.width = Math.floor(wd * scale);
+    //   canvas.height = Math.floor(ht * scale);
+    // }
+
+    // setupCanv();
+    const pts = setupSketch(wd, ht);
+    const fan = new Fan(pts);
+
+    fan.update(frameCount);
+    fan.render();
+
+    const i = setInterval(() => {
+      frameCount += 1;
+
+      const canvas = document.getElementById("canv");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      fan.update(frameCount);
+      fan.render();
+    }, 500);
+  </script>
+</body>
+
+</html>
