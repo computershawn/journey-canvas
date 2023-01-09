@@ -83,6 +83,7 @@
     let showColor = true;
     let showBackground = true;
     let bgIndex = 0;
+    let scale = 1;
 
     // Colors
     let allColors = [];
@@ -111,33 +112,33 @@
     }, false);
   </script>
   <script>
-    // const setupCanv = () => {
-    //   const canvas = document.getElementById("canv");
-    //   canvas.style.width = `${wd}px`;
-    //   canvas.style.height = `${ht}px`;
+    const setupCanv = () => {
+      const canvas = document.getElementById("canv");
+      canvas.style.width = `${wd}px`;
+      canvas.style.height = `${ht}px`;
 
-    //   const scale = window.devicePixelRatio;
-    //   canvas.width = Math.floor(wd * scale);
-    //   canvas.height = Math.floor(ht * scale);
-    // }
+      scale = window.devicePixelRatio;
+      canvas.width = Math.floor(wd * scale);
+      canvas.height = Math.floor(ht * scale);
+    }
 
-    // setupCanv();
+    setupCanv();
     const pts = setupSketch(wd, ht);
     const fan = new Fan(pts);
 
     fan.update(frameCount);
     fan.render();
 
-    const i = setInterval(() => {
-      frameCount += 1;
+    // const i = setInterval(() => {
+    //   frameCount += 1;
 
-      const canvas = document.getElementById("canv");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //   const canvas = document.getElementById("canv");
+    //   const ctx = canvas.getContext("2d");
+    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      fan.update(frameCount);
-      fan.render();
-    }, 500);
+    //   fan.update(frameCount);
+    //   fan.render();
+    // }, 500);
   </script>
 </body>
 
