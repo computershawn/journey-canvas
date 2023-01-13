@@ -1,226 +1,245 @@
-class BeziCurve {
-  constructor(curveSetPoints = {}) {
-    let a211, a212, a222, c211, c212, c222;
-    if (curveSetPoints !== null && Object.keys(curveSetPoints).length) {
-      const {
-        pt1, pt2, pt3, pt4, pt5, pt6
-      } = curveSetPoints;
-      c211 = new Point({x: pt4.x, y: pt4.y}, null);
-      c212 = new Point({x: pt5.x, y: pt5.y}, null);
-      c222 = new Point({x: pt6.x, y: pt6.y}, null);
-      a211 = new Point({x: pt1.x, y: pt1.y}, c211);
-      a212 = new Point({x: pt2.x, y: pt2.y}, c212);
-      a222 = new Point({x: pt3.x, y: pt3.y}, c222);
-    } else {
-      const rMin = 48;
-      const rMax = 96;
-      const angle1 = random(TWO_PI);
-      const radius1 = random(rMin, rMax);
-      const angle2 = random(TWO_PI);
-      const radius2 = random(rMin, rMax);
-      const angle3 = random(TWO_PI);
-      const radius3 = random(rMin, rMax);
-      this.lastDragState = false;
-  
-      const x01 = cX - wd / 3;
-      const y01 = cY + (random(1) > 0.5 ? 1 : -1) * random(0.5 * cY);
-      const x02 = cX;
-      const y02 = cY + (random(1) > 0.5 ? 1 : -1) * random(0.5 * cY);
-      const x03 = cX + wd / 3;
-      const y03 = cY + (random(1) > 0.5 ? 1 : -1) * random(0.5 * cY);
-  
-      const x04 = x01 + radius1 * cos(angle1);
-      const y04 = y01 + radius1 * sin(angle1);
-      const x05 = x02 + radius2 * cos(angle2);
-      const y05 = y02 + radius2 * sin(angle2);
-      const x06 = x03 + radius3 * cos(angle3);
-      const y06 = y03 + radius3 * sin(angle3);
-  
-      c211 = new Point({x: x04, y: y04}, null);
-      c212 = new Point({x: x05, y: y05}, null);
-      c222 = new Point({x: x06, y: y06}, null);
-      a211 = new Point({x: x01, y: y01}, c211);
-      a212 = new Point({x: x02, y: y02}, c212);
-      a222 = new Point({x: x03, y: y03}, c222);
-    }
+const beziCanvas = document.getElementById("bezier-geom");
+const bezictx = beziCanvas.getContext("2d");
 
-    this.cs = new CurveSet([c211, c212, c222, a211, a212, a222]);
-  }
+const uiCanv = document.getElementById('bezier-ctrl');
+const uictx = uiCanv.getContext("2d");
 
-  render() {
-    this.cs.render();
-    this.lastDragState = dragging;
-  }
 
-  getPoints() {
-    return this.cs.getPoints();
-  }
+const numPoints = 65;
+const n = (numPoints - 1) / 2;
+const dragRadius = 12;
+const beziCtrl = [];
+beziCtrl.push({x: 30, y: 180, child: [1]});
+beziCtrl.push({x: 150, y: 260, child: null});
+beziCtrl.push({x: 220, y: 120, child: null});
+beziCtrl.push({x: 320, y: 220, child: [2, -1]});
+beziCtrl.push({x: 420, y: 240, child: null});
+beziCtrl.push({x: 610, y: 180, child: [4]});
+
+// Draggy logic
+let currentHandle = null;
+let dragging = false;
+const startPoints = {x: 0, y: 0};
+let offsetX = 0;
+let offsetY = 0;
+
+// Returns x/y coordinates of a point along a bezier curve.
+function cubic(p0, p1, p2, p3, t) {
+  const x =
+    Math.pow(1 - t, 3) * p0.x +
+    3 * Math.pow(1 - t, 2) * t * p1.x +
+    3 * (1 - t) * t * t * p2.x +
+    t * t * t * p3.x;
+  const y =
+    Math.pow(1 - t, 3) * p0.y +
+    3 * Math.pow(1 - t, 2) * t * p1.y +
+    3 * (1 - t) * t * t * p2.y +
+    t * t * t * p3.y;
+
+  return { x, y };
 }
 
-class CurveSet {
-  constructor(_points) {
-    this.ctrl11 = _points[0];
-    this.ctrl12 = _points[1];
-    this.ctrl22 = _points[2];
-    this.anchor11 = _points[3];
-    this.anchor12 = _points[4];
-    this.anchor22 = _points[5];
-    this.ctrl21 = new Point({x: 0, y: 0}, null);
-  }
+const drawGuides = () => {
+  if (uiCanv.getContext) {
+    const wd = uiCanv.width;
+    const ht = uiCanv.height;
+    uictx.clearRect(0, 0, wd, ht);
 
-  drawLines() {
-    const {
-      anchor11,
-      anchor22,
-      ctrl11,
-      ctrl12,
-      ctrl21,
-      ctrl22,
-    } = this;
-    noFill();
-    stroke(255, 0, 0, 127);
-    line(anchor11.c.x, anchor11.c.y, ctrl11.c.x, ctrl11.c.y);
-    line(ctrl12.c.x, ctrl12.c.y, ctrl21.c.x, ctrl21.c.y);
-    line(anchor22.c.x, anchor22.c.y, ctrl22.c.x, ctrl22.c.y);
-  }
+    beziCtrl.forEach((ctrl, i) => {
+      if (ctrl.child !== null) {
+        const childIndex = ctrl.child[0];
+        const px = beziCtrl[i].x;
+        const py = beziCtrl[i].y
+        const child0x = beziCtrl[childIndex].x;
+        const child0y = beziCtrl[childIndex].y;
+        uictx.beginPath();
+        uictx.strokeStyle = "#ff00ff";
+        uictx.moveTo(px, py);
+        uictx.lineTo(child0x, child0y);
+        uictx.stroke();
+        
+        if (ctrl.child.length > 1) {
+          const child1x = 2 * px - child0x;
+          const child1y = 2 * py - child0y;
+          uictx.beginPath();
+          uictx.strokeStyle = "#ff00ff80";
+          uictx.moveTo(beziCtrl[i].x, beziCtrl[i].y);
+          uictx.lineTo(child1x, child1y);
+          uictx.stroke();
 
-  drawCircles() {
-    const {
-      anchor11,
-      anchor12,
-      anchor22,
-      ctrl11,
-      ctrl12,
-      ctrl22,
-    } = this;
-    noFill();
-    stroke(0, 71);
-
-    const diam1 = this.getRadius(anchor11.c, ctrl11.c);
-    const diam2 = this.getRadius(anchor12.c, ctrl12.c);
-    const diam3 = this.getRadius(anchor22.c, ctrl22.c);
-
-    circle(anchor11.c.x, anchor11.c.y, diam1);
-    circle(anchor12.c.x, anchor12.c.y, diam2);
-    circle(anchor22.c.x, anchor22.c.y, diam3);
-  }
-
-  getRadius(p0, p1) {
-    const yDiff = p0.y - p1.y;
-    const xDiff = p0.x - p1.x;
-
-    return 2 * sqrt(xDiff * xDiff + yDiff * yDiff);
-  }
-
-  getPoints() {
-    const {
-      ctrl11,
-      ctrl12,
-      ctrl21,
-      ctrl22,
-      anchor11,
-      anchor12,
-      anchor22,
-    } = this;
-    const temp = [];
-    ctrl21.c.x = 2 * anchor12.c.x - ctrl12.c.x;
-    ctrl21.c.y = 2 * anchor12.c.y - ctrl12.c.y;
-    const half = numLoops / 2;
-
-    for (let i = 0; i <= half; i++) {
-      const t = i / half;
-      const x = bezierPoint(anchor11.c.x, ctrl11.c.x, ctrl12.c.x, anchor12.c.x, t);
-      const y = bezierPoint(anchor11.c.y, ctrl11.c.y, ctrl12.c.y, anchor12.c.y, t);
-      temp.push({x, y});
-    }
-
-    for (let i = 1; i <= half; i++) {
-      const t = i / half;
-      const x = bezierPoint(anchor12.c.x, ctrl21.c.x, ctrl22.c.x, anchor22.c.x, t);
-      const y = bezierPoint(anchor12.c.y, ctrl21.c.y, ctrl22.c.y, anchor22.c.y, t);
-      temp.push({x, y});
-    }
-
-    return temp;
-  }
-  
-  render() {
-    const {
-      anchor11,
-      anchor12,
-      anchor22,
-      ctrl11,
-      ctrl12,
-      ctrl21,
-      ctrl22,
-    } = this;
-    noFill();
-    stroke(255, 0, 0);
-    ctrl21.c.x = 2 * anchor12.c.x - ctrl12.c.x;
-    ctrl21.c.y = 2 * anchor12.c.y - ctrl12.c.y;
-    beginShape();
-    vertex(anchor11.c.x, anchor11.c.y);
-    bezierVertex(ctrl11.c.x, ctrl11.c.y, ctrl12.c.x, ctrl12.c.y, anchor12.c.x, anchor12.c.y);
-    bezierVertex(ctrl21.c.x, ctrl21.c.y, ctrl22.c.x, ctrl22.c.y, anchor22.c.x, anchor22.c.y);
-    endShape();
-
-    // Show points
-    noStroke();
-    fill(0, 0, 0, 95);
-    anchor11.render();
-    anchor12.render();
-    anchor22.render();
-    ctrl11.render();
-    ctrl12.render();
-    ctrl22.render();
-
-    // Show handles
-    this.drawLines();
-    this.drawCircles();
-  }
-}
-
-class Point {
-  constructor(_coords, _childPoint) {
-    this.c = _coords;
-    this.active = false;
-    this.diam = 4;
-    this.childPoint = _childPoint;
-  }
-
-  isHover() {
-    if (dist(mouseX, mouseY, this.c.x, this.c.y) < 8 * this.diam) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  render() {
-    const { c, childPoint, diam, isHover } = this;
-    stroke(0);
-    fill(0, 0, 0, 95);
-    circle(c.x, c.y, diam);
-    noFill();
-    if (this.isHover()) {
-      stroke(0, 127, 255);
-      fill(0, 127, 255, 95);
-      circle(c.x, c.y, diam * 8);
-      noStroke();
-
-      if (dragging) {
-        c.x = mouseX;
-        c.y = mouseY;
-
-        if (childPoint !== null) {
-          if (!lastDragState) {
-            mouseDX = childPoint.c.x - c.x;
-            mouseDY = childPoint.c.y - c.y;
-          }
-          childPoint.c.x = c.x + mouseDX;
-          childPoint.c.y = c.y + mouseDY;
+          uictx.strokeStyle = '#ffff0070';
+          uictx.beginPath();
+          uictx.arc(child1x, child1y, dragRadius, 0, 2 * Math.PI);
+          uictx.stroke();
         }
       }
+    })
+
+    beziCtrl.forEach(shape => {
+      uictx.strokeStyle = shape.child ? '#00ffff' : '#ffff00';
+      uictx.beginPath();
+      uictx.arc(shape.x, shape.y, dragRadius, 0, 2 * Math.PI);
+      uictx.stroke();
+    });
+  }
+};
+
+const getBezierPoints = (p0, p1, p2, p3, num) => {
+  const temp = [];
+  for (let i = 0; i <= num; i++) {
+    const t = i / num;
+    const coords = cubic(p0, p1, p2, p3, t);
+    temp.push(coords);
+  }
+
+  return temp;
+};
+
+const drawBackground = () => {
+  const wd = beziCanvas.width;
+  const ht = beziCanvas.height;
+  if (beziCanvas.getContext) {
+    bezictx.rect(0, 0, wd, ht);
+    bezictx.fillStyle = '#000000';
+    bezictx.fill();
+  }
+};
+
+const drawBezier = (pts) => {
+  if (beziCanvas.getContext) {
+    bezictx.beginPath();
+    bezictx.fillStyle = "white";
+    pts.forEach((pt) => {
+      bezictx.beginPath();
+      bezictx.arc(pt.x, pt.y, 2, 0, 2 * Math.PI);
+      bezictx.fill();
+    });
+  }
+};
+
+const getOffsets = () => {
+  const offsets = uiCanv.getBoundingClientRect();
+  offsetX = offsets.left;
+  offsetY = offsets.top;
+};
+
+getOffsets();
+window.onscroll = () => {
+  getOffsets();
+};
+window.onresize = () => {
+  getOffsets();
+};
+
+const isMouseHover = (x, y, shape) => {
+  const shapeLeft = shape.x - dragRadius;
+  const shapeRight = shape.x + dragRadius;
+  const shapeTop = shape.y - dragRadius;
+  const shapeBottom = shape.y + dragRadius;
+  
+  if (
+    x > shapeLeft &&
+    x < shapeRight &&
+    y > shapeTop &&
+    y < shapeBottom
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const handleMouseDown = (evt) => {
+  evt.preventDefault();
+  startPoints.x = parseInt(evt.clientX - offsetX);
+  startPoints.y= parseInt(evt.clientY - offsetY);
+  
+  for (let i = beziCtrl.length - 1; i >= 0; i--) {
+    const shape = beziCtrl[i];
+    if (isMouseHover(startPoints.x, startPoints.y, shape)) {
+      currentHandleIndex = i;
+      dragging = true;
+      return;
     }
+  };
+};
+
+const handleMouseUp = (evt) => {
+  evt.preventDefault();
+  if (!dragging) {
+    return;
+  }
+  dragging = false;
+  currentHandleIndex = null;
+};
+
+const handleMouseOut = (evt) => {
+  evt.preventDefault();
+  if (!dragging) {
+    return;
+  }
+  dragging = false;
+};
+
+const handleMouseMove = (evt) => {
+  evt.preventDefault();
+  if (!dragging) {
+    return;
+  }
+  
+  const mouseX = parseInt(evt.clientX - offsetX);
+  const mouseY = parseInt(evt.clientY - offsetY);
+  
+  const dx = mouseX - startPoints.x;
+  const dy = mouseY - startPoints.y;
+  
+  const currentHandle = beziCtrl[currentHandleIndex];
+  currentHandle.x += dx;
+  currentHandle.y += dy;
+  
+  // Move an anchor's control point if present
+  if (currentHandle.child !== null) {
+    const index = currentHandle.child[0];
+    beziCtrl[index].x += dx;
+    beziCtrl[index].y += dy;    
+  }
+
+  // drawGuides();
+  startPoints.x = mouseX;
+  startPoints.y = mouseY;
+  
+  render();
+}
+
+uiCanv.onmousedown = handleMouseDown;
+uiCanv.onmouseup = handleMouseUp;
+uiCanv.onmouseout = handleMouseOut;
+uiCanv.addEventListener('mousemove', throttle(handleMouseMove, 50));
+
+const render = () => {
+  const [p0, p1, p2, p3, p5, p6] = beziCtrl;
+  const p4 = { x: 2 * p3.x - p2.x, y: 2 * p3.y - p2.y };
+  const bezierPoints1 = getBezierPoints(p0, p1, p2, p3, n);
+  const bezierPoints2 = getBezierPoints(p3, p4, p5, p6, n);
+  const omitIndex = bezierPoints1.length;
+  const bezierPoints = [...bezierPoints1, ...bezierPoints2].filter(
+    (_item, index) => index !== omitIndex
+  );
+
+  drawBackground();
+  drawBezier(bezierPoints, omitIndex);
+  drawGuides();
+};
+
+function throttle(callback, interval) {
+  let enableCall = true;
+
+  return function(...args) {
+    if (!enableCall) return;
+
+    enableCall = false;
+    callback.apply(this, args);
+    setTimeout(() => enableCall = true, interval);
   }
 }
+
+render();

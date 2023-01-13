@@ -10,14 +10,14 @@
 </head>
 
 <body>
-  <script src="js/particle.js"></script>
-  <script src="js/fanBlade.js"></script>
-  <script src="js/fan.js"></script>
-  <script src="js/nullElement.js"></script>
+  <!-- <script src="js/particle.js"></script> -->
+  <!-- <script src="js/fanBlade.js"></script> -->
+  <!-- <script src="js/fan.js"></script> -->
+  <!-- <script src="js/nullElement.js"></script> -->
   <!-- <script src="js/constants.js"></script> -->
-  <script src="js/utils.js"></script>
-  <script src="js/bezier.js"></script>
-  <script src="js/sketch.js"></script>
+  <!-- <script src="js/utils.js"></script> -->
+  <!-- <script src="js/bezier.js"></script> -->
+  <!-- <script src="js/sketch.js"></script> -->
 
   <div id="ui-controls" class="controls">
     <div class="wut">
@@ -51,7 +51,21 @@
       <div id="comp-select" class="dropdown-content"></div>
     </div>
   </div>
-  <canvas id="canv" width="1280" height="720"></canvas>
+
+  <div class="canvas-container">
+    <canvas id="canv" width="1280" height="720"></canvas>
+    <canvas id="bezier-geom" width="1280" height="720"></canvas>
+    <canvas id="bezier-ctrl" width="1280" height="720"></canvas>
+  </div>
+
+  <script src="js/particle.js"></script>
+  <script src="js/fanBlade.js"></script>
+  <script src="js/fan.js"></script>
+  <script src="js/nullElement.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/bezier.js"></script>
+  <script src="js/sketch.js"></script>
+
   <script>
     const numParticles = 320;
 
@@ -100,7 +114,7 @@
     const cY = ht / 2;
 
     // Bezier Curve variables
-    let dragging;
+    // let dragging;
     let lastDragState = false;
     let mouseDX = 0;
     let mouseDY = 0;

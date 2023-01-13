@@ -27,3 +27,31 @@ main {
 .ui-row button:not(:first-child) {
   margin-left: 0.5rem;
 }
+
+canvas {
+  display: block;
+}
+
+.ui {
+  margin: 0.5rem 0 0 0;
+}
+
+.canvas-container {
+  position: relative;
+  width: 640px;
+  height: 360px;
+}
+
+.canvas-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#bezier-geom {
+  z-index: 0;
+}
+
+#bezier-ctrl {
+  z-index: 1;
+}
