@@ -10,15 +10,6 @@
 </head>
 
 <body>
-  <!-- <script src="js/particle.js"></script> -->
-  <!-- <script src="js/fanBlade.js"></script> -->
-  <!-- <script src="js/fan.js"></script> -->
-  <!-- <script src="js/nullElement.js"></script> -->
-  <!-- <script src="js/constants.js"></script> -->
-  <!-- <script src="js/utils.js"></script> -->
-  <!-- <script src="js/bezier.js"></script> -->
-  <!-- <script src="js/sketch.js"></script> -->
-
   <div id="ui-controls" class="controls">
     <div class="wut">
       <input id="frame-number" type="range" name="framenumber" min="0" max="383">
@@ -130,10 +121,6 @@
       const canvas = document.getElementById("canv");
       canvas.style.width = `${wd}px`;
       canvas.style.height = `${ht}px`;
-
-      scale = window.devicePixelRatio;
-      canvas.width = Math.floor(wd * scale);
-      canvas.height = Math.floor(ht * scale);
     }
 
     setupCanv();

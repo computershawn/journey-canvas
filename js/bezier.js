@@ -1,5 +1,5 @@
-const beziCanvas = document.getElementById("bezier-geom");
-const bezictx = beziCanvas.getContext("2d");
+const beziCanv = document.getElementById("bezier-geom");
+const bezictx = beziCanv.getContext("2d");
 
 const uiCanv = document.getElementById('bezier-ctrl');
 const uictx = uiCanv.getContext("2d");
@@ -9,12 +9,12 @@ const numPoints = 65;
 const n = (numPoints - 1) / 2;
 const dragRadius = 12;
 const beziCtrl = [];
-beziCtrl.push({x: 30, y: 180, child: [1]});
-beziCtrl.push({x: 150, y: 260, child: null});
-beziCtrl.push({x: 220, y: 120, child: null});
-beziCtrl.push({x: 320, y: 220, child: [2, -1]});
-beziCtrl.push({x: 420, y: 240, child: null});
-beziCtrl.push({x: 610, y: 180, child: [4]});
+beziCtrl.push({x: 60, y: 360, child: [1]});
+beziCtrl.push({x: 300, y: 520, child: null});
+beziCtrl.push({x: 440, y: 240, child: null});
+beziCtrl.push({x: 640, y: 440, child: [2, -1]});
+beziCtrl.push({x: 840, y: 480, child: null});
+beziCtrl.push({x: 1220, y: 360, child: [4]});
 
 // Draggy logic
 let currentHandle = null;
@@ -41,12 +41,9 @@ function cubic(p0, p1, p2, p3, t) {
 
 const drawGuides = () => {
   if (uiCanv.getContext) {
-    const wd = uiCanv.width;
-    const ht = uiCanv.height;
-    uictx.clearRect(0, 0, wd, ht);
-
     beziCtrl.forEach((ctrl, i) => {
       if (ctrl.child !== null) {
+        uictx.lineWidth = 1;
         const childIndex = ctrl.child[0];
         const px = beziCtrl[i].x;
         const py = beziCtrl[i].y
@@ -76,7 +73,8 @@ const drawGuides = () => {
     })
 
     beziCtrl.forEach(shape => {
-      uictx.strokeStyle = shape.child ? '#00ffff' : '#ffff00';
+      uictx.strokeStyle = shape.child ? '#00ffff' : '#00ff80';
+      uictx.lineWidth = shape.child ? 2 : 1;
       uictx.beginPath();
       uictx.arc(shape.x, shape.y, dragRadius, 0, 2 * Math.PI);
       uictx.stroke();
@@ -95,23 +93,20 @@ const getBezierPoints = (p0, p1, p2, p3, num) => {
   return temp;
 };
 
-const drawBackground = () => {
-  const wd = beziCanvas.width;
-  const ht = beziCanvas.height;
-  if (beziCanvas.getContext) {
-    bezictx.rect(0, 0, wd, ht);
-    bezictx.fillStyle = '#000000';
-    bezictx.fill();
-  }
+const clearCanvas = () => {
+  const wd = beziCanv.width;
+  const ht = beziCanv.height;
+  uictx.clearRect(0, 0, wd, ht);
+  bezictx.clearRect(0, 0, wd, ht);
 };
 
 const drawBezier = (pts) => {
-  if (beziCanvas.getContext) {
+  if (beziCanv.getContext) {
     bezictx.beginPath();
-    bezictx.fillStyle = "white";
+    bezictx.fillStyle = '#ff0000';
     pts.forEach((pt) => {
       bezictx.beginPath();
-      bezictx.arc(pt.x, pt.y, 2, 0, 2 * Math.PI);
+      bezictx.arc(pt.x, pt.y, 1.5, 0, 2 * Math.PI);
       bezictx.fill();
     });
   }
@@ -225,7 +220,7 @@ const render = () => {
     (_item, index) => index !== omitIndex
   );
 
-  drawBackground();
+  clearCanvas();
   drawBezier(bezierPoints, omitIndex);
   drawGuides();
 };

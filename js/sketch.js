@@ -261,12 +261,6 @@ function setupSketch(wd, ht) {
   //   particlesBack.push(new Particle(fb2.center, fb2.getHeading()));
   // }
 
-  // const den = displayDensity();
-  // pixelDensity(den);
-
-  // createCanvas(wd, ht);
-  // frameRate(fps);
-
   initPalette().then((data) => {
     allColors = data;
     // palette = pickPalette(data).map(c => color(c));
