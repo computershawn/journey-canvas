@@ -49,12 +49,12 @@
     <canvas id="bezier-ctrl" width="1280" height="720"></canvas>
   </div>
 
+  <script src="js/utils.js"></script>
+  <script src="js/bezier.js"></script>
   <script src="js/particle.js"></script>
   <script src="js/fanBlade.js"></script>
   <script src="js/fan.js"></script>
   <script src="js/nullElement.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/bezier.js"></script>
   <script src="js/sketch.js"></script>
 
   <script>
@@ -98,14 +98,12 @@
     const numColors = 5;
 
     // Canvas
-    // PGraphics canv;
     const wd = 1280;
     const ht = 720;
     const cX = wd / 2;
     const cY = ht / 2;
 
     // Bezier Curve variables
-    // let dragging;
     let lastDragState = false;
     let mouseDX = 0;
     let mouseDY = 0;
@@ -121,6 +119,10 @@
       const canvas = document.getElementById("canv");
       canvas.style.width = `${wd}px`;
       canvas.style.height = `${ht}px`;
+
+      scale = window.devicePixelRatio;
+      canvas.width = Math.floor(wd * scale);
+      canvas.height = Math.floor(ht * scale);
     }
 
     setupCanv();

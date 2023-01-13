@@ -5,8 +5,7 @@ const uiCanv = document.getElementById('bezier-ctrl');
 const uictx = uiCanv.getContext("2d");
 
 
-const numPoints = 65;
-const n = (numPoints - 1) / 2;
+const numPoints = 41;
 const dragRadius = 12;
 const beziCtrl = [];
 beziCtrl.push({x: 60, y: 360, child: [1]});
@@ -43,7 +42,6 @@ const drawGuides = () => {
   if (uiCanv.getContext) {
     beziCtrl.forEach((ctrl, i) => {
       if (ctrl.child !== null) {
-        uictx.lineWidth = 1;
         const childIndex = ctrl.child[0];
         const px = beziCtrl[i].x;
         const py = beziCtrl[i].y
@@ -73,16 +71,19 @@ const drawGuides = () => {
     })
 
     beziCtrl.forEach(shape => {
-      uictx.strokeStyle = shape.child ? '#00ffff' : '#00ff80';
-      uictx.lineWidth = shape.child ? 2 : 1;
+      uictx.strokeStyle = '#00ffff'; // shape.child ? '#00ffff' : '#00ff80';
+      uictx.fillStyle = '#00ffff20'; // shape.child ? '#00ffff' : '#00ff80';
       uictx.beginPath();
       uictx.arc(shape.x, shape.y, dragRadius, 0, 2 * Math.PI);
       uictx.stroke();
+      if (shape.child) {
+        uictx.fill();
+      }
     });
   }
 };
 
-const getBezierPoints = (p0, p1, p2, p3, num) => {
+const getBezierSegmentPoints = (p0, p1, p2, p3, num) => {
   const temp = [];
   for (let i = 0; i <= num; i++) {
     const t = i / num;
@@ -103,27 +104,31 @@ const clearCanvas = () => {
 const drawBezier = (pts) => {
   if (beziCanv.getContext) {
     bezictx.beginPath();
-    bezictx.fillStyle = '#ff0000';
-    pts.forEach((pt) => {
-      bezictx.beginPath();
-      bezictx.arc(pt.x, pt.y, 1.5, 0, 2 * Math.PI);
-      bezictx.fill();
-    });
+    bezictx.strokeStyle = '#ff0000';
+    bezictx.moveTo(pts[0].x, pts[0].y);
+    for (let j = 1; j < pts.length; j++) {
+      bezictx.lineTo(pts[j].x, pts[j].y);
+    }
+    bezictx.stroke();
   }
 };
 
-const getOffsets = () => {
+const getCanvasOffsets = () => {
   const offsets = uiCanv.getBoundingClientRect();
   offsetX = offsets.left;
-  offsetY = offsets.top;
+  // THE offsets.top VALUE DOESN'T TAKE INTO ACCOUNT THE 'load comp' BUTTON,
+  // WHICH IS 32px HIGH. THIS IS PROBABLY BECAUSE THAT BUTTON IS ADDED TO THE
+  // DOM PROGRAMMATICALLY. ONE JANKY OPTION IS TO ADD 32px TO offsetY.
+  const loadCompBtnHeight = 32;
+  offsetY = offsets.top + loadCompBtnHeight;
 };
 
-getOffsets();
+getCanvasOffsets();
 window.onscroll = () => {
-  getOffsets();
+  getCanvasOffsets();
 };
 window.onresize = () => {
-  getOffsets();
+  getCanvasOffsets();
 };
 
 const isMouseHover = (x, y, shape) => {
@@ -141,6 +146,27 @@ const isMouseHover = (x, y, shape) => {
     return true;
   }
   return false;
+};
+
+const render = () => {
+  const bezierPoints = getBezierSplinePoints(numPoints);
+
+  clearCanvas();
+  drawBezier(bezierPoints);
+  drawGuides();
+};
+
+const getBezierSplinePoints = (numberOfPoints) => {
+  const n = (numberOfPoints - 1) / 2;
+  const [p0, p1, p2, p3, p5, p6] = beziCtrl;
+  const p4 = { x: 2 * p3.x - p2.x, y: 2 * p3.y - p2.y };
+  const bezierPoints1 = getBezierSegmentPoints(p0, p1, p2, p3, n);
+  const tempSet = getBezierSegmentPoints(p3, p4, p5, p6, n);
+  // First point in tempSet is a redundant duplicate of last point in bezierPoints2
+  // We can use array destructuring to throw out the first point in tempSet
+  const [_omitDuplicate, ...bezierPoints2] = tempSet;
+
+  return [...bezierPoints1, ...bezierPoints2];
 };
 
 const handleMouseDown = (evt) => {
@@ -165,6 +191,11 @@ const handleMouseUp = (evt) => {
   }
   dragging = false;
   currentHandleIndex = null;
+
+  const numFanBlades = 385;
+  const temp = getBezierSplinePoints(numFanBlades);
+  console.log(`${numFanBlades} Bezier spline points:`);
+  // Use this array to redraw the fan whenever the spline is modified
 };
 
 const handleMouseOut = (evt) => {
@@ -177,6 +208,7 @@ const handleMouseOut = (evt) => {
 
 const handleMouseMove = (evt) => {
   evt.preventDefault();
+
   if (!dragging) {
     return;
   }
@@ -198,43 +230,15 @@ const handleMouseMove = (evt) => {
     beziCtrl[index].y += dy;    
   }
 
-  // drawGuides();
   startPoints.x = mouseX;
   startPoints.y = mouseY;
-  
+
   render();
 }
 
 uiCanv.onmousedown = handleMouseDown;
 uiCanv.onmouseup = handleMouseUp;
 uiCanv.onmouseout = handleMouseOut;
-uiCanv.addEventListener('mousemove', throttle(handleMouseMove, 50));
-
-const render = () => {
-  const [p0, p1, p2, p3, p5, p6] = beziCtrl;
-  const p4 = { x: 2 * p3.x - p2.x, y: 2 * p3.y - p2.y };
-  const bezierPoints1 = getBezierPoints(p0, p1, p2, p3, n);
-  const bezierPoints2 = getBezierPoints(p3, p4, p5, p6, n);
-  const omitIndex = bezierPoints1.length;
-  const bezierPoints = [...bezierPoints1, ...bezierPoints2].filter(
-    (_item, index) => index !== omitIndex
-  );
-
-  clearCanvas();
-  drawBezier(bezierPoints, omitIndex);
-  drawGuides();
-};
-
-function throttle(callback, interval) {
-  let enableCall = true;
-
-  return function(...args) {
-    if (!enableCall) return;
-
-    enableCall = false;
-    callback.apply(this, args);
-    setTimeout(() => enableCall = true, interval);
-  }
-}
+uiCanv.onmousemove = throttle(handleMouseMove, 50);
 
 render();
