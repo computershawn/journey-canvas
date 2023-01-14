@@ -9,6 +9,14 @@
   <meta charset="utf-8" />
 </head>
 
+<script>
+  const PI = Math.PI;
+  const numFanBlades = 385;
+  const wd = 1280;
+  const ht = 720;
+</script>
+
+
 <body>
   <div id="ui-controls" class="controls">
     <div class="wut">
@@ -76,12 +84,12 @@
 
     // Geometry
     const radius = 108; // 48;
-    const numLoops = 320; // 160; // 200; // 160; // 60;
+    const numLoops = 325; // 160; // 200; // 160; // 60;
     let balance = 0.5;
     let diff = 4.5;
 
     // Display of geometry and guides
-    let showFan = true;
+    let showFan = false; // true;
     let showPoints = false;
     let showBezier = true;
     let showParticles = false;
@@ -98,8 +106,6 @@
     const numColors = 5;
 
     // Canvas
-    const wd = 1280;
-    const ht = 720;
     const cX = wd / 2;
     const cY = ht / 2;
 
@@ -130,7 +136,9 @@
     const fan = new Fan(pts);
 
     fan.update(frameCount);
-    fan.render();
+    if (showFan) {
+      fan.render();
+    }
 
     // const i = setInterval(() => {
     //   frameCount += 1;

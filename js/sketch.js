@@ -50,7 +50,7 @@ const buildSelectMenu = (shouldSetComp = false) => {
         const params = getComp(comp);
         setComp(params, frameSlider, balanceSlider, diffSlider);
         const csp = params.curveSetPoints;
-        bezi = new BeziCurve(csp);
+        bezi = new BeziSpline(csp, (val) => console.log(val));
         resetBezier();
         styleDropdown(index);
       });
@@ -221,12 +221,15 @@ function setupSketch(wd, ht) {
   }
   
   // CASE C: Unfurly path is a Bezier curve
-  // const existingComps = getAllComps();
-  // const csp = existingComps.length
-  //   ? getComp(existingComps[0])?.curveSetPoints
-  //   : null;
+  const existingComps = getAllComps();
+  const csp = existingComps.length
+    ? getComp(existingComps[0])?.curveSetPoints
+    : null;
 
-  // bezi = new BeziCurve(csp);
+  bezi = new BeziSpline(csp, (val) => console.log(val));
+  // console.log(bezi.cubic({x: 1, y: 2}, {x: 3, y: 4}, {x: 5, y: 6}, {x: 7, y: 8},  0.5));
+  // bezi.drawGuides();
+  bezi.render();
   // const beziPoints = bezi.getPoints();
   // for (let j = 0; j < beziPoints.length; j++) {
   //   pts.push(beziPoints[j]);
