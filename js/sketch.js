@@ -76,26 +76,7 @@ const buildSelectMenu = (shouldSetComp = false) => {
   }
 }
 
-function setupSketch() {
-  // Instantiate Bezier curve object
-  const existingComps = getAllComps();
-  const csp = existingComps.length
-    ? getComp(existingComps[0])?.curveSetPoints
-    : null;
-
-  // bezi = new BeziSpline(csp, (val) => console.log(val));
-  bezi = new BeziSpline(csp, (val) => {
-    fan = new Fan(val);
-    fan.update(frameCount);
-    if (showFan) {
-      fan.render();
-    }
-  });
-
-  if (showBezier) {
-    bezi.render();
-  }
-
+function setupSketch(pathOption = 0) {
   initPalette().then((data) => {
     allColors = data;
     palette = pickPalette(data);
@@ -106,10 +87,42 @@ function setupSketch() {
     tickSequence.push(i);
   }
 
-  const pts = getFanPath();
-  fan = new Fan(pts);
+  // Instantiate Bezier curve object
+  const existingComps = getAllComps();
+  const csp = existingComps.length
+    ? getComp(existingComps[0])?.curveSetPoints
+    : null;
+  bezi = new BeziSpline(csp, (val) => {
+    // This callback method re-renders the fan
+    // whenever the bezier is modified
+    fan = new Fan(val);
+    fan.update(frameCount);
+    if (showFan) {
+      fan.render();
+    }
+  });
 
+  let pts;
+  switch(pathOption) {
+    case 0: 
+      pts = getStraightPath();
+      break;
+    case 1:
+      pts = getArcPoints(0.25 * Math.PI, numLoops, 600, wd / 2, 260);
+      break;
+    case 2:
+    default:
+      pts = bezi.getBezierSplinePoints(numLoops);
+  }
+
+  fan = new Fan(pts);
   fan.update(frameCount);
+
+  // Finally, render the visuals  
+  if (showBezier) {
+    bezi.render();
+  }
+  
   if (showFan) {
     fan.render();
   }
@@ -243,44 +256,17 @@ function setupUI() {
 }
 
 
-function getFanPath() {
-  // Initialize points
-  //
-  // CASE A: Unfurly path is a straight line
-  // const sp = 4;
-  // for (let j = 0; j < numLoops; j++) {
-  //   const w = (numLoops - 1) * sp;
-  //   const xOffset = cX - w / 2;
-  //   const vec = createVector(xOffset + j * sp, cY);
-  //   pts.push(vec);
-  // }
-  //
-  // CASE B: Unfurly path is an arc
-  const arcPoints = getArcPoints(0.25 * Math.PI, numLoops, 600, wd / 2, 260);
+function getStraightPath() {
   const temp = [];
+  const sp = 2;
   for (let j = 0; j < numLoops; j++) {
-    temp.push(arcPoints[j]);
+    const w = (numLoops - 1) * sp;
+    const xOffset = cX - w / 2;
+    const vec = {x: xOffset + j * sp, y: cY};
+    temp.push(vec);
   }
-  
-  // CASE C: Unfurly path is a Bezier curve
-  // const existingComps = getAllComps();
-  // const csp = existingComps.length
-  //   ? getComp(existingComps[0])?.curveSetPoints
-  //   : null;
-
-  // bezi = new BeziSpline(csp, (val) => console.log(val));
-  // bezi.render();
-
-  // initPalette().then((data) => {
-  //   allColors = data;
-  //   palette = pickPalette(data);
-  // });
-
-  // for (let j = 0; j < 2 * maxTicks; j++) {
-  //   const i = Math.floor(Math.random(numColors));
-  //   tickSequence.push(i);
-  // }
 
   return temp;
 }
+
 

@@ -133,22 +133,12 @@
 
     setupCanvas();
     setupUI();
-    setupSketch();
-    // const pts = getFanPath();
-    // fan = new Fan(pts);
+    const pathOption = 2; // 0: Straight line / 1: Arc / 2: Bezier Curve
+    setupSketch(pathOption);
 
-    // fan.update(frameCount);
-    // if (showFan) {
-    //   fan.render();
-    // }
-
+    // Animate using setInterval
     // const i = setInterval(() => {
     //   frameCount += 1;
-
-    //   const canvas = document.getElementById("canv");
-    //   const ctx = canvas.getContext("2d");
-    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     //   fan.update(frameCount);
     //   fan.render();
     // }, 500);

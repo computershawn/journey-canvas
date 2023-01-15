@@ -75,9 +75,9 @@ class BeziSpline {
       this.dragging = false;
       this.currentHandleIndex = null;
 
+      // Run callback onChangeBezier whenever the spline is modified
       const temp = this.getBezierSplinePoints(numLoops);
       this.onChangeBezier(temp);
-      // Run callback onChangeBezier whenever the spline is modified
     });
     
     this.uiCanv.addEventListener('mouseout', (evt) => {
