@@ -136,12 +136,17 @@
     const pathOption = 2; // 0: Straight line / 1: Arc / 2: Bezier Curve
     setupSketch(pathOption);
 
-    // Animate using setInterval
-    // const i = setInterval(() => {
-    //   frameCount += 1;
-    //   fan.update(frameCount);
-    //   fan.render();
-    // }, 500);
+    const okAnimate = false;
+    if (okAnimate) {
+      // Animate using setInterval
+      // ! In the real world this should be done with requestAnimationFrame
+      const i = setInterval(() => {
+        frameCount += 1;
+        fan.update(frameCount);
+        fan.render();
+      }, 100);
+    }
+
   </script>
 </body>
 

@@ -92,10 +92,10 @@ function setupSketch(pathOption = 0) {
   const csp = existingComps.length
     ? getComp(existingComps[0])?.curveSetPoints
     : null;
-  bezi = new BeziSpline(csp, (val) => {
+  bezi = new BeziSpline(csp, (newPoints) => {
     // This callback method re-renders the fan
     // whenever the bezier is modified
-    fan = new Fan(val);
+    fan = new Fan(newPoints);
     fan.update(frameCount);
     if (showFan) {
       fan.render();
@@ -108,7 +108,9 @@ function setupSketch(pathOption = 0) {
       pts = getStraightPath();
       break;
     case 1:
-      pts = getArcPoints(0.25 * Math.PI, numLoops, 600, wd / 2, 260);
+      const circleRadius = 160; // 600;
+      // pts = getArcPoints(0.25 * Math.PI, numLoops, circleRadius, wd / 2, 260);
+      pts = getArcPoints(2 * Math.PI, numLoops, circleRadius, wd / 2, ht / 2 - circleRadius);
       break;
     case 2:
     default:
