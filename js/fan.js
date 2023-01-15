@@ -21,6 +21,16 @@ class Fan {
     };
   }
 
+  // Replace existing null elements with a new set
+  // set of x/y coordinates
+  resetPoints(_pts) {
+    this.nullElements = [];
+
+    for (let j = 0; j < _pts.length; j++) {
+      this.nullElements.push(new NullElement(_pts[j], j));
+    }
+  }
+
   update(currentCycleFrame) {
     // Update all positions of our references
     this.nullElements.forEach(nE => {

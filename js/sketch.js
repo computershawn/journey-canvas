@@ -93,9 +93,9 @@ function setupSketch(pathOption = 0) {
     ? getComp(existingComps[0])?.curveSetPoints
     : null;
   bezi = new BeziSpline(csp, (newPoints) => {
-    // This callback method re-renders the fan
-    // whenever the bezier is modified
-    fan = new Fan(newPoints);
+    // The logic in the callback will re-render
+    // the fan whenever the bezier is modified
+    fan.resetPoints(newPoints);
     fan.update(frameCount);
     if (showFan) {
       fan.render();

@@ -76,19 +76,16 @@
     let frameCount = 0;
 
     // Collections of things
-    // const pts = [];
-    const nullElements = [];
     const particlesFront = [];
     const particlesBack = [];
 
     // Geometry
     const radius = 108; // 48;
-    // const numLoops = 15; // 325; // 160; // 200; // 160; // 60;
     let balance = 0.5;
     let diff = 4.5;
 
     // Display of geometry and guides
-    let showFan = true; //false; // true;
+    let showFan = true;
     let showPoints = false;
     let showBezier = true;
     let showParticles = false;
@@ -109,10 +106,9 @@
     const cY = ht / 2;
 
     // Bezier Curve variables
-    let lastDragState = false;
-    let mouseDX = 0;
-    let mouseDY = 0;
     let bezi;
+
+    // Unfurly/fan geometry
     let fan;
 
     // Listen for the event.
