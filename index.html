@@ -5,13 +5,12 @@
   <title>✨ journey ✨</title>
   <link rel="stylesheet" href="css/dropdown.css">
   <link rel="stylesheet" href="css/style.css">
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.js"></script> -->
   <meta charset="utf-8" />
 </head>
 
 <script>
   const PI = Math.PI;
-  const numFanBlades = 385;
+  const numLoops = 325; // 325; // 160; // 200; // 160; // 60;
   const wd = 1280;
   const ht = 720;
 </script>
@@ -20,7 +19,7 @@
 <body>
   <div id="ui-controls" class="controls">
     <div class="wut">
-      <input id="frame-number" type="range" name="framenumber" min="0" max="383">
+      <input id="frame-number" type="range" name="framenumber" min="0" max="384">
       <label for="frame-number">frame</label>
       <button id="animation-mode">play</button>
     </div>
@@ -52,7 +51,7 @@
   </div>
 
   <div class="canvas-container">
-    <canvas id="canv" width="1280" height="720"></canvas>
+    <canvas id="fan" width="1280" height="720"></canvas>
     <canvas id="bezier-geom" width="1280" height="720"></canvas>
     <canvas id="bezier-ctrl" width="1280" height="720"></canvas>
   </div>
@@ -84,12 +83,12 @@
 
     // Geometry
     const radius = 108; // 48;
-    const numLoops = 325; // 160; // 200; // 160; // 60;
+    // const numLoops = 15; // 325; // 160; // 200; // 160; // 60;
     let balance = 0.5;
     let diff = 4.5;
 
     // Display of geometry and guides
-    let showFan = false; // true;
+    let showFan = true; //false; // true;
     let showPoints = false;
     let showBezier = true;
     let showParticles = false;
@@ -114,6 +113,7 @@
     let mouseDX = 0;
     let mouseDY = 0;
     let bezi;
+    let fan;
 
     // Listen for the event.
     window.addEventListener('look', (e) => {
@@ -121,24 +121,26 @@
     }, false);
   </script>
   <script>
-    const setupCanv = () => {
-      const canvas = document.getElementById("canv");
-      canvas.style.width = `${wd}px`;
-      canvas.style.height = `${ht}px`;
+    const setupCanvas = () => {
+      const fanCanvas = document.getElementById("fan");
+      fanCanvas.style.width = `${wd}px`;
+      fanCanvas.style.height = `${ht}px`;
 
       scale = window.devicePixelRatio;
-      canvas.width = Math.floor(wd * scale);
-      canvas.height = Math.floor(ht * scale);
+      fanCanvas.width = Math.floor(wd * scale);
+      fanCanvas.height = Math.floor(ht * scale);
     }
 
-    setupCanv();
-    const pts = setupSketch(wd, ht);
-    const fan = new Fan(pts);
+    setupCanvas();
+    setupUI();
+    setupSketch();
+    // const pts = getFanPath();
+    // fan = new Fan(pts);
 
-    fan.update(frameCount);
-    if (showFan) {
-      fan.render();
-    }
+    // fan.update(frameCount);
+    // if (showFan) {
+    //   fan.render();
+    // }
 
     // const i = setInterval(() => {
     //   frameCount += 1;

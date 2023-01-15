@@ -53,10 +53,14 @@ canvas {
   left: 0;
 }
 
-#bezier-geom {
+#fan {
   z-index: 0;
 }
 
-#bezier-ctrl {
+#bezier-geom {
   z-index: 1;
+}
+
+#bezier-ctrl {
+  z-index: 2;
 }

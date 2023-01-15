@@ -15,6 +15,7 @@ class Fan {
         pt2: { x: 0, y: 0 },
         pt3: { x: 0, y: 0 },
       };
+
       const fb = new FanBlade(points, j);
       this.fanBlades.push(fb);
     };
@@ -49,10 +50,11 @@ class Fan {
   }
 
   render() {
-    const canv = document.getElementById("canv");
+    const fanCanvas = document.getElementById('fan');
 
-    if (canv.getContext) {
-      const ctx = canv.getContext('2d');
+    if (fanCanvas.getContext) {
+      const ctx = fanCanvas.getContext('2d');
+      ctx.clearRect(0, 0, fanCanvas.width, fanCanvas.height);
       this.fanBlades.forEach(fb => {
         fb.render(ctx);
       });

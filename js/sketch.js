@@ -76,7 +76,46 @@ const buildSelectMenu = (shouldSetComp = false) => {
   }
 }
 
-function setupSketch(wd, ht) {
+function setupSketch() {
+  // Instantiate Bezier curve object
+  const existingComps = getAllComps();
+  const csp = existingComps.length
+    ? getComp(existingComps[0])?.curveSetPoints
+    : null;
+
+  // bezi = new BeziSpline(csp, (val) => console.log(val));
+  bezi = new BeziSpline(csp, (val) => {
+    fan = new Fan(val);
+    fan.update(frameCount);
+    if (showFan) {
+      fan.render();
+    }
+  });
+
+  if (showBezier) {
+    bezi.render();
+  }
+
+  initPalette().then((data) => {
+    allColors = data;
+    palette = pickPalette(data);
+  });
+
+  for (let j = 0; j < 2 * maxTicks; j++) {
+    const i = Math.floor(Math.random(numColors));
+    tickSequence.push(i);
+  }
+
+  const pts = getFanPath();
+  fan = new Fan(pts);
+
+  fan.update(frameCount);
+  if (showFan) {
+    fan.render();
+  }
+}
+
+function setupUI() {
   // Set up UI Controls
   const frameSlider = document.querySelector('#frame-number');
   const balanceSlider = document.querySelector('#balance');
@@ -201,7 +240,10 @@ function setupSketch(wd, ht) {
       palette = pickPalette(allColors);
     }
   });
+}
 
+
+function getFanPath() {
   // Initialize points
   //
   // CASE A: Unfurly path is a straight line
@@ -221,59 +263,23 @@ function setupSketch(wd, ht) {
   }
   
   // CASE C: Unfurly path is a Bezier curve
-  const existingComps = getAllComps();
-  const csp = existingComps.length
-    ? getComp(existingComps[0])?.curveSetPoints
-    : null;
+  // const existingComps = getAllComps();
+  // const csp = existingComps.length
+  //   ? getComp(existingComps[0])?.curveSetPoints
+  //   : null;
 
-  bezi = new BeziSpline(csp, (val) => console.log(val));
-  // console.log(bezi.cubic({x: 1, y: 2}, {x: 3, y: 4}, {x: 5, y: 6}, {x: 7, y: 8},  0.5));
-  // bezi.drawGuides();
-  bezi.render();
-  // const beziPoints = bezi.getPoints();
-  // for (let j = 0; j < beziPoints.length; j++) {
-  //   pts.push(beziPoints[j]);
-  // }
+  // bezi = new BeziSpline(csp, (val) => console.log(val));
+  // bezi.render();
 
-  // Initialize null elements
-  // for (let j = 0; j < pts.length; j++) {
-  //   nullElements.push(new NullElement(pts[j], j));
-  // }
-
-  // Initialize fan blades
-  // for (let j = 0; j < nullElements.length - 1; j++) {
-  //   const fb = new FanBlade(j);
-  //   fanBlades.push(fb);
-  // }
-
-  // Do an initial run to get a 'heading' value from
-  // each fan blade; Each particle can attach itself
-  // to a random fan blade and move along its heading
-  // nullElements.forEach(nE => {
-  //   nE.update(frameCount);
+  // initPalette().then((data) => {
+  //   allColors = data;
+  //   palette = pickPalette(data);
   // });
-  // renderFan(fanBlades, nullElements);
 
-  // Initialize particles
-  // for (let j = 0; j < numParticles / 2; j++) {
-  //   const rand1 = getRandomIndex(fanBlades.length);
-  //   const rand2 = getRandomIndex(fanBlades.length);
-  //   const fb1 = fanBlades[rand1];
-  //   const fb2 = fanBlades[rand2];
-  //   particlesFront.push(new Particle(fb1.center, fb1.getHeading()));
-  //   particlesBack.push(new Particle(fb2.center, fb2.getHeading()));
+  // for (let j = 0; j < 2 * maxTicks; j++) {
+  //   const i = Math.floor(Math.random(numColors));
+  //   tickSequence.push(i);
   // }
-
-  initPalette().then((data) => {
-    allColors = data;
-    // palette = pickPalette(data).map(c => color(c));
-    palette = pickPalette(data);
-  });
-
-  for (let j = 0; j < 2 * maxTicks; j++) {
-    const i = Math.floor(Math.random(numColors));
-    tickSequence.push(i);
-  }
 
   return temp;
 }

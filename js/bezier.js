@@ -1,6 +1,5 @@
 class BeziSpline {
   constructor(_curveSetPoints = {}, _onChangeBezier = () => {}) {
-    console.log('_curveSetPoints', _curveSetPoints);
     this.beziCanv = document.getElementById("bezier-geom");
     this.bezictx = this.beziCanv.getContext("2d");
     
@@ -8,54 +7,58 @@ class BeziSpline {
     this.uictx = this.uiCanv.getContext("2d");
 
     this.numPoints = 49;
-    this.dragRadius = 12;
+    // this.dragRadius = 12;
     const temp = [];
-    temp.push({ x: 60, y: 360, child: [1] });
-    temp.push({ x: 300, y: 520, child: null });
-    temp.push({ x: 440, y: 240, child: null });
-    temp.push({ x: 640, y: 440, child: [2, -1] });
-    temp.push({ x: 840, y: 480, child: null });
-    temp.push({ x: 1220, y: 360, child: [4] });
+
+    const {
+      pt1, pt2, pt3, pt4, pt5, pt6
+    } = _curveSetPoints;
+
+    temp.push({ x: pt1.x, y: pt1.y, child: [1] });
+    temp.push({ x: pt4.x, y: pt4.y, child: null });
+    temp.push({ x: pt5.x, y: pt5.y, child: null });
+    temp.push({ x: pt2.x, y: pt2.y, child: [2, -1] });
+    temp.push({ x: pt6.x, y: pt6.y, child: null });
+    temp.push({ x: pt3.x, y: pt3.y, child: [4] });
     this.beziCtrl = temp;
 
     this.dragging = false;
+    this.currentHandleIndex = null;
+    this.currentHoverIndex = null;
     this.startPoints = { x: 0, y: 0 };
+    this.pointRadius = 3;
+    this.hoverRadius = 24;
 
-    // THE offsets.top VALUE DOESN'T TAKE INTO ACCOUNT THE 'load comp' BUTTON,
-    // WHICH IS 32px HIGH. THIS IS PROBABLY BECAUSE THAT BUTTON IS ADDED TO THE
-    // DOM PROGRAMMATICALLY. ONE JANKY OPTION IS TO ADD 32px TO offsetY.
     const offsets = this.uiCanv.getBoundingClientRect();
-    // const loadCompBtnHeight = 32;
-    this.offsetX = offsets.left;
-    this.offsetY = offsets.top; //  + loadCompBtnHeight;
+    this.xOffset = offsets.left;
+    this.yOffset = offsets.top;
     this.onChangeBezier = _onChangeBezier;
-    console.log(this.onChangeBezier);
 
     this.uiCanv.addEventListener('mousedown', (evt) => {
       const {
         beziCtrl,
-        offsetX,
-        offsetY,
+        hoverRadius,
+        xOffset,
+        yOffset,
         startPoints,
       } = this;
 
       evt.preventDefault();
-      startPoints.x = parseInt(evt.clientX - offsetX);
-      startPoints.y = parseInt(evt.clientY - offsetY);
+      startPoints.x = parseInt(evt.clientX - xOffset);
+      startPoints.y = parseInt(evt.clientY - yOffset);
     
       for (let i = beziCtrl.length - 1; i >= 0; i--) {
         const shape = beziCtrl[i];
-        const {dragRadius} = this;
-        const areaLeft = shape.x - dragRadius;
-        const areaRight = shape.x + dragRadius;
-        const areaTop = shape.y - dragRadius;
-        const areaBottom = shape.y + dragRadius;
+        const hoverAreaLeft = shape.x - hoverRadius;
+        const hoverAreaRight = shape.x + hoverRadius;
+        const hoverAreaTop = shape.y - hoverRadius;
+        const hoverAreaBottom = shape.y + hoverRadius;
 
         if (
-          startPoints.x > areaLeft &&
-          startPoints.x < areaRight &&
-          startPoints.y > areaTop &&
-          startPoints.y < areaBottom
+          startPoints.x > hoverAreaLeft &&
+          startPoints.x < hoverAreaRight &&
+          startPoints.y > hoverAreaTop &&
+          startPoints.y < hoverAreaBottom
         ) {
           this.currentHandleIndex = i;
           this.dragging = true;
@@ -65,35 +68,26 @@ class BeziSpline {
     });
 
     this.uiCanv.addEventListener('mouseup', (evt) => {
-      let {
-        currentHandleIndex,
-        dragging,
-      } = this;
-
-      const {
-        onChangeBezier,
-      } = this;
-
-
       evt.preventDefault();
-      if (!dragging) {
+      if (!this.dragging) {
         return;
       }
       this.dragging = false;
       this.currentHandleIndex = null;
 
-      const temp = this.getBezierSplinePoints(numFanBlades);
-      onChangeBezier(temp);
+      const temp = this.getBezierSplinePoints(numLoops);
+      this.onChangeBezier(temp);
       // Run callback onChangeBezier whenever the spline is modified
     });
     
     this.uiCanv.addEventListener('mouseout', (evt) => {
       evt.preventDefault();
-      let { dragging } = this;
-      if (!dragging) {
+      if (!this.dragging) {
         return;
       }
-      dragging = false;
+      this.currentHoverIndex = null;
+      this.currentHandleIndex = null;
+      this.dragging = false;
     });
     
     this.uiCanv.addEventListener('mousemove', throttle((evt) => {
@@ -101,18 +95,43 @@ class BeziSpline {
         beziCtrl,
         currentHandleIndex,
         dragging,
-        offsetX,
-        offsetY,
+        xOffset,
+        yOffset,
         startPoints,
       } = this;
       evt.preventDefault();
+      this.checkHoverIndex(evt);
+      // const currentHoverIndex = getHoverIndex();
+      // for (let i = beziCtrl.length - 1; i >= 0; i--) {
+      //   // console.log('boyee');
+      //   const mouseX = parseInt(evt.clientX - xOffset);
+      //   const mouseY = parseInt(evt.clientY - yOffset);
+  
+      //   const shape = beziCtrl[i];
+      //   const hoverAreaLeft = shape.x - this.hoverRadius;
+      //   const hoverAreaRight = shape.x + this.hoverRadius;
+      //   const hoverAreaTop = shape.y - this.hoverRadius;
+      //   const hoverAreaBottom = shape.y + this.hoverRadius;
+
+      //   if (
+      //     mouseX > hoverAreaLeft &&
+      //     mouseX < hoverAreaRight &&
+      //     mouseY > hoverAreaTop &&
+      //     mouseY < hoverAreaBottom
+      //   ) {
+      //     console.log('oh yeah');
+      //     // this.currentHandleIndex = i;
+      //     // this.dragging = true;
+      //     return;
+      //   }
+      // };
     
       if (!dragging) {
         return;
       }
     
-      const mouseX = parseInt(evt.clientX - offsetX);
-      const mouseY = parseInt(evt.clientY - offsetY);
+      const mouseX = parseInt(evt.clientX - xOffset);
+      const mouseY = parseInt(evt.clientY - yOffset);
     
       const dx = mouseX - startPoints.x;
       const dy = mouseY - startPoints.y;
@@ -158,13 +177,33 @@ class BeziSpline {
     } = this;
     if (uictx) {
       beziCtrl.forEach((ctrl, i) => {
+        // Circle around currently hovered point
+        if (i === this.currentHoverIndex) {
+          uictx.strokeStyle = '#00ffff';
+          uictx.fillStyle = '#00ffff10';
+          uictx.beginPath();
+          uictx.arc(ctrl.x, ctrl.y, this.hoverRadius, 0, 2 * PI);
+          uictx.stroke();
+          uictx.fill();
+        }
+
+        // Circle around anchors and control points
+        uictx.strokeStyle = '#00ffff';
+        uictx.fillStyle = '#00ffffff';
+        uictx.beginPath();
+        uictx.arc(ctrl.x, ctrl.y, this.pointRadius, 0, 2 * PI);
+        uictx.stroke();
+        if (ctrl.child) {
+          uictx.fill();
+        }
+
         if (ctrl.child !== null) {
+          // Circle from anchor to control point
           const childIndex = ctrl.child[0];
           const px = beziCtrl[i].x;
           const py = beziCtrl[i].y
           const child0x = beziCtrl[childIndex].x;
           const child0y = beziCtrl[childIndex].y;
-  
           const dx = px - child0x;
           const dy = py - child0y;
           const r = Math.sqrt(dx * dx + dy * dy);
@@ -173,13 +212,15 @@ class BeziSpline {
           uictx.arc(px, py, r, 0, 2 * PI);
           uictx.stroke();
   
+          // Line from anchor to control point
           uictx.beginPath();
           uictx.strokeStyle = "#ff00ff";
           uictx.moveTo(px, py);
           uictx.lineTo(child0x, child0y);
           uictx.stroke();
-  
+
           if (ctrl.child.length > 1) {
+            // Line from anchor to unused control point
             const child1x = 2 * px - child0x;
             const child1y = 2 * py - child0y;
             uictx.beginPath();
@@ -188,24 +229,14 @@ class BeziSpline {
             uictx.lineTo(child1x, child1y);
             uictx.stroke();
   
-            uictx.strokeStyle = '#ffff0070';
+            // Circle around unused control point
+            uictx.strokeStyle = '#ff00ff70';
             uictx.beginPath();
-            uictx.arc(child1x, child1y, this.dragRadius, 0, 2 * PI);
+            uictx.arc(child1x, child1y, this.pointRadius, 0, 2 * PI);
             uictx.stroke();
           }
         }
       })
-  
-      beziCtrl.forEach(shape => {
-        uictx.strokeStyle = '#00ffff';
-        uictx.fillStyle = '#00ffff20';
-        uictx.beginPath();
-        uictx.arc(shape.x, shape.y, this.dragRadius, 0, 2 * PI);
-        uictx.stroke();
-        if (shape.child) {
-          uictx.fill();
-        }
-      });
     }
   };
 
@@ -233,9 +264,17 @@ class BeziSpline {
     return [...bezierPoints1, ...bezierPoints2];
   };
 
-  clearCanvas() {
-    this.uictx.clearRect(0, 0, wd, ht);
-    this.bezictx.clearRect(0, 0, wd, ht);
+  clearCanvas(canv = null) {
+    if (canv) {
+      if (Array.isArray(canv)) {
+        canv.forEach(c => {
+          c.clearRect(0, 0, wd, ht);
+          c.clearRect(0, 0, wd, ht);
+        });
+      } else {
+        canv.clearRect(0, 0, wd, ht);
+      }
+    }
   };
   
   drawBezier(pts) {
@@ -251,10 +290,51 @@ class BeziSpline {
     }
   };
 
+  checkHoverIndex(evt) {
+    const {
+      beziCtrl,
+      xOffset,
+      yOffset,
+    } = this;
+
+    for (let i = beziCtrl.length - 1; i >= 0; i--) {
+      const mouseX = parseInt(evt.clientX - xOffset);
+      const mouseY = parseInt(evt.clientY - yOffset);
+  
+      const shape = beziCtrl[i];
+      const hoverAreaLeft = shape.x - this.hoverRadius;
+      const hoverAreaRight = shape.x + this.hoverRadius;
+      const hoverAreaTop = shape.y - this.hoverRadius;
+      const hoverAreaBottom = shape.y + this.hoverRadius;
+  
+      if (
+        mouseX > hoverAreaLeft &&
+        mouseX < hoverAreaRight &&
+        mouseY > hoverAreaTop &&
+        mouseY < hoverAreaBottom
+      ) {
+        if (this.currentHoverIndex !== i) {
+          this.currentHoverIndex = i;
+          // Re-render Bezier controls
+          this.clearCanvas(this.uictx);
+          this.drawGuides();
+        }
+        return;
+      }
+    };
+
+    if (this.currentHoverIndex !== null && !this.dragging) {
+      this.currentHoverIndex = null;
+      // Re-render Bezier controls
+      this.clearCanvas(this.uictx);
+      this.drawGuides();
+    }
+  }
+
   render() {
     const bezierPoints = this.getBezierSplinePoints(this.numPoints);
   
-    this.clearCanvas();
+    this.clearCanvas([this.uictx, this.bezictx]);
     this.drawBezier(bezierPoints);
     this.drawGuides();
   };
