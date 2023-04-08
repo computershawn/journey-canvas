@@ -22,7 +22,6 @@ const wobble = (val, range) => {
 
 // CALCULATE THE X/Y COORDINATES ALONG AN ARC 
 const getArcPoints = (arcAngle, numPoints, r, cx = 0, cy = 0) => {
-  console.log(cx);
   const temp = [];
   for (let i = 0; i < numPoints; i++) {
     const a = 2 * i / numPoints * arcAngle - arcAngle - Math.PI / 2;
@@ -205,4 +204,17 @@ const mapTo = (value, fromMin, fromMax, toMin, toMax) => {
   const amount = value / (fromMax - fromMin);
 
   return toMin + amount * (toMax - toMin);
+}
+
+
+function throttle(callback, interval) {
+  let enableCall = true;
+
+  return function(...args) {
+    if (!enableCall) return;
+
+    enableCall = false;
+    callback.apply(this, args);
+    setTimeout(() => enableCall = true, interval);
+  }
 }

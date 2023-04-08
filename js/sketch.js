@@ -50,7 +50,7 @@ const buildSelectMenu = (shouldSetComp = false) => {
         const params = getComp(comp);
         setComp(params, frameSlider, balanceSlider, diffSlider);
         const csp = params.curveSetPoints;
-        bezi = new BeziCurve(csp);
+        bezi = new BeziSpline(csp, (val) => console.log(val));
         resetBezier();
         styleDropdown(index);
       });
@@ -76,7 +76,61 @@ const buildSelectMenu = (shouldSetComp = false) => {
   }
 }
 
-function setupSketch(wd, ht) {
+function setupSketch(pathOption = 0) {
+  initPalette().then((data) => {
+    allColors = data;
+    palette = pickPalette(data);
+  });
+
+  for (let j = 0; j < 2 * maxTicks; j++) {
+    const i = Math.floor(Math.random(numColors));
+    tickSequence.push(i);
+  }
+
+  // Instantiate Bezier curve object
+  const existingComps = getAllComps();
+  const csp = existingComps.length
+    ? getComp(existingComps[0])?.curveSetPoints
+    : null;
+  bezi = new BeziSpline(csp, (newPoints) => {
+    // The logic in the callback will re-render
+    // the fan whenever the bezier is modified
+    fan.resetPoints(newPoints);
+    fan.update(frameCount);
+    if (showFan) {
+      fan.render();
+    }
+  });
+
+  let pts;
+  switch(pathOption) {
+    case 0: 
+      pts = getStraightPath();
+      break;
+    case 1:
+      const circleRadius = 160; // 600;
+      // pts = getArcPoints(0.25 * Math.PI, numLoops, circleRadius, wd / 2, 260);
+      pts = getArcPoints(2 * Math.PI, numLoops, circleRadius, wd / 2, ht / 2 - circleRadius);
+      break;
+    case 2:
+    default:
+      pts = bezi.getBezierSplinePoints(numLoops);
+  }
+
+  fan = new Fan(pts);
+  fan.update(frameCount);
+
+  // Finally, render the visuals  
+  if (showBezier) {
+    bezi.render();
+  }
+  
+  if (showFan) {
+    fan.render();
+  }
+}
+
+function setupUI() {
   // Set up UI Controls
   const frameSlider = document.querySelector('#frame-number');
   const balanceSlider = document.querySelector('#balance');
@@ -201,83 +255,20 @@ function setupSketch(wd, ht) {
       palette = pickPalette(allColors);
     }
   });
+}
 
-  // Initialize points
-  //
-  // CASE A: Unfurly path is a straight line
-  // const sp = 4;
-  // for (let j = 0; j < numLoops; j++) {
-  //   const w = (numLoops - 1) * sp;
-  //   const xOffset = cX - w / 2;
-  //   const vec = createVector(xOffset + j * sp, cY);
-  //   pts.push(vec);
-  // }
-  //
-  // CASE B: Unfurly path is an arc
-  const arcPoints = getArcPoints(0.25 * Math.PI, numLoops, 600, wd / 2, 260);
+
+function getStraightPath() {
   const temp = [];
+  const sp = 2;
   for (let j = 0; j < numLoops; j++) {
-    temp.push(arcPoints[j]);
-  }
-  
-  // CASE C: Unfurly path is a Bezier curve
-  // const existingComps = getAllComps();
-  // const csp = existingComps.length
-  //   ? getComp(existingComps[0])?.curveSetPoints
-  //   : null;
-
-  // bezi = new BeziCurve(csp);
-  // const beziPoints = bezi.getPoints();
-  // for (let j = 0; j < beziPoints.length; j++) {
-  //   pts.push(beziPoints[j]);
-  // }
-
-  // Initialize null elements
-  // for (let j = 0; j < pts.length; j++) {
-  //   nullElements.push(new NullElement(pts[j], j));
-  // }
-
-  // Initialize fan blades
-  // for (let j = 0; j < nullElements.length - 1; j++) {
-  //   const fb = new FanBlade(j);
-  //   fanBlades.push(fb);
-  // }
-
-  // Do an initial run to get a 'heading' value from
-  // each fan blade; Each particle can attach itself
-  // to a random fan blade and move along its heading
-  // nullElements.forEach(nE => {
-  //   nE.update(frameCount);
-  // });
-  // renderFan(fanBlades, nullElements);
-
-  // Initialize particles
-  // for (let j = 0; j < numParticles / 2; j++) {
-  //   const rand1 = getRandomIndex(fanBlades.length);
-  //   const rand2 = getRandomIndex(fanBlades.length);
-  //   const fb1 = fanBlades[rand1];
-  //   const fb2 = fanBlades[rand2];
-  //   particlesFront.push(new Particle(fb1.center, fb1.getHeading()));
-  //   particlesBack.push(new Particle(fb2.center, fb2.getHeading()));
-  // }
-
-  // const den = displayDensity();
-  // pixelDensity(den);
-
-  // createCanvas(wd, ht);
-  // frameRate(fps);
-
-  initPalette().then((data) => {
-    allColors = data;
-    // palette = pickPalette(data).map(c => color(c));
-    palette = pickPalette(data);
-  });
-
-  for (let j = 0; j < 2 * maxTicks; j++) {
-    const i = Math.floor(Math.random(numColors));
-    tickSequence.push(i);
+    const w = (numLoops - 1) * sp;
+    const xOffset = cX - w / 2;
+    const vec = {x: xOffset + j * sp, y: cY};
+    temp.push(vec);
   }
 
   return temp;
 }
+
 

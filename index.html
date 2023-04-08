@@ -5,23 +5,21 @@
   <title>✨ journey ✨</title>
   <link rel="stylesheet" href="css/dropdown.css">
   <link rel="stylesheet" href="css/style.css">
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.js"></script> -->
   <meta charset="utf-8" />
 </head>
 
-<body>
-  <script src="js/particle.js"></script>
-  <script src="js/fanBlade.js"></script>
-  <script src="js/fan.js"></script>
-  <script src="js/nullElement.js"></script>
-  <!-- <script src="js/constants.js"></script> -->
-  <script src="js/utils.js"></script>
-  <script src="js/bezier.js"></script>
-  <script src="js/sketch.js"></script>
+<script>
+  const PI = Math.PI;
+  const numLoops = 325; // 325; // 160; // 200; // 160; // 60;
+  const wd = 1280;
+  const ht = 720;
+</script>
 
+
+<body>
   <div id="ui-controls" class="controls">
     <div class="wut">
-      <input id="frame-number" type="range" name="framenumber" min="0" max="383">
+      <input id="frame-number" type="range" name="framenumber" min="0" max="384">
       <label for="frame-number">frame</label>
       <button id="animation-mode">play</button>
     </div>
@@ -51,7 +49,21 @@
       <div id="comp-select" class="dropdown-content"></div>
     </div>
   </div>
-  <canvas id="canv" width="1280" height="720"></canvas>
+
+  <div class="canvas-container">
+    <canvas id="fan" width="1280" height="720"></canvas>
+    <canvas id="bezier-geom" width="1280" height="720"></canvas>
+    <canvas id="bezier-ctrl" width="1280" height="720"></canvas>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/bezier.js"></script>
+  <script src="js/particle.js"></script>
+  <script src="js/fanBlade.js"></script>
+  <script src="js/fan.js"></script>
+  <script src="js/nullElement.js"></script>
+  <script src="js/sketch.js"></script>
+
   <script>
     const numParticles = 320;
 
@@ -64,14 +76,11 @@
     let frameCount = 0;
 
     // Collections of things
-    // const pts = [];
-    const nullElements = [];
     const particlesFront = [];
     const particlesBack = [];
 
     // Geometry
     const radius = 108; // 48;
-    const numLoops = 320; // 160; // 200; // 160; // 60;
     let balance = 0.5;
     let diff = 4.5;
 
@@ -93,18 +102,14 @@
     const numColors = 5;
 
     // Canvas
-    // PGraphics canv;
-    const wd = 1280;
-    const ht = 720;
     const cX = wd / 2;
     const cY = ht / 2;
 
     // Bezier Curve variables
-    let dragging;
-    let lastDragState = false;
-    let mouseDX = 0;
-    let mouseDY = 0;
     let bezi;
+
+    // Unfurly/fan geometry
+    let fan;
 
     // Listen for the event.
     window.addEventListener('look', (e) => {
@@ -112,33 +117,32 @@
     }, false);
   </script>
   <script>
-    const setupCanv = () => {
-      const canvas = document.getElementById("canv");
-      canvas.style.width = `${wd}px`;
-      canvas.style.height = `${ht}px`;
+    const setupCanvas = () => {
+      const fanCanvas = document.getElementById("fan");
+      fanCanvas.style.width = `${wd}px`;
+      fanCanvas.style.height = `${ht}px`;
 
       scale = window.devicePixelRatio;
-      canvas.width = Math.floor(wd * scale);
-      canvas.height = Math.floor(ht * scale);
+      fanCanvas.width = Math.floor(wd * scale);
+      fanCanvas.height = Math.floor(ht * scale);
     }
 
-    setupCanv();
-    const pts = setupSketch(wd, ht);
-    const fan = new Fan(pts);
+    setupCanvas();
+    setupUI();
+    const pathOption = 2; // 0: Straight line / 1: Arc / 2: Bezier Curve
+    setupSketch(pathOption);
 
-    fan.update(frameCount);
-    fan.render();
+    const okAnimate = false;
+    if (okAnimate) {
+      // Animate using setInterval
+      // ! In the real world this should be done with requestAnimationFrame
+      const i = setInterval(() => {
+        frameCount += 1;
+        fan.update(frameCount);
+        fan.render();
+      }, 100);
+    }
 
-    // const i = setInterval(() => {
-    //   frameCount += 1;
-
-    //   const canvas = document.getElementById("canv");
-    //   const ctx = canvas.getContext("2d");
-    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    //   fan.update(frameCount);
-    //   fan.render();
-    // }, 500);
   </script>
 </body>
 
