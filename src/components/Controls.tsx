@@ -4,12 +4,14 @@ import {
   FaEye,
   FaEyeSlash,
   FaFloppyDisk,
+  FaPause,
 } from 'react-icons/fa6';
 
 import {
   Button,
   ButtonGroup,
   Flex,
+  Heading,
   IconButton,
   Text,
   VStack,
@@ -45,23 +47,40 @@ const Controls = () => {
   };
 
   return (
-    <>
-      <VStack bg='#eee' p={2} gap={2} align='flex-start'>
-        <Slider size='sm' defaultValue={0} label='frame' wd={240} />
-        <Slider size='sm' defaultValue={0} label='balance' wd={240} />
-        <Slider size='sm' defaultValue={0} label='diff' wd={240} />
+    <VStack w={300} h='100vh' bg='#eee' p={4} align="flex-start">
+      <Heading size="lg" mb={4}>journey</Heading>
+      <VStack w='full' gap={4} align='flex-start'>
+        <Slider size='sm' defaultValue={0} label='Frame' wd={240} />
+        <Slider size='sm' defaultValue={0} label='Balance' wd={240} />
+        <Slider size='sm' defaultValue={0} label='Difference' wd={240} />
 
-        <Button
+        {/* <Button
           variant='outline'
           aria-label='Play animation'
           w='full'
           onClick={() => setPlaying(!playing)}
         >
-          <FaPlay color={playing ? 'green' : 'black'} /> Animate
-        </Button>
+          {playing ? (
+            <>
+              <FaPlay color='green' /> Play
+            </>
+          ) : (
+            <>
+              <FaPlay color='black' /> Pause
+            </>
+          )}
+        </Button> */}
+        <IconButton
+          size='xs'
+          aria-label='Play or pause animation'
+          onClick={() => setPlaying(!playing)}
+          w='full'
+        >
+          {playing ? <FaPlay color='green' /> : <FaPause color='black' />}
+        </IconButton>
       </VStack>
 
-      <VStack bg='#eee' p={2} gap={2} align='flex-start'>
+      <VStack w='full' gap={2} align='flex-start'>
         <Flex w='100%' align='center' justify='space-between'>
           <Text textStyle='sm'>Paths</Text>
           <IconButton
@@ -142,21 +161,17 @@ const Controls = () => {
             <FaArrowRotateRight color='black' />
           </IconButton>
         </Flex>
-
-        <ButtonGroup size='xs' variant='outline' w='full' pt={4}>
-          <Button aria-label='Save composition' flexGrow={1} onClick={saveComp}>
-            <FaFloppyDisk color='black' /> Save
-          </Button>
-          <Button
-            aria-label='Export as JPEG'
-            flexGrow={1}
-            onClick={exportImage}
-          >
-            <FaCloudArrowDown color='black' /> Export
-          </Button>
-        </ButtonGroup>
       </VStack>
-    </>
+
+      <ButtonGroup size='xs' variant='outline' w='full' pt={4} mt='auto'>
+        <Button aria-label='Save composition' flexGrow={1} onClick={saveComp}>
+          <FaFloppyDisk color='black' /> Save
+        </Button>
+        <Button aria-label='Export as JPEG' flexGrow={1} onClick={exportImage}>
+          <FaCloudArrowDown color='black' /> Export
+        </Button>
+      </ButtonGroup>
+    </VStack>
   );
 };
 
