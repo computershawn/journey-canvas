@@ -13,14 +13,17 @@ import {
   Flex,
   Heading,
   IconButton,
+  SliderValueChangeDetails,
   Text,
   VStack,
 } from '@chakra-ui/react';
 
+import { mapTo } from '../utils/helpers';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaPlay } from 'react-icons/fa';
+import CompSelector from './ui/compSelector';
 
 const Controls = () => {
   const [pathsChecked, setPathsChecked] = useState(true);
@@ -29,6 +32,8 @@ const Controls = () => {
   const [colorChecked, setColorChecked] = useState(true);
   const [bgChecked, setBgChecked] = useState(true);
   const [playing, setPlaying] = useState(false);
+  const [balance, setBalance] = useState(0.5);
+  const [diff, setDiff] = useState(4.5);
 
   const pickColors = () => {
     console.log('pick colors');
@@ -46,13 +51,53 @@ const Controls = () => {
     console.log('export current comp as image');
   };
 
+  const updateFrame = (details: SliderValueChangeDetails) => {
+    const value = details.value[0];
+    console.log('go to frame number', value);
+    // goToFrameNumber(value);
+  };
+
+  const updateBalance = (details: SliderValueChangeDetails) => {
+    const value = details.value[0];
+    console.log('set balance to', value / 100);
+    setBalance(value / 100);
+  };
+  
+  const updateDiff = (details: SliderValueChangeDetails) => {
+    const value = details.value[0];
+    const num = mapTo(value, 0, 100, 1, 8);
+    console.log('set diff to', num);
+    setDiff(num);
+  };
+
   return (
-    <VStack w={300} h='100vh' bg='#eee' p={4} align="flex-start">
-      <Heading size="lg" mb={4}>journey</Heading>
+    <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start'>
+      <Heading size='lg' mb={4}>
+        journey
+      </Heading>
       <VStack w='full' gap={4} align='flex-start'>
-        <Slider size='sm' defaultValue={0} label='Frame' wd={240} />
-        <Slider size='sm' defaultValue={0} label='Balance' wd={240} />
-        <Slider size='sm' defaultValue={0} label='Difference' wd={240} />
+        <CompSelector />
+        <Slider
+          size='sm'
+          defaultValue={0}
+          label='Frame'
+          wd={240}
+          onValueChange={updateFrame}
+        />
+        <Slider
+          size='sm'
+          defaultValue={0}
+          label='Balance'
+          wd={240}
+          onValueChange={updateBalance}
+        />
+        <Slider
+          size='sm'
+          defaultValue={0}
+          label='Diff'
+          wd={240}
+          onValueChange={updateDiff}
+        />
 
         {/* <Button
           variant='outline'
