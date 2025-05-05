@@ -43,7 +43,8 @@ const Artboard = () => {
 
       {/* <Tings /> */}
       {/* <BeziControls curveSetPoints={csp} /> */}
-      <BeziControlsAlt />
+      {/* <BeziControlsAlt wd={1280} ht={720} /> */}
+      <BeziControlsAlt wd={640} ht={360} />
     </>
   );
 };

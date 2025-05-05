@@ -1,127 +1,187 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 const rad = 16;
-const pointRad = 3;
+const pointRad = 4;
+const numPoints = 49;
 
-const BeziControlsAlt = () => {
-  const canvasRef = useRef(null);
-  // const [isDragging, setIsDragging] = useState(false);
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
-  // const [shape, setShape] = useState({
-  //   x: 50,
-  //   y: 50,
-  //   width: 50,
-  //   height: 50,
-  // });
+type Point = {
+  x: number;
+  y: number;
+};
+
+type CtrlPoint = Point & {
+  child: number[] | null;
+};
+
+const getBezierSegmentPoints = (
+  p0: CtrlPoint,
+  p1: CtrlPoint,
+  p2: CtrlPoint,
+  p3: CtrlPoint,
+  num: number
+) => {
+  const temp = [];
+  for (let i = 0; i <= num; i++) {
+    const t = i / num;
+    const x =
+      Math.pow(1 - t, 3) * p0.x +
+      3 * Math.pow(1 - t, 2) * t * p1.x +
+      3 * (1 - t) * t * t * p2.x +
+      t * t * t * p3.x;
+    const y =
+      Math.pow(1 - t, 3) * p0.y +
+      3 * Math.pow(1 - t, 2) * t * p1.y +
+      3 * (1 - t) * t * t * p2.y +
+      t * t * t * p3.y;
+
+    temp.push({ x, y });
+  }
+
+  return temp;
+};
+
+const getBezierSplinePoints = (points: CtrlPoint[]) => {
+  const n = (numPoints - 1) / 2;
+  const [p0, p1, p2, p3, p5, p6] = points;
+  const p4: CtrlPoint = {
+    x: 2 * p3.x - p2.x,
+    y: 2 * p3.y - p2.y,
+    child: null,
+  };
+  const bezierPoints1 = getBezierSegmentPoints(p0, p1, p2, p3, n);
+  const tempSet = getBezierSegmentPoints(p3, p4, p5, p6, n);
+
+  // First point in tempSet is a redundant duplicate of last point in bezierPoints2
+  // We can use array destructuring to throw out the first point in tempSet
+  const [_omitDuplicate, ...bezierPoints2] = tempSet;
+
+  return [...bezierPoints1, ...bezierPoints2];
+};
+
+const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [offsets, setOffsets] = useState({ x: 0, y: 0 });
   const [dragIndex, setDragIndex] = useState(-1);
-
-  // const [points, setPoints] = useState([
-  //   {
-  //     x: 50,
-  //     y: 150,
-  //   },
-  //   {
-  //     x: 60,
-  //     y: 100,
-  //   },
-  //   {
-  //     x: 150,
-  //     y: 150,
-  //   },
-  //   {
-  //     x: 160,
-  //     y: 90,
-  //   },
-  //   {
-  //     x: 300,
-  //     y: 150,
-  //   },
-  //   {
-  //     x: 310,
-  //     y: 80,
-  //   },
-  // ]);
-  const [points, setPoints] = useState([
+  const [childDeltas, setChildDeltas] = useState({ x: 0, y: 0 });
+  const [points, setPoints] = useState<CtrlPoint[]>([
     { x: 50, y: 150, child: [1] },
     { x: 60, y: 100, child: null },
-    { x: 150, y: 150, child: null },
-    { x: 160, y: 90, child: [2, -1] },
-    { x: 300, y: 150, child: null },
-    { x: 310, y: 80, child: [4] },
+    { x: 200, y: 340, child: null },
+    { x: 310, y: 180, child: [2, -1] },
+    { x: 550, y: 150, child: null },
+    { x: 560, y: 80, child: [4] },
   ]);
 
-  // useEffect(() => {
-  //   const canvas = canvasRef.current;
-  //   const context = canvas.getContext('2d');
+  const drawBezier = (pts: Point[]) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (ctx) {
+      ctx.beginPath();
+      ctx.strokeStyle = '#ff0000';
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let j = 1; j < pts.length; j++) {
+        ctx.lineTo(pts[j].x, pts[j].y);
+      }
+      ctx.stroke();
+    }
+  };
 
-  //   const drawShape = () => {
-  //     context.clearRect(0, 0, canvas.width, canvas.height);
-  //     context.fillStyle = 'blue';
-  //     context.fillRect(shape.x, shape.y, shape.width, shape.height);
-  //   };
-
-  //   drawShape();
-  // }, [shape]);
+  const eraser = useCallback(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (canvas && ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
-    const colors = ['red', 'pink', 'green', 'lightgreen', 'blue', 'lightblue'];
-    const drawShapes = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      points.forEach((p, i) => {
-        ctx.fillStyle = colors[i];
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, rad, 0, 2 * Math.PI);
-        ctx.fill();
-      });
-      // points.forEach((pt) => {
-      //   // Circle around anchors and control points
-      //   ctx.strokeStyle = '#00ffff';
-      //   ctx.fillStyle = '#00ffffff';
-      //   ctx.beginPath();
-      //   ctx.arc(pt.x, pt.y, rad, 0, 2 * Math.PI);
-      //   ctx.stroke();
-      //   if (pt.child) {
-      //     ctx.fill();
-      //   }
-      // });
+    const drawControls = () => {
+      if (ctx) {
+        points.forEach((pt) => {
+          // Circle around anchors and control points
+          ctx.strokeStyle = '#00ffff';
+          ctx.fillStyle = '#00ffffff';
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, pointRad, 0, 2 * Math.PI);
+          ctx.stroke();
+          if (pt.child !== null) {
+            ctx.fill();
+          }
+          if (pt.child !== null) {
+            // Circle from anchor to control point
+            const childIndex = pt.child[0];
+            const px = pt.x;
+            const py = pt.y;
+            const child0x = points[childIndex].x;
+            const child0y = points[childIndex].y;
+            const dx = px - child0x;
+            const dy = py - child0y;
+            const r = Math.sqrt(dx * dx + dy * dy);
+            ctx.strokeStyle = '#00000020';
+            ctx.beginPath();
+            ctx.arc(px, py, r, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // Line from anchor to control point
+            ctx.beginPath();
+            ctx.strokeStyle = '#ff00ff';
+            ctx.moveTo(px, py);
+            ctx.lineTo(child0x, child0y);
+            ctx.stroke();
+
+            if (pt.child.length > 1) {
+              // Line from anchor to unused control point
+              const child1x = 2 * px - child0x;
+              const child1y = 2 * py - child0y;
+              ctx.beginPath();
+              ctx.strokeStyle = '#ff00ff80';
+              ctx.moveTo(pt.x, pt.y);
+              ctx.lineTo(child1x, child1y);
+              ctx.stroke();
+
+              // Circle around unused control point
+              ctx.strokeStyle = '#ff00ff70';
+              ctx.beginPath();
+              ctx.arc(child1x, child1y, pointRad, 0, 2 * Math.PI);
+              ctx.stroke();
+            }
+          }
+        });
+      }
     };
 
     if (ctx) {
-      drawShapes();
+      eraser();
+      drawControls();
+      const splinePoints = getBezierSplinePoints(points);
+      drawBezier(splinePoints);
     }
-  }, [dragIndex, points]);
+  }, [dragIndex, eraser, points]);
 
-  // const handleMouseDown = (e) => {
-  //   const canvas = canvasRef.current;
-  //   const rect = canvas.getBoundingClientRect();
-  //   const mouseX = e.clientX - rect.left;
-  //   const mouseY = e.clientY - rect.top;
-  //   if (
-  //     mouseX >= shape.x &&
-  //     mouseX <= shape.x + shape.width &&
-  //     mouseY >= shape.y &&
-  //     mouseY <= shape.y + shape.height
-  //   ) {
-  //     setIsDragging(true);
-  //     setOffsetX(mouseX - shape.x);
-  //     setOffsetY(mouseY - shape.y);
-  //   }
-  // };
-
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (ev) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    const mouseX = ev.clientX - rect.left;
+    const mouseY = ev.clientY - rect.top;
 
     const nearestIndex = getNearest(mouseX, mouseY);
     if (nearestIndex !== -1) {
       setDragIndex(nearestIndex);
-      setOffsetX(mouseX - points[nearestIndex].x);
-      setOffsetY(mouseY - points[nearestIndex].y);
+      setOffsets({
+        x: mouseX - points[nearestIndex].x,
+        y: mouseY - points[nearestIndex].y,
+      });
+
+      if (points[nearestIndex].child !== null) {
+        const j = points[nearestIndex].child[0];
+        const x1 = points[nearestIndex].x;
+        const x0 = points[j].x;
+        const y1 = points[nearestIndex].y;
+        const y0 = points[j].y;
+        setChildDeltas({ x: x1 - x0, y: y1 - y0 });
+      }
     }
   };
 
@@ -148,46 +208,36 @@ const BeziControlsAlt = () => {
     return -1;
   };
 
-  // const handleMouseMove = (e) => {
-  //   if (isDragging) {
-  //     const canvas = canvasRef.current;
-  //     const rect = canvas.getBoundingClientRect();
-  //     const mouseX = e.clientX - rect.left;
-  //     const mouseY = e.clientY - rect.top;
-
-  //     setShape((prevShape) => ({
-  //       ...prevShape,
-  //       x: mouseX - offsetX,
-  //       y: mouseY - offsetY,
-  //     }));
-  //   }
-  // };
-
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (ev) => {
     if (dragIndex !== -1) {
       const canvas = canvasRef.current;
       const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+      const mouseX = ev.clientX - rect.left;
+      const mouseY = ev.clientY - rect.top;
 
-      const updated = points.map((pt, i) => {
+      // Update coordinates of the current point
+      const temp = points.map((pt, i) => {
         if (i !== dragIndex) {
           return pt;
         }
         return {
           ...pt,
-          x: mouseX - offsetX,
-          y: mouseY - offsetY,
+          x: mouseX - offsets.x,
+          y: mouseY - offsets.y,
         };
       });
 
-      setPoints(updated);
+      // Update coordinates of the current point's child if applicable
+      const currentPoint = points[dragIndex];
+      if (currentPoint.child !== null) {
+        const childIndex = currentPoint.child[0];
+        temp[childIndex].x = currentPoint.x - childDeltas.x;
+        temp[childIndex].y = currentPoint.y - childDeltas.y;
+      }
+
+      setPoints(temp);
     }
   };
-
-  // const handleMouseUp = () => {
-  //   setIsDragging(false);
-  // };
 
   const handleMouseUp = () => {
     setDragIndex(-1);
@@ -196,16 +246,14 @@ const BeziControlsAlt = () => {
   return (
     <canvas
       ref={canvasRef}
-      width={500}
-      height={300}
+      width={wd}
+      height={ht}
       style={{ border: '1px solid black' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     />
   );
-
-  // return <div>wassup fool</div>;
 };
 
 export default BeziControlsAlt;
