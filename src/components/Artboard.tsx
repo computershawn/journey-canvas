@@ -1,9 +1,12 @@
-import { useEffect, useRef } from 'react';
-import BeziControlsAlt from './BeziControlsAlt';
+import { useEffect, useRef, useState } from 'react';
+import BeziControls from './BeziControls';
 import { getAllComps } from '../utils/helpers';
-import ControlPoint from './BeziControlsAlt';
 
-const Artboard = () => {
+type CtrlPoint = Point & {
+  child: number[] | null;
+};
+
+const Artboard = ({ compIndex }: { compIndex: number }) => {
   const compRef = useRef<HTMLCanvasElement | null>(null);
   const comps = getAllComps();
 
@@ -27,7 +30,15 @@ const Artboard = () => {
   //     }
   //   }
   // }, []);
-  const csp = comps[0].curveSetPoints;
+  const csp = comps[compIndex].curveSetPoints;
+  const [points, setPoints] = useState<CtrlPoint[]>([
+    { x: csp.pt1.x, y: csp.pt1.y, child: [1] },
+    { x: csp.pt4.x, y: csp.pt4.y, child: null },
+    { x: csp.pt5.x, y: csp.pt5.y, child: null },
+    { x: csp.pt2.x, y: csp.pt2.y, child: [2, -1] },
+    { x: csp.pt6.x, y: csp.pt6.y, child: null },
+    { x: csp.pt3.x, y: csp.pt3.y, child: [4] },
+  ]);
 
   return (
     <>
@@ -42,9 +53,8 @@ const Artboard = () => {
       </canvas> */}
 
       {/* <Tings /> */}
-      {/* <BeziControls curveSetPoints={csp} /> */}
-      {/* <BeziControlsAlt wd={1280} ht={720} /> */}
-      <BeziControlsAlt wd={640} ht={360} />
+      <BeziControls csp={csp} wd={1280} ht={720} />
+      {/* <BeziControls wd={1280} ht={720} /> */}
     </>
   );
 };

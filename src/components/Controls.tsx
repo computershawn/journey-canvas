@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   FaArrowRotateRight,
   FaCloudArrowDown,
@@ -5,13 +6,13 @@ import {
   FaEyeSlash,
   FaFloppyDisk,
   FaPause,
+  FaPlay,
 } from 'react-icons/fa6';
 
 import {
   Button,
   ButtonGroup,
   Flex,
-  Heading,
   IconButton,
   SliderValueChangeDetails,
   Text,
@@ -21,9 +22,6 @@ import {
 import { mapTo } from '../utils/helpers';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
-import { useEffect, useState } from 'react';
-import { FaPlay } from 'react-icons/fa';
-import CompSelector from './ui/compSelector';
 
 const Controls = () => {
   const [pathsChecked, setPathsChecked] = useState(true);
@@ -62,7 +60,7 @@ const Controls = () => {
     console.log('set balance to', value / 100);
     setBalance(value / 100);
   };
-  
+
   const updateDiff = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
     const num = mapTo(value, 0, 100, 1, 8);
@@ -71,12 +69,8 @@ const Controls = () => {
   };
 
   return (
-    <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start'>
-      <Heading size='lg' mb={4}>
-        journey
-      </Heading>
+    <>
       <VStack w='full' gap={4} align='flex-start'>
-        <CompSelector />
         <Slider
           size='sm'
           defaultValue={0}
@@ -216,7 +210,7 @@ const Controls = () => {
           <FaCloudArrowDown color='black' /> Export
         </Button>
       </ButtonGroup>
-    </VStack>
+    </>
   );
 };
 

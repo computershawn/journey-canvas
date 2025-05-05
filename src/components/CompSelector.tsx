@@ -1,18 +1,37 @@
 import { Portal, Select, createListCollection } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
-const CompSelector = () => {
+const items = [
+  { label: 'comp 1', value: 'comp 1' },
+  { label: 'comp 2', value: 'comp 2' },
+];
+
+const CompSelector = ({
+  onChangeComp,
+}: {
+  onChangeComp: (index: number) => void;
+}) => {
+  const [value, setValue] = useState<string[]>([items[0].value]);
   const frameworks = useMemo(() => {
     return createListCollection({
-      items: [
-        { label: 'comp 1', value: 'comp 1' },
-        { label: 'comp 2', value: 'comp 2' },
-      ],
+      items,
     });
   }, []);
 
+  const handleValueChange = (e) => {
+    const index = items.findIndex((item) => item.value === e.value[0]);
+    setValue(e.value);
+    onChangeComp(index);
+  };
+
   return (
-    <Select.Root collection={frameworks} size='sm' width='200px'>
+    <Select.Root
+      collection={frameworks}
+      size='xs'
+      width='200px'
+      value={value}
+      onValueChange={handleValueChange}
+    >
       <Select.HiddenSelect />
       <Select.Label>Compositions</Select.Label>
       <Select.Control>
