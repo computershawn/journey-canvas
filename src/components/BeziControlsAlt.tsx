@@ -62,6 +62,7 @@ const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [offsets, setOffsets] = useState({ x: 0, y: 0 });
   const [dragIndex, setDragIndex] = useState(-1);
+  const [hoverIndex, setHoverIndex] = useState(-1);
   const [childDeltas, setChildDeltas] = useState({ x: 0, y: 0 });
   const [points, setPoints] = useState<CtrlPoint[]>([
     { x: 50, y: 150, child: [1] },
@@ -99,7 +100,16 @@ const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
     const ctx = canvas?.getContext('2d');
     const drawControls = () => {
       if (ctx) {
-        points.forEach((pt) => {
+        points.forEach((pt, i) => {
+          // Circle around currently hovered point
+          if (i === hoverIndex) {
+            ctx.strokeStyle = '#00ffff';
+            ctx.fillStyle = '#00ffff10';
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, rad, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.fill();
+          }
           // Circle around anchors and control points
           ctx.strokeStyle = '#00ffff';
           ctx.fillStyle = '#00ffffff';
@@ -142,10 +152,10 @@ const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
               ctx.stroke();
 
               // Circle around unused control point
-              ctx.strokeStyle = '#ff00ff70';
+              ctx.fillStyle = '#ff00ff70';
               ctx.beginPath();
-              ctx.arc(child1x, child1y, pointRad, 0, 2 * Math.PI);
-              ctx.stroke();
+              ctx.arc(child1x, child1y, 0.5 * pointRad, 0, 2 * Math.PI);
+              ctx.fill();
             }
           }
         });
@@ -158,7 +168,7 @@ const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
       const splinePoints = getBezierSplinePoints(points);
       drawBezier(splinePoints);
     }
-  }, [dragIndex, eraser, points]);
+  }, [eraser, hoverIndex, points]);
 
   const handleMouseDown = (ev) => {
     const canvas = canvasRef.current;
@@ -166,7 +176,7 @@ const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
     const mouseX = ev.clientX - rect.left;
     const mouseY = ev.clientY - rect.top;
 
-    const nearestIndex = getNearest(mouseX, mouseY);
+    const nearestIndex = getNearest(mouseX, mouseY, rad);
     if (nearestIndex !== -1) {
       setDragIndex(nearestIndex);
       setOffsets({
@@ -185,11 +195,11 @@ const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
     }
   };
 
-  const getNearest = (mouseX: number, mouseY: number) => {
+  const getNearest = (mouseX: number, mouseY: number, boundRadius: number) => {
     let dx = mouseX - points[0].x;
     let dy = mouseY - points[0].y;
     let d = Math.sqrt(dx * dx + dy * dy);
-    let index = d <= rad ? 0 : -1;
+    let index = d <= boundRadius ? 0 : -1;
 
     for (let i = 1; i < points.length; i++) {
       dx = mouseX - points[i].x;
@@ -201,7 +211,7 @@ const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
       }
     }
 
-    if (d <= rad) {
+    if (d <= boundRadius) {
       return index;
     }
 
@@ -209,6 +219,13 @@ const BeziControlsAlt = ({ wd, ht }: { wd: number; ht: number }) => {
   };
 
   const handleMouseMove = (ev) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = ev.clientX - rect.left;
+    const mouseY = ev.clientY - rect.top;
+    const temp = getNearest(mouseX, mouseY, rad);
+    setHoverIndex(temp);
+
     if (dragIndex !== -1) {
       const canvas = canvasRef.current;
       const rect = canvas.getBoundingClientRect();
