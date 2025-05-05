@@ -85,7 +85,7 @@ export const removeComp = (compID) => {
 };
 
 export const getAllComps = () => {
-  let savedComps = window.localStorage.getItem('saved_comps');
+  const savedComps = window.localStorage.getItem('saved_comps');
 
   if (!savedComps) {
     return [];

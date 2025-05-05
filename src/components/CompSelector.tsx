@@ -1,25 +1,30 @@
 import { Portal, Select, createListCollection } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
+import { getAllComps } from '../utils/helpers';
 
-const items = [
-  { label: 'comp 1', value: 'comp 1' },
-  { label: 'comp 2', value: 'comp 2' },
-];
+const PREFIX = 'comp';
 
 const CompSelector = ({
   onChangeComp,
 }: {
   onChangeComp: (index: number) => void;
 }) => {
-  const [value, setValue] = useState<string[]>([items[0].value]);
+  const numComps = getAllComps().length;
+  const [value, setValue] = useState<string[]>([`${PREFIX} 1`]);
   const frameworks = useMemo(() => {
+    const items = Array(numComps)
+      .fill(0)
+      .map((_, i) => ({ label: `comp ${i + 1}`, value: `comp ${i + 1}` }));
+
     return createListCollection({
       items,
     });
-  }, []);
+  }, [numComps]);
 
   const handleValueChange = (e) => {
-    const index = items.findIndex((item) => item.value === e.value[0]);
+    const index = frameworks.items.findIndex(
+      (item) => item.value === e.value[0]
+    );
     setValue(e.value);
     onChangeComp(index);
   };
@@ -33,7 +38,7 @@ const CompSelector = ({
       onValueChange={handleValueChange}
     >
       <Select.HiddenSelect />
-      <Select.Label>Compositions</Select.Label>
+      <Select.Label>Saved Comps</Select.Label>
       <Select.Control>
         <Select.Trigger>
           <Select.ValueText placeholder='Select framework' />

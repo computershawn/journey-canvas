@@ -13,6 +13,7 @@ import {
   Button,
   ButtonGroup,
   Flex,
+  Heading,
   IconButton,
   SliderValueChangeDetails,
   Text,
@@ -22,8 +23,13 @@ import {
 import { mapTo } from '../utils/helpers';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
+import CompSelector from './CompSelector';
 
-const Controls = () => {
+const ControlPanel = ({
+  onChangeComp,
+}: {
+  onChangeComp: (index: number) => void;
+}) => {
   const [pathsChecked, setPathsChecked] = useState(true);
   const [geomChecked, setGeomChecked] = useState(true);
   const [parxChecked, setParxChecked] = useState(true);
@@ -69,7 +75,13 @@ const Controls = () => {
   };
 
   return (
-    <>
+    <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
+      <Heading size='lg' mb={4}>
+        journey
+      </Heading>
+      <CompSelector onChangeComp={onChangeComp} />
+      {/* <ControlPanel onChangeComp={setCompIndex} /> */}
+
       <VStack w='full' gap={4} align='flex-start'>
         <Slider
           size='sm'
@@ -210,8 +222,8 @@ const Controls = () => {
           <FaCloudArrowDown color='black' /> Export
         </Button>
       </ButtonGroup>
-    </>
+    </VStack>
   );
 };
 
-export default Controls;
+export default ControlPanel;
