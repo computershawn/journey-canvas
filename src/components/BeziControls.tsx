@@ -1,26 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { getAllComps } from '../utils/helpers';
+import { CtrlPoint, CurveSetPoints, Point } from '../types';
 
 const rad = 16;
 const pointRad = 4;
 const numPoints = 49;
-
-type Point = {
-  x: number;
-  y: number;
-};
-
-type CtrlPoint = Point & {
-  child: number[] | null;
-};
-
-type CurveSetPoints = {
-  pt1: Point;
-  pt2: Point;
-  pt3: Point;
-  pt4: Point;
-  pt5: Point;
-  pt6: Point;
-};
 
 const getBezierSegmentPoints = (
   p0: CtrlPoint,
@@ -67,17 +51,16 @@ const getBezierSplinePoints = (points: CtrlPoint[]) => {
   return [...bezierPoints1, ...bezierPoints2];
 };
 
-// const BeziControls = ({ csp, wd, ht }: { csp: CurveSetPoints; wd: number; ht: number }) => {
 const BeziControls = ({
-  // points,
-  // setPoints,
-  csp,
+  points,
+  setPoints,
+  compIndex,
   wd,
   ht,
 }: {
-  // points: number;
-  // setPoints: (blep: number) => void;
-  csp: CurveSetPoints;
+  points: CtrlPoint[];
+  setPoints: (pts: CtrlPoint[]) => void;
+  compIndex: number;
   wd: number;
   ht: number;
 }) => {
@@ -86,24 +69,6 @@ const BeziControls = ({
   const [dragIndex, setDragIndex] = useState(-1);
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [childDeltas, setChildDeltas] = useState({ x: 0, y: 0 });
-
-  // const [points, setPoints] = useState<CtrlPoint[]>([
-  //   { x: 50, y: 150, child: [1] },
-  //   { x: 60, y: 100, child: null },
-  //   { x: 200, y: 340, child: null },
-  //   { x: 310, y: 180, child: [2, -1] },
-  //   { x: 550, y: 150, child: null },
-  //   { x: 560, y: 80, child: [4] },
-  // ]);
-
-  const [points, setPoints] = useState<CtrlPoint[]>([
-    { x: csp.pt1.x, y: csp.pt1.y, child: [1] },
-    { x: csp.pt4.x, y: csp.pt4.y, child: null },
-    { x: csp.pt5.x, y: csp.pt5.y, child: null },
-    { x: csp.pt2.x, y: csp.pt2.y, child: [2, -1] },
-    { x: csp.pt6.x, y: csp.pt6.y, child: null },
-    { x: csp.pt3.x, y: csp.pt3.y, child: [4] },
-  ]);
 
   const drawBezier = (pts: Point[]) => {
     const canvas = canvasRef.current;
@@ -126,6 +91,20 @@ const BeziControls = ({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
   }, []);
+
+  useEffect(() => {
+    const comps = getAllComps();
+    const csp: CurveSetPoints = comps[compIndex].curveSetPoints;
+    const temp: CtrlPoint[] = [
+      { x: csp.pt1.x, y: csp.pt1.y, child: [1] },
+      { x: csp.pt4.x, y: csp.pt4.y, child: null },
+      { x: csp.pt5.x, y: csp.pt5.y, child: null },
+      { x: csp.pt2.x, y: csp.pt2.y, child: [2, -1] },
+      { x: csp.pt6.x, y: csp.pt6.y, child: null },
+      { x: csp.pt3.x, y: csp.pt3.y, child: [4] },
+    ];
+    setPoints(temp);
+  }, [compIndex, setPoints]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -194,7 +173,7 @@ const BeziControls = ({
       }
     };
 
-    if (ctx) {
+    if (ctx && points.length) {
       eraser();
       drawControls();
       const splinePoints = getBezierSplinePoints(points);
@@ -228,6 +207,8 @@ const BeziControls = ({
   };
 
   const getNearest = (mouseX: number, mouseY: number, boundRadius: number) => {
+    if (points.length === 0) return -1;
+
     let dx = mouseX - points[0].x;
     let dy = mouseY - points[0].y;
     let d = Math.sqrt(dx * dx + dy * dy);
