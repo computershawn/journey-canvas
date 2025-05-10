@@ -15,3 +15,15 @@ export type CurveSetPoints = {
   pt5: Point;
   pt6: Point;
 };
+
+export type Pt = {
+  x: number;
+  y: number;
+}
+
+export type Quad = {
+  pt0: Pt,
+  pt1: Pt,
+  pt2: Pt,
+  pt3: Pt,
+};

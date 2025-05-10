@@ -26,8 +26,6 @@ const Composition = ({
     pt2: { x: 80, y: 80 },
     pt3: { x: 10, y: 80 },
   };
-  const index = 0;
-  const fb = new FanBlade(pts, index, NUM_COLORS, MAX_TICKS);
   // const fanBlades = [];
   // const nullElements = [];
   // const [nullElements, setNullElements] = useState<NullElement[]>([]);
@@ -38,10 +36,6 @@ const Composition = ({
     }
     return temp;
   }, [beziCtrlPts]);
-
-  if (beziCtrlPts.length === 0) {
-    return null;
-  }
 
   // const bezi = new BeziSpline(points, (val) => console.log(val));
   // const numLoops = 325;
@@ -67,23 +61,36 @@ const Composition = ({
   //   setNullElements(temp);
   // }
 
-  // const fanBlades = useMemo(() => {
-  //   console.log('nullElements', nullElements);
-  //   const temp = [];
-  //   for (let j = 0; j < nullElements.length - 1; j++) {
-  //     const points = {
-  //       pt0: { x: 0, y: 0 },
-  //       pt1: { x: 0, y: 0 },
-  //       pt2: { x: 0, y: 0 },
-  //       pt3: { x: 0, y: 0 },
-  //     };
+  // ! Currently nullElements has 5 items. It should be closer to 325
+  const fanBlades = useMemo(() => {
+    const temp = [];
+    for (let j = 0; j < nullElements.length - 1; j++) {
+      // const points = {
+      //   pt0: { x: 0, y: 0 },
+      //   pt1: { x: 0, y: 0 },
+      //   pt2: { x: 0, y: 0 },
+      //   pt3: { x: 0, y: 0 },
+      // };
+      const x0 = Math.random() * 1280;
+      const y0 = Math.random() * 720;
+      const s = 40;
+      const points = {
+        pt0: { x: x0, y: y0 },
+        pt1: { x: x0 + s, y: y0 },
+        pt2: { x: x0 + s, y: y0 + s },
+        pt3: { x: x0, y: y0 + s },
+      };
 
-  //     const fb = new FanBlade(points, j, numColors);
-  //     temp.push(fb);
-  //   };
+      const fb = new FanBlade(points, j, NUM_COLORS);
+      temp.push(fb);
+    };
 
-  //   return temp;
-  // }, [nullElements]);
+    return temp;
+  }, [nullElements]);
+
+  if (beziCtrlPts.length === 0) {
+    return null;
+  }
 
   // for (let j = 0; j < nullElements.length - 1; j++) {
   //   const points = {
@@ -136,46 +143,14 @@ const Composition = ({
     }
   };
 
-  // const draw = () => {
-  //   const tempNullElements = [];
-  //   for (let j = 0; j < pts.length; j++) {
-  //     tempNullElements.push(new NullElement(pts[j], j));
-  //   }
-
-  //   const tempFanBlades = [];
-  //   for (let j = 0; j < tempNullElements.length - 1; j++) {
-  //     const fanBladePoints = {
-  //       pt0: { x: 0, y: 0 },
-  //       pt1: { x: 0, y: 0 },
-  //       pt2: { x: 0, y: 0 },
-  //       pt3: { x: 0, y: 0 },
-  //     };
-
-  //     const fb = new FanBlade(fanBladePoints, j, numColors);
-  //     tempFanBlades.push(fb);
-  //   }
-
-  //   if (tempFanBlades.length === 0 || tempNullElements.length == 0) {
-  //     console.log('oh no');
-  //     return;
-  //   }
-
-  //   const canvas = canvasRef.current;
-  //   const ctx = canvas?.getContext('2d');
-  //   if (canvas && ctx) {
-  //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  //     tempFanBlades.forEach((fb) => {
-  //       fb.render(ctx);
-  //     });
-  //   }
-  // };
-
   const draw = () => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (canvas && ctx) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      fb.render(ctx, true);
+      fanBlades.forEach((fb) => {
+        fb.render(ctx, true);
+      });
     }
   };
 
@@ -188,7 +163,7 @@ const Composition = ({
   // }, []);
 
   const doStuff = () => {
-    // update(1);
+    update(1);
     draw();
   };
 

@@ -1,18 +1,8 @@
+import { Pt, Quad } from '../types';
 import { mapTo } from './helpers';
 
-type Pt = {
-  x: number;
-  y: number;
-}
-
-type Quad = {
-  pt0: Pt,
-  pt1: Pt,
-  pt2: Pt,
-  pt3: Pt,
-};
+const MAX_TICKS = 40;
 class FanBlade {
-  maxTicks: number;
   center: Pt;
   index: number;
   isOpaque: boolean;
@@ -24,8 +14,7 @@ class FanBlade {
   value: number;
   colorStartIndex: number;
 
-  constructor(_pts: Quad, _index: number, numColors: number, _maxTicks: number) {
-    this.maxTicks = _maxTicks;
+  constructor(_pts: Quad, _index: number, numColors: number) {
     this.center = { x: 0, y: 0 };
     this.index = _index;
     this.isOpaque = Math.random() > 0.1;
@@ -37,7 +26,7 @@ class FanBlade {
     const n1 = 247;
     this.altColorOpacity = Math.round(n0 + Math.random() * (n1 - n0));
     this.value = Math.random();
-    this.colorStartIndex = Math.floor(Math.random() * _maxTicks);
+    this.colorStartIndex = Math.floor(Math.random() * MAX_TICKS);
   }
 
   update(pt0: Pt, pt1: Pt, pt2: Pt, pt3: Pt) {
@@ -187,7 +176,7 @@ class FanBlade {
       }
 
       // const numTicks = Math.round(len / (200 - 1) * (maxTicks - 1));
-      const numTicks = Math.round(mapTo(len, 1, 200, 1, this.maxTicks));
+      const numTicks = Math.round(mapTo(len, 1, 200, 1, MAX_TICKS));
 
       for (let j = 1; j < numTicks; j++) {
         const b = j / numTicks;
