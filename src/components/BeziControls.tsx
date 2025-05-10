@@ -1,65 +1,20 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { getAllComps } from '../utils/helpers';
+import { getAllComps, getBezierSplinePoints } from '../utils/helpers';
 import { CtrlPoint, CurveSetPoints, Point } from '../types';
 
 const rad = 16;
 const pointRad = 4;
 const numPoints = 49;
 
-const getBezierSegmentPoints = (
-  p0: CtrlPoint,
-  p1: CtrlPoint,
-  p2: CtrlPoint,
-  p3: CtrlPoint,
-  num: number
-) => {
-  const temp = [];
-  for (let i = 0; i <= num; i++) {
-    const t = i / num;
-    const x =
-      Math.pow(1 - t, 3) * p0.x +
-      3 * Math.pow(1 - t, 2) * t * p1.x +
-      3 * (1 - t) * t * t * p2.x +
-      t * t * t * p3.x;
-    const y =
-      Math.pow(1 - t, 3) * p0.y +
-      3 * Math.pow(1 - t, 2) * t * p1.y +
-      3 * (1 - t) * t * t * p2.y +
-      t * t * t * p3.y;
-
-    temp.push({ x, y });
-  }
-
-  return temp;
-};
-
-const getBezierSplinePoints = (points: CtrlPoint[]) => {
-  const n = (numPoints - 1) / 2;
-  const [p0, p1, p2, p3, p5, p6] = points;
-  const p4: CtrlPoint = {
-    x: 2 * p3.x - p2.x,
-    y: 2 * p3.y - p2.y,
-    child: null,
-  };
-  const bezierPoints1 = getBezierSegmentPoints(p0, p1, p2, p3, n);
-  const tempSet = getBezierSegmentPoints(p3, p4, p5, p6, n);
-
-  // First point in tempSet is a redundant duplicate of last point in bezierPoints2
-  // We can use array destructuring to throw out the first point in tempSet
-  const [_omitDuplicate, ...bezierPoints2] = tempSet;
-
-  return [...bezierPoints1, ...bezierPoints2];
-};
-
 const BeziControls = ({
-  points,
-  setPoints,
+  beziCtrlPts,
+  setBeziCtrlPts,
   compIndex,
   wd,
   ht,
 }: {
-  points: CtrlPoint[];
-  setPoints: (pts: CtrlPoint[]) => void;
+  beziCtrlPts: CtrlPoint[];
+  setBeziCtrlPts: (pts: CtrlPoint[]) => void;
   compIndex: number;
   wd: number;
   ht: number;
@@ -103,15 +58,15 @@ const BeziControls = ({
       { x: csp.pt6.x, y: csp.pt6.y, child: null },
       { x: csp.pt3.x, y: csp.pt3.y, child: [4] },
     ];
-    setPoints(temp);
-  }, [compIndex, setPoints]);
+    setBeziCtrlPts(temp);
+  }, [compIndex, setBeziCtrlPts]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     const drawControls = () => {
       if (ctx) {
-        points.forEach((pt, i) => {
+        beziCtrlPts.forEach((pt, i) => {
           // Circle around currently hovered point
           if (i === hoverIndex) {
             ctx.strokeStyle = '#00ffff';
@@ -135,8 +90,8 @@ const BeziControls = ({
             const childIndex = pt.child[0];
             const px = pt.x;
             const py = pt.y;
-            const child0x = points[childIndex].x;
-            const child0y = points[childIndex].y;
+            const child0x = beziCtrlPts[childIndex].x;
+            const child0y = beziCtrlPts[childIndex].y;
             const dx = px - child0x;
             const dy = py - child0y;
             const r = Math.sqrt(dx * dx + dy * dy);
@@ -173,13 +128,13 @@ const BeziControls = ({
       }
     };
 
-    if (ctx && points.length) {
+    if (ctx && beziCtrlPts.length) {
       eraser();
       drawControls();
-      const splinePoints = getBezierSplinePoints(points);
+      const splinePoints = getBezierSplinePoints(beziCtrlPts, numPoints);
       drawBezier(splinePoints);
     }
-  }, [eraser, hoverIndex, points]);
+  }, [eraser, hoverIndex, beziCtrlPts]);
 
   const handleMouseDown = (ev) => {
     const canvas = canvasRef.current;
@@ -191,32 +146,32 @@ const BeziControls = ({
     if (nearestIndex !== -1) {
       setDragIndex(nearestIndex);
       setOffsets({
-        x: mouseX - points[nearestIndex].x,
-        y: mouseY - points[nearestIndex].y,
+        x: mouseX - beziCtrlPts[nearestIndex].x,
+        y: mouseY - beziCtrlPts[nearestIndex].y,
       });
 
-      if (points[nearestIndex].child !== null) {
-        const j = points[nearestIndex].child[0];
-        const x1 = points[nearestIndex].x;
-        const x0 = points[j].x;
-        const y1 = points[nearestIndex].y;
-        const y0 = points[j].y;
+      if (beziCtrlPts[nearestIndex].child !== null) {
+        const j = beziCtrlPts[nearestIndex].child[0];
+        const x1 = beziCtrlPts[nearestIndex].x;
+        const x0 = beziCtrlPts[j].x;
+        const y1 = beziCtrlPts[nearestIndex].y;
+        const y0 = beziCtrlPts[j].y;
         setChildDeltas({ x: x1 - x0, y: y1 - y0 });
       }
     }
   };
 
   const getNearest = (mouseX: number, mouseY: number, boundRadius: number) => {
-    if (points.length === 0) return -1;
+    if (beziCtrlPts.length === 0) return -1;
 
-    let dx = mouseX - points[0].x;
-    let dy = mouseY - points[0].y;
+    let dx = mouseX - beziCtrlPts[0].x;
+    let dy = mouseY - beziCtrlPts[0].y;
     let d = Math.sqrt(dx * dx + dy * dy);
     let index = d <= boundRadius ? 0 : -1;
 
-    for (let i = 1; i < points.length; i++) {
-      dx = mouseX - points[i].x;
-      dy = mouseY - points[i].y;
+    for (let i = 1; i < beziCtrlPts.length; i++) {
+      dx = mouseX - beziCtrlPts[i].x;
+      dy = mouseY - beziCtrlPts[i].y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < d) {
         d = dist;
@@ -246,7 +201,7 @@ const BeziControls = ({
       const mouseY = ev.clientY - rect.top;
 
       // Update coordinates of the current point
-      const temp = points.map((pt, i) => {
+      const temp = beziCtrlPts.map((pt, i) => {
         if (i !== dragIndex) {
           return pt;
         }
@@ -258,14 +213,14 @@ const BeziControls = ({
       });
 
       // Update coordinates of the current point's child if applicable
-      const currentPoint = points[dragIndex];
+      const currentPoint = beziCtrlPts[dragIndex];
       if (currentPoint.child !== null) {
         const childIndex = currentPoint.child[0];
         temp[childIndex].x = currentPoint.x - childDeltas.x;
         temp[childIndex].y = currentPoint.y - childDeltas.y;
       }
 
-      setPoints(temp);
+      setBeziCtrlPts(temp);
     }
   };
 
@@ -278,7 +233,7 @@ const BeziControls = ({
       ref={canvasRef}
       width={wd}
       height={ht}
-      style={{ border: '1px solid black' }}
+      style={{ border: '1px solid black', display: 'none' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}

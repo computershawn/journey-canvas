@@ -1,18 +1,21 @@
+import { mapTo } from './helpers';
+
 class FanBlade {
-  constructor(_pts, _index) {
-    this.center = {x: 0, y: 0};
+  constructor(_pts, _index, _numColors) {
+    this.center = { x: 0, y: 0 };
     this.index = _index;
     this.isOpaque = Math.random() > 0.1;
     this.topEdge = Math.random() > 0.5 ? true : false;
     this.points = _pts;
     this.co = this.isOpaque ? '#ffffff' : '#00000080';
-    this.altColorIndex = Math.floor(Math.random() * numColors);
+    this.altColorIndex = Math.floor(Math.random() * _numColors);
     const n0 = 143;
     const n1 = 247;
     this.altColorOpacity = Math.round(n0 + Math.random() * (n1 - n0));
     this.value = Math.random();
     const maxTicks = 40;
     this.colorStartIndex = Math.floor(Math.random() * maxTicks);
+    // console.log('this fanblade', this);
   }
 
   update(pt0, pt1, pt2, pt3) {
@@ -89,7 +92,7 @@ class FanBlade {
   //     const longSide = max(dist(pt0.x, pt0.y, pt1.x, pt1.y), dist(pt2.x, pt2.y, pt3.x, pt3.y));
   //     const len = constrain(longSide, 1, 200);
   //     const numTicks = map(len, 1, 200, 1, maxTicks);
-  
+
   //     for (let j = 1; j < numTicks; j++) {
   //       const b = j / numTicks;
   //       if (palette.length && tickSequence.length) {
@@ -145,6 +148,7 @@ class FanBlade {
 
     // noFill();
     // Render tick marks
+    const showColor = true;
     if (isOpaque && showColor) {
       const dx1 = pt0.x - pt1.x;
       const dy1 = pt0.y - pt1.y;
@@ -161,9 +165,10 @@ class FanBlade {
         len = 200;
       }
 
+      const maxTicks = 40;
       // const numTicks = Math.round(len / (200 - 1) * (maxTicks - 1));
       const numTicks = Math.round(mapTo(len, 1, 200, 1, maxTicks));
-  
+
       for (let j = 1; j < numTicks; j++) {
         const b = j / numTicks;
         // if (palette.length && tickSequence.length) {
@@ -185,8 +190,7 @@ class FanBlade {
         // context.lineTo(pt3.x, pt3.y);
         // context.closePath();
         context.stroke();
-        // console.log(pt3.x);
-    
+
         // line(
         //   pt0.x + b * value * (pt1.x - pt0.x),
         //   pt0.y + b * value * (pt1.y - pt0.y),
