@@ -183,6 +183,8 @@ const BeziControls = ({
 
   const handleMouseDown = (ev) => {
     const canvas = canvasRef.current;
+    if (!canvas) return null;
+
     const rect = canvas.getBoundingClientRect();
     const mouseX = ev.clientX - rect.left;
     const mouseY = ev.clientY - rect.top;
@@ -233,6 +235,8 @@ const BeziControls = ({
 
   const handleMouseMove = (ev) => {
     const canvas = canvasRef.current;
+    if (!canvas) return null;
+
     const rect = canvas.getBoundingClientRect();
     const mouseX = ev.clientX - rect.left;
     const mouseY = ev.clientY - rect.top;
@@ -250,6 +254,7 @@ const BeziControls = ({
         if (i !== dragIndex) {
           return pt;
         }
+
         return {
           ...pt,
           x: mouseX - offsets.x,
@@ -278,7 +283,13 @@ const BeziControls = ({
       ref={canvasRef}
       width={wd}
       height={ht}
-      style={{ border: '1px solid black', display: 'none' }}
+      style={{
+        border: '1px solid black',
+        position: 'absolute',
+        top: '0px',
+        left: '308px',
+        pointerEvents: 'none',
+      }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}

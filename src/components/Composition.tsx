@@ -83,7 +83,7 @@ const Composition = ({
 
       const fb = new FanBlade(points, j, NUM_COLORS);
       temp.push(fb);
-    };
+    }
 
     return temp;
   }, [nullElements]);
@@ -169,14 +169,26 @@ const Composition = ({
 
   return (
     <>
-      <Button variant='outline' onClick={doStuff}>
+      <Button
+        variant='outline'
+        onClick={doStuff}
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '324px',
+        }}
+      >
         click me!
       </Button>
       <canvas
         ref={canvasRef}
         width={wd}
         height={ht}
-        style={{ border: '1px solid black' }}
+        style={{
+          border: '1px solid black',
+          position: 'relative',
+          pointerEvents: 'none',
+        }}
       />
     </>
   );

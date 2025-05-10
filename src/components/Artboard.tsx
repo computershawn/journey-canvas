@@ -20,15 +20,11 @@ const Artboard = ({ compIndex }: { compIndex: number }) => {
       </canvas> */}
 
       {/* <Tings /> */}
+      <Composition beziCtrlPts={beziCtrlPts} wd={1280} ht={720} />
       <BeziControls
         compIndex={compIndex}
         points={beziCtrlPts}
         setBeziCtrlPts={setBeziCtrlPts}
-        wd={1280}
-        ht={720}
-      />
-      <Composition
-        beziCtrlPts={beziCtrlPts}
         wd={1280}
         ht={720}
       />
