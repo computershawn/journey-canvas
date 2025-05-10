@@ -1,6 +1,32 @@
+import { mapTo } from './helpers';
+
+type Pt = {
+  x: number;
+  y: number;
+}
+
+type Quad = {
+  pt0: Pt,
+  pt1: Pt,
+  pt2: Pt,
+  pt3: Pt,
+};
 class FanBlade {
-  constructor(_pts, _index) {
-    this.center = {x: 0, y: 0};
+  maxTicks: number;
+  center: Pt;
+  index: number;
+  isOpaque: boolean;
+  topEdge: boolean;
+  points: Quad;
+  co: string;
+  altColorIndex: number;
+  altColorOpacity: number;
+  value: number;
+  colorStartIndex: number;
+
+  constructor(_pts: Quad, _index: number, numColors: number, _maxTicks: number) {
+    this.maxTicks = _maxTicks;
+    this.center = { x: 0, y: 0 };
     this.index = _index;
     this.isOpaque = Math.random() > 0.1;
     this.topEdge = Math.random() > 0.5 ? true : false;
@@ -11,11 +37,10 @@ class FanBlade {
     const n1 = 247;
     this.altColorOpacity = Math.round(n0 + Math.random() * (n1 - n0));
     this.value = Math.random();
-    const maxTicks = 40;
-    this.colorStartIndex = Math.floor(Math.random() * maxTicks);
+    this.colorStartIndex = Math.floor(Math.random() * _maxTicks);
   }
 
-  update(pt0, pt1, pt2, pt3) {
+  update(pt0: Pt, pt1: Pt, pt2: Pt, pt3: Pt) {
     this.points.pt0 = pt0;
     this.points.pt1 = pt1;
     this.points.pt2 = pt2;
@@ -89,7 +114,7 @@ class FanBlade {
   //     const longSide = max(dist(pt0.x, pt0.y, pt1.x, pt1.y), dist(pt2.x, pt2.y, pt3.x, pt3.y));
   //     const len = constrain(longSide, 1, 200);
   //     const numTicks = map(len, 1, 200, 1, maxTicks);
-  
+
   //     for (let j = 1; j < numTicks; j++) {
   //       const b = j / numTicks;
   //       if (palette.length && tickSequence.length) {
@@ -107,12 +132,12 @@ class FanBlade {
   //   }
   // }
 
-  render(context) {
+  render(context: CanvasRenderingContext2D, showColor: boolean) {
     const {
       // altColorIndex,
       // altColorOpacity,
       isOpaque,
-      co,
+      // co,
       points: { pt0, pt1, pt2, pt3 },
       value,
     } = this;
@@ -162,8 +187,8 @@ class FanBlade {
       }
 
       // const numTicks = Math.round(len / (200 - 1) * (maxTicks - 1));
-      const numTicks = Math.round(mapTo(len, 1, 200, 1, maxTicks));
-  
+      const numTicks = Math.round(mapTo(len, 1, 200, 1, this.maxTicks));
+
       for (let j = 1; j < numTicks; j++) {
         const b = j / numTicks;
         // if (palette.length && tickSequence.length) {
@@ -186,7 +211,7 @@ class FanBlade {
         // context.closePath();
         context.stroke();
         // console.log(pt3.x);
-    
+
         // line(
         //   pt0.x + b * value * (pt1.x - pt0.x),
         //   pt0.y + b * value * (pt1.y - pt0.y),

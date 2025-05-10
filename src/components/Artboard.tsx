@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import BeziControls from './BeziControls';
 import { CtrlPoint } from '../types';
+import Composition from './Composition';
 
 const Artboard = ({ compIndex }: { compIndex: number }) => {
   // const compRef = useRef<HTMLCanvasElement | null>(null);
-  const [points, setPoints] = useState<CtrlPoint[]>([]);
+  const [beziCtrlPts, setBeziCtrlPts] = useState<CtrlPoint[]>([]);
 
   return (
     <>
@@ -21,8 +22,13 @@ const Artboard = ({ compIndex }: { compIndex: number }) => {
       {/* <Tings /> */}
       <BeziControls
         compIndex={compIndex}
-        points={points}
-        setPoints={setPoints}
+        points={beziCtrlPts}
+        setBeziCtrlPts={setBeziCtrlPts}
+        wd={1280}
+        ht={720}
+      />
+      <Composition
+        beziCtrlPts={beziCtrlPts}
         wd={1280}
         ht={720}
       />

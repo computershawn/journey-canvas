@@ -53,13 +53,13 @@ const getBezierSplinePoints = (points: CtrlPoint[]) => {
 
 const BeziControls = ({
   points,
-  setPoints,
+  setBeziCtrlPts,
   compIndex,
   wd,
   ht,
 }: {
   points: CtrlPoint[];
-  setPoints: (pts: CtrlPoint[]) => void;
+  setBeziCtrlPts: (pts: CtrlPoint[]) => void;
   compIndex: number;
   wd: number;
   ht: number;
@@ -103,8 +103,8 @@ const BeziControls = ({
       { x: csp.pt6.x, y: csp.pt6.y, child: null },
       { x: csp.pt3.x, y: csp.pt3.y, child: [4] },
     ];
-    setPoints(temp);
-  }, [compIndex, setPoints]);
+    setBeziCtrlPts(temp);
+  }, [compIndex, setBeziCtrlPts]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -265,7 +265,7 @@ const BeziControls = ({
         temp[childIndex].y = currentPoint.y - childDeltas.y;
       }
 
-      setPoints(temp);
+      setBeziCtrlPts(temp);
     }
   };
 
@@ -278,7 +278,7 @@ const BeziControls = ({
       ref={canvasRef}
       width={wd}
       height={ht}
-      style={{ border: '1px solid black' }}
+      style={{ border: '1px solid black', display: 'none' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
