@@ -67,17 +67,9 @@ const Composition = ({
   //   setNullElements(temp);
   // }
 
-  // ! Currently nullElements has 5 items. It should be closer to 325
   const fanBlades = useMemo(() => {
-    // console.log('nullElements', nullElements);
     const temp = [];
     for (let j = 0; j < nullElements.length - 1; j++) {
-      // const points = {
-      //   pt0: { x: 0, y: 0 },
-      //   pt1: { x: 0, y: 0 },
-      //   pt2: { x: 0, y: 0 },
-      //   pt3: { x: 0, y: 0 },
-      // };
       const x0 = Math.random() * CANV_WD;
       const y0 = Math.random() * CANV_HT;
       const s = 40;
@@ -88,12 +80,12 @@ const Composition = ({
         pt3: { x: x0, y: y0 + s },
       };
 
-      const fb = new FanBlade(points, j, NUM_COLORS);
+      const fb = new FanBlade(points, j, NUM_COLORS, Math.random());
       temp.push(fb);
     }
 
     return temp;
-  }, [nullElements]);
+  }, [nullElements.length]);
 
   // useEffect(() => {
   //   const init = () => {
@@ -191,14 +183,14 @@ const Composition = ({
 
   // Replace existing null elements with a new set
   // set of x/y coordinates
-  const resetPoints = (_pts) => {
-    const temp = [];
-    for (let j = 0; j < _pts.length; j++) {
-      temp.push(new NullElement(pts[j], j));
-    }
+  // const resetPoints = (_pts) => {
+  //   const temp = [];
+  //   for (let j = 0; j < _pts.length; j++) {
+  //     temp.push(new NullElement(pts[j], j));
+  //   }
 
-    setNullElements(temp);
-  };
+  //   setNullElements(temp);
+  // };
 
   // const eraser = useCallback(() => {
   //   const canvas = canvasRef.current;

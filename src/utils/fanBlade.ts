@@ -11,10 +11,10 @@ class FanBlade {
   co: string;
   altColorIndex: number;
   altColorOpacity: number;
-  value: number;
+  tickSpacing: number;
   colorStartIndex: number;
 
-  constructor(_pts: Quad, _index: number, numColors: number) {
+  constructor(_pts: Quad, _index: number, numColors: number, tickSpacing: number) {
     this.center = { x: 0, y: 0 };
     this.index = _index;
     this.isOpaque = Math.random() > 0.1;
@@ -25,7 +25,7 @@ class FanBlade {
     const n0 = 143;
     const n1 = 247;
     this.altColorOpacity = Math.round(n0 + Math.random() * (n1 - n0));
-    this.value = Math.random();
+    this.tickSpacing = tickSpacing;
     this.colorStartIndex = Math.floor(Math.random() * MAX_TICKS);
   }
 
@@ -128,7 +128,7 @@ class FanBlade {
       isOpaque,
       // co,
       points: { pt0, pt1, pt2, pt3 },
-      value,
+      tickSpacing,
     } = this;
 
     // Shadow effect
@@ -188,12 +188,12 @@ class FanBlade {
 
         context.beginPath();
         context.moveTo(
-          pt0.x + b * value * (pt1.x - pt0.x),
-          pt0.y + b * value * (pt1.y - pt0.y)
+          pt0.x + b * tickSpacing * (pt1.x - pt0.x),
+          pt0.y + b * tickSpacing * (pt1.y - pt0.y)
         );
         context.lineTo(
-          pt3.x + b * value * (pt2.x - pt3.x),
-          pt3.y + b * value * (pt2.y - pt3.y)
+          pt3.x + b * tickSpacing * (pt2.x - pt3.x),
+          pt3.y + b * tickSpacing * (pt2.y - pt3.y)
         );
         // context.lineTo(pt2.x, pt2.y);
         // context.lineTo(pt3.x, pt3.y);
