@@ -64,18 +64,12 @@ const Artboard = ({ compIndex }: { compIndex: number }) => {
 
   return (
     <>
-      {/* Composition */}
-      {/* <canvas
-        width='1280'
-        height='720'
-        ref={compRef}
-        style={{ position: 'absolute', top: 0, left: 300 }}
-      >
-        Your browser does not support the HTML canvas tag.
-      </canvas> */}
-
-      {/* <Tings /> */}
-      <Composition bezierSplinePoints={bezierSplinePoints} wd={CANV_WD} ht={CANV_HT} />
+      <Composition
+        bezierSplinePoints={bezierSplinePoints}
+        wd={CANV_WD}
+        ht={CANV_HT}
+        balance={0.75}
+      />
       <BeziControls
         compIndex={compIndex}
         points={beziCtrlPts}

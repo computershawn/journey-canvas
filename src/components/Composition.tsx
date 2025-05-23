@@ -15,10 +15,12 @@ const Composition = ({
   bezierSplinePoints,
   wd,
   ht,
+  balance,
 }: {
   bezierSplinePoints: any;
   wd: number;
   ht: number;
+  balance: number;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pts = {
@@ -115,7 +117,7 @@ const Composition = ({
     const update = (currentCycleFrame: number) => {
       // Update all positions of our references
       nullElements.forEach((nE) => {
-        nE.update(currentCycleFrame);
+        nE.update(currentCycleFrame, balance);
       });
 
       for (let j = 0; j < nullElements.length - 1; j++) {

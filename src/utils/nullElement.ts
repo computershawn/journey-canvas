@@ -4,7 +4,7 @@ import { mapTo } from './helpers';
 const durationFrames = 100;
 const radius = 80;
 const diff = 0.5;
-const balance = 0.5;
+// const balance = 0.5;
 class NullElement {
   point0: Pt;
   point1: Pt;
@@ -23,7 +23,7 @@ class NullElement {
     this.point1 = { x: 0, y: 0 };
   }
 
-  update(frameNum: number) {
+  update(frameNum: number, balance: number) {
     const PI = Math.PI;
     const { angleOffset, counter } = this;
     const c = frameNum + counter;
