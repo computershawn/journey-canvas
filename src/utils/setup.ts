@@ -1,144 +1,144 @@
-import { getAllComps, getComp, mapTo } from './helpers';
+// import { getComp, mapTo } from './helpers';
 
-export const updateSliders = (compParams, durationFrames, animationMode) => {
-  if (animationMode === 1) {
-    // frameSlider.value = compParams.storedCycleFrame;
-    const currentCycleFrame = compParams.storedCycleFrame % durationFrames;
-  }
+// export const updateSliders = (compParams, durationFrames, animationMode) => {
+//   if (animationMode === 1) {
+//     // frameSlider.value = compParams.storedCycleFrame;
+//     const currentCycleFrame = compParams.storedCycleFrame % durationFrames;
+//   }
 
-  // balanceSlider.value = compParams.storedBalance;
-  const balance = compParams.storedBalance / 100;
+//   // balanceSlider.value = compParams.storedBalance;
+//   const balance = compParams.storedBalance / 100;
 
-  // diffSlider.value = compParams.storedDiff;
-  const diff = mapTo(compParams.storedDiff, 0, 100, 1, 8);
-};
+//   // diffSlider.value = compParams.storedDiff;
+//   const diff = mapTo(compParams.storedDiff, 0, 100, 1, 8);
+// };
 
-export const buildSelectMenu = (shouldSetComp = false) => {
-  // const comps = getAllComps();
-  // const comps = [];
+// export const buildSelectMenu = (shouldSetComp = false) => {
+//   // const comps = getAllComps();
+//   // const comps = [];
 
-  // console.log('comps', comps);
-  // const container = document.querySelector('#dropdown-container');
-  if (comps.length) {
-    //   const frameSlider = document.querySelector('#frame-number');
-    //   const balanceSlider = document.querySelector('#balance');
-    //   const diffSlider = document.querySelector('#diff');
+//   // console.log('comps', comps);
+//   // const container = document.querySelector('#dropdown-container');
+//   if (comps.length) {
+//     //   const frameSlider = document.querySelector('#frame-number');
+//     //   const balanceSlider = document.querySelector('#balance');
+//     //   const diffSlider = document.querySelector('#diff');
 
-    if (shouldSetComp) {
-      const params = getComp(comps[0]);
-      // updateSliders(params, frameSlider, balanceSlider, diffSlider);
-      updateSliders(params, 120, 1);
-    }
+//     if (shouldSetComp) {
+//       const params = getComp(comps[0]);
+//       // updateSliders(params, frameSlider, balanceSlider, diffSlider);
+//       updateSliders(params, 120, 1);
+//     }
 
-    //   // Remove existing options from dropdown
-    //   const compSelect = document.querySelector('#comp-select');
-    //   while (compSelect.firstChild) {
-    //     compSelect.removeChild(compSelect.firstChild);
-    //   }
+//     //   // Remove existing options from dropdown
+//     //   const compSelect = document.querySelector('#comp-select');
+//     //   while (compSelect.firstChild) {
+//     //     compSelect.removeChild(compSelect.firstChild);
+//     //   }
 
-    //   // Add options to dropdown
-    //   comps.forEach((comp, index) => {
-    //     const option = document.createElement('div');
-    //     option.classList.add('item');
-    //     if (index === 0 && shouldSetComp) {
-    //       option.classList.add('active');
-    //     }
+//     //   // Add options to dropdown
+//     //   comps.forEach((comp, index) => {
+//     //     const option = document.createElement('div');
+//     //     option.classList.add('item');
+//     //     if (index === 0 && shouldSetComp) {
+//     //       option.classList.add('active');
+//     //     }
 
-    //     const loadBtn = document.createElement('div');
-    //     loadBtn.classList.add('load-btn');
-    //     loadBtn.innerText = `comp ${index + 1}`;
-    //     loadBtn.addEventListener('click', () => {
-    //       const params = getComp(comp);
-    //       setComp(params, frameSlider, balanceSlider, diffSlider);
-    //       const csp = params.curveSetPoints;
-    //       bezi = new BeziSpline(csp, (val) => console.log(val));
-    //       resetBezier();
-    //       styleDropdown(index);
-    //     });
+//     //     const loadBtn = document.createElement('div');
+//     //     loadBtn.classList.add('load-btn');
+//     //     loadBtn.innerText = `comp ${index + 1}`;
+//     //     loadBtn.addEventListener('click', () => {
+//     //       const params = getComp(comp);
+//     //       setComp(params, frameSlider, balanceSlider, diffSlider);
+//     //       const csp = params.curveSetPoints;
+//     //       bezi = new BeziSpline(csp, (val) => console.log(val));
+//     //       resetBezier();
+//     //       styleDropdown(index);
+//     //     });
 
-    //     const removeBtn = document.createElement('div');
-    //     removeBtn.classList.add('remove');
-    //     removeBtn.innerText = '✕';
-    //     removeBtn.addEventListener('click', () => {
-    //       removeComp(comp.id);
-    //       container.dispatchEvent(
-    //         new Event('look', {
-    //           bubbles: true,
-    //           cancelable: false,
-    //         })
-    //       );
-    //     });
+//     //     const removeBtn = document.createElement('div');
+//     //     removeBtn.classList.add('remove');
+//     //     removeBtn.innerText = '✕';
+//     //     removeBtn.addEventListener('click', () => {
+//     //       removeComp(comp.id);
+//     //       container.dispatchEvent(
+//     //         new Event('look', {
+//     //           bubbles: true,
+//     //           cancelable: false,
+//     //         })
+//     //       );
+//     //     });
 
-    //     option.appendChild(loadBtn);
-    //     option.appendChild(removeBtn);
-    //     compSelect.appendChild(option);
-    //   });
-    //   container.style.display = 'inline-block';
-  } else {
-    // container.style.display = 'none';
-    console.log('no comps');
-  }
-};
+//     //     option.appendChild(loadBtn);
+//     //     option.appendChild(removeBtn);
+//     //     compSelect.appendChild(option);
+//     //   });
+//     //   container.style.display = 'inline-block';
+//   } else {
+//     // container.style.display = 'none';
+//     console.log('no comps');
+//   }
+// };
 
-export function setupSketch(pathOption = 0) {
-  initPalette().then((data) => {
-    allColors = data;
-    palette = pickPalette(data);
-  });
+// export function setupSketch(pathOption = 0) {
+//   initPalette().then((data) => {
+//     allColors = data;
+//     palette = pickPalette(data);
+//   });
 
-  for (let j = 0; j < 2 * maxTicks; j++) {
-    const i = Math.floor(Math.random(numColors));
-    tickSequence.push(i);
-  }
+//   for (let j = 0; j < 2 * maxTicks; j++) {
+//     const i = Math.floor(Math.random(numColors));
+//     tickSequence.push(i);
+//   }
 
-  // Instantiate Bezier curve object
-  const existingComps = getAllComps();
-  const csp = existingComps.length
-    ? getComp(existingComps[0])?.curveSetPoints
-    : null;
-  bezi = new BeziSpline(csp, (newPoints) => {
-    // The logic in the callback will re-render
-    // the fan whenever the bezier is modified
-    fan.resetPoints(newPoints);
-    fan.update(frameCount);
-    if (showFan) {
-      fan.render();
-    }
-  });
+//   // Instantiate Bezier curve object
+//   const existingComps = getAllComps();
+//   const csp = existingComps.length
+//     ? getComp(existingComps[0])?.curveSetPoints
+//     : null;
+//   bezi = new BeziSpline(csp, (newPoints) => {
+//     // The logic in the callback will re-render
+//     // the fan whenever the bezier is modified
+//     fan.resetPoints(newPoints);
+//     fan.update(frameCount);
+//     if (showFan) {
+//       fan.render();
+//     }
+//   });
 
-  let pts;
-  switch (pathOption) {
-    case 0:
-      pts = getStraightPath();
-      break;
-    case 1:
-      const circleRadius = 160; // 600;
-      // pts = getArcPoints(0.25 * Math.PI, numLoops, circleRadius, wd / 2, 260);
-      pts = getArcPoints(
-        2 * Math.PI,
-        numLoops,
-        circleRadius,
-        wd / 2,
-        ht / 2 - circleRadius
-      );
-      break;
-    case 2:
-    default:
-      pts = bezi.getBezierSplinePoints(numLoops);
-  }
+//   let pts;
+//   switch (pathOption) {
+//     case 0:
+//       pts = getStraightPath();
+//       break;
+//     case 1:
+//       const circleRadius = 160; // 600;
+//       // pts = getArcPoints(0.25 * Math.PI, numLoops, circleRadius, wd / 2, 260);
+//       pts = getArcPoints(
+//         2 * Math.PI,
+//         numLoops,
+//         circleRadius,
+//         wd / 2,
+//         ht / 2 - circleRadius
+//       );
+//       break;
+//     case 2:
+//     default:
+//       pts = bezi.getBezierSplinePoints(numLoops);
+//   }
 
-  fan = new Fan(pts);
-  fan.update(frameCount);
+//   fan = new Fan(pts);
+//   fan.update(frameCount);
 
-  // Finally, render the visuals
-  if (showBezier) {
-    bezi.render();
-  }
+//   // Finally, render the visuals
+//   if (showBezier) {
+//     bezi.render();
+//   }
 
-  if (showFan) {
-    fan.render();
-  }
-}
+//   if (showFan) {
+//     fan.render();
+//   }
+// }
 
 // export const setupUI = () => {
 //   // Set up UI Controls
@@ -267,83 +267,82 @@ export function setupSketch(pathOption = 0) {
 //   });
 // };
 
-export function getStraightPath() {
-  const temp = [];
-  const sp = 2;
-  for (let j = 0; j < numLoops; j++) {
-    const w = (numLoops - 1) * sp;
-    const xOffset = cX - w / 2;
-    const vec = { x: xOffset + j * sp, y: cY };
-    temp.push(vec);
-  }
+// export function getStraightPath() {
+//   const temp = [];
+//   const sp = 2;
+//   for (let j = 0; j < numLoops; j++) {
+//     const w = (numLoops - 1) * sp;
+//     const xOffset = cX - w / 2;
+//     const vec = { x: xOffset + j * sp, y: cY };
+//     temp.push(vec);
+//   }
 
-  return temp;
-}
+//   return temp;
+// }
 
-const comps = [
-  {
-    id: '19a133cd',
-    balance: '50',
-    currentCycleFrame: '230',
-    diff: '50',
-    curveSetPoints: {
-      pt1: {
-        x: 80,
-        y: 547,
-      },
-      pt2: {
-        x: 728,
-        y: 541,
-      },
-      pt3: {
-        x: 1239,
-        y: 51,
-      },
-      pt4: {
-        x: 85,
-        y: 26,
-      },
-      pt5: {
-        x: 993,
-        y: 483,
-      },
-      pt6: {
-        x: 1157,
-        y: -68,
-      },
-    },
-  },
-  {
-    id: '18dc50a0',
-    balance: '55',
-    currentCycleFrame: '316',
-    diff: '50',
-    curveSetPoints: {
-      pt1: {
-        x: 210,
-        y: 233.5,
-      },
-      pt2: {
-        x: 632,
-        y: 364.5,
-      },
-      pt3: {
-        x: 1171,
-        y: 407.5,
-      },
-      pt4: {
-        x: 139,
-        y: 519.5,
-      },
-      pt5: {
-        x: 892,
-        y: 119.5,
-      },
-      pt6: {
-        x: 1056,
-        y: 59.5,
-      },
-    },
-  },
-];
-
+// const comps = [
+//   {
+//     id: '19a133cd',
+//     balance: '50',
+//     currentCycleFrame: '230',
+//     diff: '50',
+//     curveSetPoints: {
+//       pt1: {
+//         x: 80,
+//         y: 547,
+//       },
+//       pt2: {
+//         x: 728,
+//         y: 541,
+//       },
+//       pt3: {
+//         x: 1239,
+//         y: 51,
+//       },
+//       pt4: {
+//         x: 85,
+//         y: 26,
+//       },
+//       pt5: {
+//         x: 993,
+//         y: 483,
+//       },
+//       pt6: {
+//         x: 1157,
+//         y: -68,
+//       },
+//     },
+//   },
+//   {
+//     id: '18dc50a0',
+//     balance: '55',
+//     currentCycleFrame: '316',
+//     diff: '50',
+//     curveSetPoints: {
+//       pt1: {
+//         x: 210,
+//         y: 233.5,
+//       },
+//       pt2: {
+//         x: 632,
+//         y: 364.5,
+//       },
+//       pt3: {
+//         x: 1171,
+//         y: 407.5,
+//       },
+//       pt4: {
+//         x: 139,
+//         y: 519.5,
+//       },
+//       pt5: {
+//         x: 892,
+//         y: 119.5,
+//       },
+//       pt6: {
+//         x: 1056,
+//         y: 59.5,
+//       },
+//     },
+//   },
+// ];

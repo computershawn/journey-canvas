@@ -1,8 +1,9 @@
-import { Portal, Select, createListCollection } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
-import { getAllComps } from '../utils/helpers';
 
-const PREFIX = 'comp';
+import { Portal, Select, createListCollection } from '@chakra-ui/react';
+
+import { PREFIX } from '../constants';
+import { getAllComps } from '../utils/helpers';
 
 const CompSelector = ({
   onChangeComp,

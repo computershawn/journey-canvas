@@ -1,21 +1,22 @@
-import { useMemo, useRef } from 'react';
-import { CtrlPoint } from '../types';
+import { useEffect, useMemo, useRef } from 'react';
 import NullElement from '../utils/nullElement';
 import FanBlade from '../utils/fanBlade';
-import { Button } from '@chakra-ui/react';
+import { CANV_HT, CANV_WD } from '../constants';
 // import BeziSpline from '../utils/bezier';
 // import { getBezierSplinePoints } from '../utils/helpers';
 
 const scale = 1;
 const NUM_COLORS = 5;
-const MAX_TICKS = 40;
+
+// Get the device pixel ratio, falling back to 1.
+const dpr = window.devicePixelRatio || 1;
 
 const Composition = ({
-  beziCtrlPts,
+  bezierSplinePoints,
   wd,
   ht,
 }: {
-  beziCtrlPts: CtrlPoint[];
+  bezierSplinePoints: any;
   wd: number;
   ht: number;
 }) => {
@@ -31,11 +32,16 @@ const Composition = ({
   // const [nullElements, setNullElements] = useState<NullElement[]>([]);
   const nullElements = useMemo(() => {
     const temp = [];
-    for (let j = 0; j < beziCtrlPts.length; j++) {
-      temp.push(new NullElement(beziCtrlPts[j], j));
+    // console.log('bezierSplinePoints', bezierSplinePoints);
+    if (bezierSplinePoints?.length) {
+      for (let j = 0; j < bezierSplinePoints.length; j++) {
+        temp.push(new NullElement(bezierSplinePoints[j], j));
+      }
+      return temp;
     }
-    return temp;
-  }, [beziCtrlPts]);
+
+    return [];
+  }, [bezierSplinePoints]);
 
   // const bezi = new BeziSpline(points, (val) => console.log(val));
   // const numLoops = 325;
@@ -63,6 +69,7 @@ const Composition = ({
 
   // ! Currently nullElements has 5 items. It should be closer to 325
   const fanBlades = useMemo(() => {
+    // console.log('nullElements', nullElements);
     const temp = [];
     for (let j = 0; j < nullElements.length - 1; j++) {
       // const points = {
@@ -71,8 +78,8 @@ const Composition = ({
       //   pt2: { x: 0, y: 0 },
       //   pt3: { x: 0, y: 0 },
       // };
-      const x0 = Math.random() * 1280;
-      const y0 = Math.random() * 720;
+      const x0 = Math.random() * CANV_WD;
+      const y0 = Math.random() * CANV_HT;
       const s = 40;
       const points = {
         pt0: { x: x0, y: y0 },
@@ -88,7 +95,85 @@ const Composition = ({
     return temp;
   }, [nullElements]);
 
-  if (beziCtrlPts.length === 0) {
+  // useEffect(() => {
+  //   const init = () => {
+  //     const canvas = canvasRef.current;
+  //     const ctx = canvas?.getContext('2d');
+  //     if (canvas && ctx) {
+  //       console.log('initialize');
+  //       // Get the device pixel ratio, falling back to 1.
+  //       const dpr = window.devicePixelRatio || 1;
+  //       // Get the size of the canvas in CSS pixels.
+  //       const rect = canvas.getBoundingClientRect();
+  //       // Give the canvas pixel dimensions of their CSS
+  //       // size * the device pixel ratio.
+  //       canvas.width = rect.width * dpr;
+  //       canvas.height = rect.height * dpr;
+  //       // var ctx = canvas.getContext('2d');
+  //       // Scale all drawing operations by the dpr, so you
+  //       // don't have to worry about the difference.
+  //       ctx.scale(dpr, dpr);
+  //     }
+  //   };
+
+  //   init();
+  // }, []);
+
+  useEffect(() => {
+    const update = (currentCycleFrame: number) => {
+      // Update all positions of our references
+      nullElements.forEach((nE) => {
+        nE.update(currentCycleFrame);
+      });
+
+      for (let j = 0; j < nullElements.length - 1; j++) {
+        const thisRef = nullElements[j];
+        const nextRef = nullElements[j + 1];
+
+        const px0 = thisRef.point0.x + thisRef.x;
+        const py0 = thisRef.point0.y + thisRef.y;
+        const px1 = thisRef.point1.x + thisRef.x;
+        const py1 = thisRef.point1.y + thisRef.y;
+        const px2 = nextRef.point1.x + nextRef.x;
+        const py2 = nextRef.point1.y + nextRef.y;
+        const px3 = nextRef.point0.x + nextRef.x;
+        const py3 = nextRef.point0.y + nextRef.y;
+
+        const pv0 = { x: scale * px0, y: scale * py0 };
+        const pv1 = { x: scale * px1, y: scale * py1 };
+        const pv2 = { x: scale * px2, y: scale * py2 };
+        const pv3 = { x: scale * px3, y: scale * py3 };
+
+        fanBlades[j].update(pv0, pv1, pv2, pv3);
+      }
+    };
+
+    const draw = () => {
+      const canvas = canvasRef.current;
+      const ctx = canvas?.getContext('2d');
+
+      if (canvas && ctx) {
+        // Get the size of the canvas in CSS pixels.
+        const rect = canvas.getBoundingClientRect();
+        // Give the canvas pixel dimensions of their CSS size * the device pixel ratio.
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        // Scale all drawing operations by the dpr, so you don't have to worry about the difference.
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        fanBlades.forEach((fb) => {
+          fb.render(ctx, true);
+        });
+      }
+    };
+
+    update(1);
+    draw();
+  }, [fanBlades, nullElements]);
+
+  if (!bezierSplinePoints?.length) {
     return null;
   }
 
@@ -115,45 +200,6 @@ const Composition = ({
     setNullElements(temp);
   };
 
-  const update = (currentCycleFrame: number) => {
-    // Update all positions of our references
-    nullElements.forEach((nE) => {
-      nE.update(currentCycleFrame);
-    });
-
-    for (let j = 0; j < nullElements.length - 1; j++) {
-      const thisRef = nullElements[j];
-      const nextRef = nullElements[j + 1];
-
-      const px0 = thisRef.point0.x + thisRef.x;
-      const py0 = thisRef.point0.y + thisRef.y;
-      const px1 = thisRef.point1.x + thisRef.x;
-      const py1 = thisRef.point1.y + thisRef.y;
-      const px2 = nextRef.point1.x + nextRef.x;
-      const py2 = nextRef.point1.y + nextRef.y;
-      const px3 = nextRef.point0.x + nextRef.x;
-      const py3 = nextRef.point0.y + nextRef.y;
-
-      const pv0 = { x: scale * px0, y: scale * py0 };
-      const pv1 = { x: scale * px1, y: scale * py1 };
-      const pv2 = { x: scale * px2, y: scale * py2 };
-      const pv3 = { x: scale * px3, y: scale * py3 };
-
-      fanBlades[j].update(pv0, pv1, pv2, pv3);
-    }
-  };
-
-  const draw = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (canvas && ctx) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      fanBlades.forEach((fb) => {
-        fb.render(ctx, true);
-      });
-    }
-  };
-
   // const eraser = useCallback(() => {
   //   const canvas = canvasRef.current;
   //   const ctx = canvas?.getContext('2d');
@@ -162,35 +208,19 @@ const Composition = ({
   //   }
   // }, []);
 
-  const doStuff = () => {
-    update(1);
-    draw();
-  };
-
   return (
-    <>
-      <Button
-        variant='outline'
-        onClick={doStuff}
-        style={{
-          position: 'absolute',
-          top: '20px',
-          left: '324px',
-        }}
-      >
-        click me!
-      </Button>
-      <canvas
-        ref={canvasRef}
-        width={wd}
-        height={ht}
-        style={{
-          border: '1px solid black',
-          position: 'relative',
-          pointerEvents: 'none',
-        }}
-      />
-    </>
+    <canvas
+      id='composition'
+      ref={canvasRef}
+      style={{
+        position: 'relative',
+        pointerEvents: 'none',
+        transform: 'scale: (0.5)',
+        width: `${CANV_WD}px`,
+        height: `${CANV_HT}px`,
+        marginTop: '8px',
+      }}
+    />
   );
 };
 

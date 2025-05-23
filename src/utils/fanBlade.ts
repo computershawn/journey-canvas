@@ -1,7 +1,7 @@
+import { MAX_TICKS } from '../constants';
 import { Pt, Quad } from '../types';
 import { mapTo } from './helpers';
 
-const MAX_TICKS = 40;
 class FanBlade {
   center: Pt;
   index: number;

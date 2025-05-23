@@ -4,7 +4,7 @@ import { CtrlPoint, CurveSetPoints, Point } from '../types';
 
 const rad = 16;
 const pointRad = 4;
-const numPoints = 49;
+const numPoints = 325;
 
 const getBezierSegmentPoints = (
   p0: CtrlPoint,
@@ -173,7 +173,7 @@ const BeziControls = ({
       }
     };
 
-    if (ctx && points.length) {
+    if (ctx && points?.length) {
       eraser();
       drawControls();
       const splinePoints = getBezierSplinePoints(points);
@@ -284,11 +284,9 @@ const BeziControls = ({
       width={wd}
       height={ht}
       style={{
-        border: '1px solid black',
         position: 'absolute',
-        top: '0px',
+        top: '8px',
         left: '308px',
-        pointerEvents: 'none',
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
