@@ -20,10 +20,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { mapTo } from '../utils/helpers';
+// import { mapTo } from '../utils/helpers';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
 import CompSelector from './CompSelector';
+import { useControls } from '../hooks/useControls';
 
 const ControlPanel = ({
   onChangeComp,
@@ -36,8 +37,7 @@ const ControlPanel = ({
   const [colorChecked, setColorChecked] = useState(true);
   const [bgChecked, setBgChecked] = useState(true);
   const [playing, setPlaying] = useState(false);
-  const [balance, setBalance] = useState(0.5);
-  const [diff, setDiff] = useState(4.5);
+  const { balance, setBalance, diff, setDiff } = useControls();
 
   const pickColors = () => {
     console.log('pick colors');
@@ -63,15 +63,15 @@ const ControlPanel = ({
 
   const updateBalance = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
-    console.log('set balance to', value / 100);
-    setBalance(value / 100);
+    setBalance(value);
   };
 
   const updateDiff = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
-    const num = mapTo(value, 0, 100, 1, 8);
-    console.log('set diff to', num);
-    setDiff(num);
+    // const num = mapTo(value, 0, 100, 1, 8);
+    // console.log('set diff to', num);
+    // setDiff(num);
+    setDiff(value);
   };
 
   return (
@@ -80,7 +80,6 @@ const ControlPanel = ({
         journey
       </Heading>
       <CompSelector onChangeComp={onChangeComp} />
-      {/* <ControlPanel onChangeComp={setCompIndex} /> */}
 
       <VStack w='full' gap={4} align='flex-start'>
         <Slider
@@ -92,15 +91,15 @@ const ControlPanel = ({
         />
         <Slider
           size='sm'
-          defaultValue={0}
+          defaultValue={balance}
           label='Balance'
           wd={240}
           onValueChange={updateBalance}
         />
         <Slider
           size='sm'
-          defaultValue={0}
-          label='Diff'
+          defaultValue={diff}
+          label='Difference'
           wd={240}
           onValueChange={updateDiff}
         />
@@ -133,7 +132,7 @@ const ControlPanel = ({
 
       <VStack w='full' gap={2} align='flex-start'>
         <Flex w='100%' align='center' justify='space-between'>
-          <Text textStyle='sm'>Paths</Text>
+          <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>Paths</Text>
           <IconButton
             size='xs'
             aria-label='hide or show path'
@@ -148,10 +147,10 @@ const ControlPanel = ({
         </Flex>
 
         <Flex w='100%' align='center' justify='space-between'>
-          <Text textStyle='sm'>Geometry</Text>
+          <Text textStyle='sm' opacity={geomChecked ? 1 : '0.625'}>Geometry</Text>
           <IconButton
             size='xs'
-            aria-label='hide or show path'
+            aria-label='hide or show shapes'
             onClick={() => setGeomChecked(!geomChecked)}
           >
             {geomChecked ? (
@@ -163,10 +162,10 @@ const ControlPanel = ({
         </Flex>
 
         <Flex w='100%' align='center' justify='space-between'>
-          <Text textStyle='sm'>Particles</Text>
+          <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>Particles</Text>
           <IconButton
             size='xs'
-            aria-label='hide or show path'
+            aria-label='hide or show particles'
             onClick={() => setParxChecked(!parxChecked)}
           >
             {parxChecked ? (

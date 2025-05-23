@@ -27,3 +27,12 @@ export type Quad = {
   pt2: Pt,
   pt3: Pt,
 };
+
+export interface ControlsContextType {
+  balance: number;
+  setBalance: (value: number) => void;
+  cycleFrame: number;
+  setCycleFrame: (value: number) => void;
+  diff: number;
+  setDiff: (value: number) => void;
+}

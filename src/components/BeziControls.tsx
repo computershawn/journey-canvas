@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { getAllComps } from '../utils/helpers';
 import { CtrlPoint, CurveSetPoints, Point } from '../types';
+import { CANV_HT, CANV_WD } from '../constants';
 
 const rad = 16;
 const pointRad = 4;
@@ -46,7 +47,7 @@ const getBezierSplinePoints = (points: CtrlPoint[]) => {
 
   // First point in tempSet is a redundant duplicate of last point in bezierPoints2
   // We can use array destructuring to throw out the first point in tempSet
-  const [_omitDuplicate, ...bezierPoints2] = tempSet;
+  const bezierPoints2 = tempSet.slice(1);
 
   return [...bezierPoints1, ...bezierPoints2];
 };
@@ -55,14 +56,10 @@ const BeziControls = ({
   points,
   setBeziCtrlPts,
   compIndex,
-  wd,
-  ht,
 }: {
   points: CtrlPoint[];
   setBeziCtrlPts: (pts: CtrlPoint[]) => void;
   compIndex: number;
-  wd: number;
-  ht: number;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [offsets, setOffsets] = useState({ x: 0, y: 0 });
@@ -281,8 +278,8 @@ const BeziControls = ({
   return (
     <canvas
       ref={canvasRef}
-      width={wd}
-      height={ht}
+      width={CANV_WD}
+      height={CANV_HT}
       style={{
         position: 'absolute',
         top: '8px',

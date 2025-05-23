@@ -2,8 +2,9 @@ import { useEffect, useMemo, useRef } from 'react';
 import NullElement from '../utils/nullElement';
 import FanBlade from '../utils/fanBlade';
 import { CANV_HT, CANV_WD } from '../constants';
-// import BeziSpline from '../utils/bezier';
-// import { getBezierSplinePoints } from '../utils/helpers';
+import { useControls } from '../hooks/useControls';
+import { mapTo } from '../utils/helpers';
+import { Point } from '../types';
 
 const scale = 1;
 const NUM_COLORS = 5;
@@ -13,28 +14,12 @@ const dpr = window.devicePixelRatio || 1;
 
 const Composition = ({
   bezierSplinePoints,
-  wd,
-  ht,
-  balance,
 }: {
-  bezierSplinePoints: any;
-  wd: number;
-  ht: number;
-  balance: number;
+  bezierSplinePoints: Point[];
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pts = {
-    pt0: { x: 10, y: 10 },
-    pt1: { x: 80, y: 10 },
-    pt2: { x: 80, y: 80 },
-    pt3: { x: 10, y: 80 },
-  };
-  // const fanBlades = [];
-  // const nullElements = [];
-  // const [nullElements, setNullElements] = useState<NullElement[]>([]);
   const nullElements = useMemo(() => {
     const temp = [];
-    // console.log('bezierSplinePoints', bezierSplinePoints);
     if (bezierSplinePoints?.length) {
       for (let j = 0; j < bezierSplinePoints.length; j++) {
         temp.push(new NullElement(bezierSplinePoints[j], j));
@@ -113,11 +98,15 @@ const Composition = ({
   //   init();
   // }, []);
 
+  const { balance, diff } = useControls();
+
   useEffect(() => {
     const update = (currentCycleFrame: number) => {
       // Update all positions of our references
+      const num = mapTo(diff, 0, 100, 1, 8);
+      // console.log('num', num);
       nullElements.forEach((nE) => {
-        nE.update(currentCycleFrame, balance);
+        nE.update(currentCycleFrame, balance / 100, num);
       });
 
       for (let j = 0; j < nullElements.length - 1; j++) {
@@ -165,7 +154,7 @@ const Composition = ({
 
     update(1);
     draw();
-  }, [fanBlades, nullElements]);
+  }, [balance, diff, fanBlades, nullElements]);
 
   if (!bezierSplinePoints?.length) {
     return null;

@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import BeziControls from './BeziControls';
+
 import { CtrlPoint } from '../types';
+import BeziControls from './BeziControls';
 import Composition from './Composition';
-import { CANV_HT, CANV_WD } from '../constants';
 
 const NUM_POINTS = 325; // THIS IS DUPLICATED IN BeziControls
 
@@ -51,7 +51,7 @@ const Artboard = ({ compIndex }: { compIndex: number }) => {
 
       // First point in tempSet is a redundant duplicate of last point in bezierPoints2
       // We can use array destructuring to throw out the first point in tempSet
-      const [_omitDuplicate, ...bezierPoints2] = tempSet;
+      const bezierPoints2 = tempSet.slice(1);
       return [...bezierPoints1, ...bezierPoints2];
     };
 
@@ -66,16 +66,11 @@ const Artboard = ({ compIndex }: { compIndex: number }) => {
     <>
       <Composition
         bezierSplinePoints={bezierSplinePoints}
-        wd={CANV_WD}
-        ht={CANV_HT}
-        balance={0.75}
       />
       <BeziControls
         compIndex={compIndex}
         points={beziCtrlPts}
         setBeziCtrlPts={setBeziCtrlPts}
-        wd={CANV_WD}
-        ht={CANV_HT}
       />
       {/* <BeziControls wd={1280} ht={720} /> */}
     </>
