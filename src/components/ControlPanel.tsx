@@ -31,13 +31,22 @@ const ControlPanel = ({
 }: {
   onChangeComp: (index: number) => void;
 }) => {
-  const [pathsChecked, setPathsChecked] = useState(true);
-  const [geomChecked, setGeomChecked] = useState(true);
   const [parxChecked, setParxChecked] = useState(true);
   const [colorChecked, setColorChecked] = useState(true);
   const [bgChecked, setBgChecked] = useState(true);
   const [playing, setPlaying] = useState(false);
-  const { balance, setBalance, cycleFrame, setCycleFrame, diff, setDiff } = useControls();
+  const {
+    balance,
+    setBalance,
+    cycleFrame,
+    setCycleFrame,
+    diff,
+    setDiff,
+    geomChecked,
+    setGeomChecked,
+    pathsChecked,
+    setPathsChecked,
+  } = useControls();
 
   const pickColors = () => {
     console.log('pick colors');

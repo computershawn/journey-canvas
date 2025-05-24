@@ -5,6 +5,7 @@ import { CANV_HT, CANV_WD } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { mapTo } from '../utils/helpers';
 import { Point } from '../types';
+import { Box } from '@chakra-ui/react';
 
 const scale = 1;
 const NUM_COLORS = 5;
@@ -17,6 +18,7 @@ const Composition = ({
 }: {
   bezierSplinePoints: Point[];
 }) => {
+  const { geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const nullElements = useMemo(() => {
     const temp = [];
@@ -151,9 +153,11 @@ const Composition = ({
       }
     };
 
-    update();
-    draw();
-  }, [balance, cycleFrame, diff, fanBlades, nullElements]);
+    if (geomChecked) {
+      update();
+      draw();
+    }
+  }, [balance, cycleFrame, diff, fanBlades, geomChecked, nullElements]);
 
   if (!bezierSplinePoints?.length) {
     return null;
@@ -190,7 +194,7 @@ const Composition = ({
   //   }
   // }, []);
 
-  return (
+  return geomChecked ? (
     <canvas
       id='composition'
       ref={canvasRef}
@@ -201,8 +205,11 @@ const Composition = ({
         width: `${CANV_WD}px`,
         height: `${CANV_HT}px`,
         marginTop: '8px',
+        // display: geomChecked ? 'block' : 'none',
       }}
     />
+  ) : (
+    <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
   );
 };
 

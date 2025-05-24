@@ -35,4 +35,8 @@ export interface ControlsContextType {
   setCycleFrame: (value: number) => void;
   diff: number;
   setDiff: (value: number) => void;
+  geomChecked: boolean;
+  setGeomChecked: (value: boolean) => void;
+  pathsChecked: boolean;
+  setPathsChecked: (value: boolean) => void;
 }

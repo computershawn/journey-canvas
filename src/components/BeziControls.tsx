@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { getAllComps } from '../utils/helpers';
+
+import {
+  CANV_HT,
+  CANV_WD,
+  CTRL_SPLINE_NUM_POINTS,
+  POINT_RADIUS,
+  RADIUS,
+} from '../constants';
+import { useControls } from '../hooks/useControls';
 import { CtrlPoint, CurveSetPoints, Point } from '../types';
-import { CANV_HT, CANV_WD, NUM_POINTS, POINT_RADIUS, RADIUS } from '../constants';
+import { getAllComps } from '../utils/helpers';
 
 const getBezierSegmentPoints = (
   p0: CtrlPoint,
@@ -31,7 +39,7 @@ const getBezierSegmentPoints = (
 };
 
 const getBezierSplinePoints = (points: CtrlPoint[]) => {
-  const n = (NUM_POINTS - 1) / 2;
+  const n = (CTRL_SPLINE_NUM_POINTS - 1) / 2;
   const [p0, p1, p2, p3, p5, p6] = points;
   const p4: CtrlPoint = {
     x: 2 * p3.x - p2.x,
@@ -62,6 +70,7 @@ const BeziControls = ({
   const [dragIndex, setDragIndex] = useState(-1);
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [childDeltas, setChildDeltas] = useState({ x: 0, y: 0 });
+  const { pathsChecked } = useControls();
 
   const drawBezier = (pts: Point[]) => {
     const canvas = canvasRef.current;
@@ -279,6 +288,7 @@ const BeziControls = ({
         position: 'absolute',
         top: '8px',
         left: '308px',
+        display: pathsChecked ? 'block' : 'none',
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}

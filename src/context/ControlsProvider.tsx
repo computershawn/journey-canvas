@@ -12,9 +12,24 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
   const [balance, setBalance] = useState(storedBalance);
   const [cycleFrame, setCycleFrame] = useState(storedCycleFrame);
   const [diff, setDiff] = useState(storedDiff);
+  const [geomChecked, setGeomChecked] = useState(true);
+  const [pathsChecked, setPathsChecked] = useState(true);
 
   return (
-    <ControlsContext.Provider value={{ balance, setBalance, cycleFrame, setCycleFrame, diff, setDiff }}>
+    <ControlsContext.Provider
+      value={{
+        balance,
+        cycleFrame,
+        diff,
+        geomChecked,
+        pathsChecked,
+        setBalance,
+        setCycleFrame,
+        setDiff,
+        setGeomChecked,
+        setPathsChecked,
+      }}
+    >
       {children}
     </ControlsContext.Provider>
   );

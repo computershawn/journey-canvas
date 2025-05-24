@@ -8,4 +8,5 @@ export const PREFIX = 'comp';
 export const RADIUS = 16;
 export const POINT_RADIUS = 4;
 
+export const CTRL_SPLINE_NUM_POINTS = 49;
 export const NUM_POINTS = 325;
