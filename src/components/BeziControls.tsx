@@ -1,11 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { getAllComps } from '../utils/helpers';
 import { CtrlPoint, CurveSetPoints, Point } from '../types';
-import { CANV_HT, CANV_WD } from '../constants';
-
-const rad = 16;
-const pointRad = 4;
-const numPoints = 325;
+import { CANV_HT, CANV_WD, NUM_POINTS, POINT_RADIUS, RADIUS } from '../constants';
 
 const getBezierSegmentPoints = (
   p0: CtrlPoint,
@@ -35,7 +31,7 @@ const getBezierSegmentPoints = (
 };
 
 const getBezierSplinePoints = (points: CtrlPoint[]) => {
-  const n = (numPoints - 1) / 2;
+  const n = (NUM_POINTS - 1) / 2;
   const [p0, p1, p2, p3, p5, p6] = points;
   const p4: CtrlPoint = {
     x: 2 * p3.x - p2.x,
@@ -114,7 +110,7 @@ const BeziControls = ({
             ctx.strokeStyle = '#00ffff';
             ctx.fillStyle = '#00ffff10';
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, rad, 0, 2 * Math.PI);
+            ctx.arc(pt.x, pt.y, RADIUS, 0, 2 * Math.PI);
             ctx.stroke();
             ctx.fill();
           }
@@ -122,7 +118,7 @@ const BeziControls = ({
           ctx.strokeStyle = '#00ffff';
           ctx.fillStyle = '#00ffffff';
           ctx.beginPath();
-          ctx.arc(pt.x, pt.y, pointRad, 0, 2 * Math.PI);
+          ctx.arc(pt.x, pt.y, POINT_RADIUS, 0, 2 * Math.PI);
           ctx.stroke();
           if (pt.child !== null) {
             ctx.fill();
@@ -162,7 +158,7 @@ const BeziControls = ({
               // Circle around unused control point
               ctx.fillStyle = '#ff00ff70';
               ctx.beginPath();
-              ctx.arc(child1x, child1y, 0.5 * pointRad, 0, 2 * Math.PI);
+              ctx.arc(child1x, child1y, 0.5 * POINT_RADIUS, 0, 2 * Math.PI);
               ctx.fill();
             }
           }
@@ -178,7 +174,7 @@ const BeziControls = ({
     }
   }, [eraser, hoverIndex, points]);
 
-  const handleMouseDown = (ev) => {
+  const handleMouseDown = (ev: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
 
@@ -186,7 +182,7 @@ const BeziControls = ({
     const mouseX = ev.clientX - rect.left;
     const mouseY = ev.clientY - rect.top;
 
-    const nearestIndex = getNearest(mouseX, mouseY, rad);
+    const nearestIndex = getNearest(mouseX, mouseY, RADIUS);
     if (nearestIndex !== -1) {
       setDragIndex(nearestIndex);
       setOffsets({
@@ -230,18 +226,17 @@ const BeziControls = ({
     return -1;
   };
 
-  const handleMouseMove = (ev) => {
+  const handleMouseMove = (ev: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
 
     const rect = canvas.getBoundingClientRect();
     const mouseX = ev.clientX - rect.left;
     const mouseY = ev.clientY - rect.top;
-    const temp = getNearest(mouseX, mouseY, rad);
+    const temp = getNearest(mouseX, mouseY, RADIUS);
     setHoverIndex(temp);
 
     if (dragIndex !== -1) {
-      const canvas = canvasRef.current;
       const rect = canvas.getBoundingClientRect();
       const mouseX = ev.clientX - rect.left;
       const mouseY = ev.clientY - rect.top;

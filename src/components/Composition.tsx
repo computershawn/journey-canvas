@@ -31,7 +31,6 @@ const Composition = ({
   }, [bezierSplinePoints]);
 
   // const bezi = new BeziSpline(points, (val) => console.log(val));
-  // const numLoops = 325;
   // const pts = getBezierSplinePoints(beziCtrlPts, 25);
   // let pts;
   // switch(pathOption) {
@@ -39,12 +38,12 @@ const Composition = ({
   //     pts = getStraightPath();
   //     break;
   //   case 1:
-  //     // pts = getArcPoints(0.25 * Math.PI, numLoops, circleRadius, wd / 2, 260);
-  //     pts = getArcPoints(2 * Math.PI, numLoops, circleRadius, wd / 2, ht / 2 - circleRadius);
+  //     // pts = getArcPoints(0.25 * Math.PI, NUM_POINTS, circleRadius, wd / 2, 260);
+  //     pts = getArcPoints(2 * Math.PI, NUM_POINTS, circleRadius, wd / 2, ht / 2 - circleRadius);
   //     break;
   //   case 2:
   //   default:
-  //     pts = bezi.getBezierSplinePoints(numLoops);
+  //     pts = bezi.getBezierSplinePoints(NUM_POINTS);
   // }
 
   // Initialize null elements
@@ -98,15 +97,15 @@ const Composition = ({
   //   init();
   // }, []);
 
-  const { balance, diff } = useControls();
+  const { balance, cycleFrame, diff } = useControls();
 
   useEffect(() => {
-    const update = (currentCycleFrame: number) => {
+    const update = () => {
       // Update all positions of our references
-      const num = mapTo(diff, 0, 100, 1, 8);
-      // console.log('num', num);
+      const difference = mapTo(diff, 0, 100, 1, 8);
+
       nullElements.forEach((nE) => {
-        nE.update(currentCycleFrame, balance / 100, num);
+        nE.update(cycleFrame, balance / 100, difference);
       });
 
       for (let j = 0; j < nullElements.length - 1; j++) {
@@ -152,9 +151,9 @@ const Composition = ({
       }
     };
 
-    update(1);
+    update();
     draw();
-  }, [balance, diff, fanBlades, nullElements]);
+  }, [balance, cycleFrame, diff, fanBlades, nullElements]);
 
   if (!bezierSplinePoints?.length) {
     return null;

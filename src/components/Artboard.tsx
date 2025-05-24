@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
 
+import { NUM_POINTS } from '../constants';
 import { CtrlPoint } from '../types';
 import BeziControls from './BeziControls';
 import Composition from './Composition';
-
-const NUM_POINTS = 325; // THIS IS DUPLICATED IN BeziControls
 
 const Artboard = ({ compIndex }: { compIndex: number }) => {
   // const compRef = useRef<HTMLCanvasElement | null>(null);

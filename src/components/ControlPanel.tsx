@@ -20,11 +20,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-// import { mapTo } from '../utils/helpers';
-import Slider from './ui/slider';
-import Switch from './ui/switch';
+import { NUM_POINTS } from '../constants';
 import CompSelector from './CompSelector';
 import { useControls } from '../hooks/useControls';
+import Slider from './ui/slider';
+import Switch from './ui/switch';
 
 const ControlPanel = ({
   onChangeComp,
@@ -37,7 +37,7 @@ const ControlPanel = ({
   const [colorChecked, setColorChecked] = useState(true);
   const [bgChecked, setBgChecked] = useState(true);
   const [playing, setPlaying] = useState(false);
-  const { balance, setBalance, diff, setDiff } = useControls();
+  const { balance, setBalance, cycleFrame, setCycleFrame, diff, setDiff } = useControls();
 
   const pickColors = () => {
     console.log('pick colors');
@@ -57,7 +57,8 @@ const ControlPanel = ({
 
   const updateFrame = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
-    console.log('go to frame number', value);
+    // console.log('go to frame number', value);
+    setCycleFrame(value);
     // goToFrameNumber(value);
   };
 
@@ -84,9 +85,11 @@ const ControlPanel = ({
       <VStack w='full' gap={4} align='flex-start'>
         <Slider
           size='sm'
-          defaultValue={0}
+          defaultValue={cycleFrame}
           label='Frame'
           wd={240}
+          min={0}
+          max={NUM_POINTS}
           onValueChange={updateFrame}
         />
         <Slider
@@ -132,7 +135,9 @@ const ControlPanel = ({
 
       <VStack w='full' gap={2} align='flex-start'>
         <Flex w='100%' align='center' justify='space-between'>
-          <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>Paths</Text>
+          <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>
+            Paths
+          </Text>
           <IconButton
             size='xs'
             aria-label='hide or show path'
@@ -147,7 +152,9 @@ const ControlPanel = ({
         </Flex>
 
         <Flex w='100%' align='center' justify='space-between'>
-          <Text textStyle='sm' opacity={geomChecked ? 1 : '0.625'}>Geometry</Text>
+          <Text textStyle='sm' opacity={geomChecked ? 1 : '0.625'}>
+            Geometry
+          </Text>
           <IconButton
             size='xs'
             aria-label='hide or show shapes'
@@ -162,7 +169,9 @@ const ControlPanel = ({
         </Flex>
 
         <Flex w='100%' align='center' justify='space-between'>
-          <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>Particles</Text>
+          <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
+            Particles
+          </Text>
           <IconButton
             size='xs'
             aria-label='hide or show particles'
