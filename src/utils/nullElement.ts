@@ -1,7 +1,7 @@
 import { Pt } from '../types';
 import { mapTo } from './helpers';
 
-const durationFrames = 100;
+const durationFrames = 384;
 const radius = 80;
 // const diff = 0.5;
 // const balance = 0.5;
@@ -17,7 +17,6 @@ class NullElement {
     this.x = _pos.x;
     this.y = _pos.y;
     this.counter = _index;
-    // this.angleOffset = radians(_index * 2);
     this.angleOffset = (2 * Math.PI * (_index * 2)) / 360;
     this.point0 = { x: 0, y: 0 };
     this.point1 = { x: 0, y: 0 };

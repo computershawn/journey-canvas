@@ -97,8 +97,8 @@ const ControlPanel = ({
           defaultValue={cycleFrame}
           label='Frame'
           wd={240}
-          min={0}
-          max={NUM_POINTS}
+          min={1}
+          max={384}
           onValueChange={updateFrame}
         />
         <Slider
