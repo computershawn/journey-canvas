@@ -23,7 +23,7 @@ const CompSelector = ({
     });
   }, [numComps]);
 
-  const handleValueChange = (e) => {
+  const handleValueChange = (e: { value: string[] }) => {
     const index = frameworks.items.findIndex(
       (item) => item.value === e.value[0]
     );
