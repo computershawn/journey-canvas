@@ -35,7 +35,7 @@ const CompSelector = ({
     <Select.Root
       collection={frameworks}
       size='xs'
-      width='200px'
+      width='full'
       value={value}
       onValueChange={handleValueChange}
     >

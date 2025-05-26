@@ -154,7 +154,7 @@ const Composition = ({
         ctx.scale(dpr, dpr);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // ctx.fillStyle = '#fff';
-        ctx.fillStyle = (showBackground && palette[backgroundIndex]) || '#fff';
+        ctx.fillStyle = (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         fanBlades.forEach((fb) => {
           fb.render(ctx, palette, renderColors);

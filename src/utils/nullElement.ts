@@ -1,7 +1,7 @@
+import { DURATION_FRAMES } from '../constants';
 import { Pt } from '../types';
 import { mapTo } from './helpers';
 
-const DURATION_FRAMES = 384; // TODO: Consider making this variable
 const radius = 80; // TODO: Consider making this variable
 class NullElement {
   point0: Pt;

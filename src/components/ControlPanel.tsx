@@ -23,13 +23,14 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { DURATION_FRAMES } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { ColorArray } from '../types';
+import { getRandomIndex } from '../utils/helpers';
 import Chips from './Chips';
 import CompSelector from './CompSelector';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
-import { getRandomIndex } from '../utils/helpers';
 
 const ControlPanel = ({
   allColors,
@@ -108,8 +109,6 @@ const ControlPanel = ({
     const value = details.value[0];
     setDiff(value);
   };
-
-  const DURATION_FRAMES = 384; // TODO: Consider making this variable
 
   return (
     <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
@@ -233,7 +232,7 @@ const ControlPanel = ({
             onCheckedChange={(e) => setColorChecked(e.checked)}
             disabled={!colorsLoaded}
           >
-            Color
+            Colors
           </Switch>
           <HStack>
             {colorChecked && palette.length > 0 && (
