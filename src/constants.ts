@@ -3,8 +3,6 @@ export const CANV_HT = 720;
 
 export const MAX_TICKS = 40;
 
-export const PREFIX = 'comp';
-
 export const RADIUS = 16;
 export const POINT_RADIUS = 4;
 

@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 
 import { Portal, Select, createListCollection } from '@chakra-ui/react';
 
-import { PREFIX } from '../constants';
 import { getAllComps } from '../utils/helpers';
+
+const PREFIX = 'comp';
 
 const CompSelector = ({
   onChangeComp,

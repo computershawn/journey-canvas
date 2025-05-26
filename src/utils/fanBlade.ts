@@ -17,7 +17,7 @@ class FanBlade {
   constructor(_pts: Quad, _index: number, numColors: number, tickSpacing: number) {
     this.center = { x: 0, y: 0 };
     this.index = _index;
-    this.isOpaque = Math.random() > 0.1;
+    this.isOpaque = Math.random() > 0.3;
     this.topEdge = Math.random() > 0.5 ? true : false;
     this.points = _pts;
     this.co = this.isOpaque ? '#ffffff' : '#00000080';
@@ -149,6 +149,7 @@ class FanBlade {
     }
 
     // context.fillStyle = 'white';
+    context.strokeStyle= '#000000';
     context.beginPath();
     context.moveTo(pt0.x, pt0.y);
     context.lineTo(pt1.x, pt1.y);
@@ -161,6 +162,13 @@ class FanBlade {
     // noFill();
     // Render tick marks
     if (isOpaque && showColor) {
+      // if (palette.length) {
+      //   const altColor = `${palette[altColorIndex]}${altColorOpacity}`;;
+      //   context.strokeStyle = altColor;
+      // } else {
+      //   context.strokeStyle = '#000000';
+      // }
+
       const dx1 = pt0.x - pt1.x;
       const dy1 = pt0.y - pt1.y;
       const dx2 = pt2.x - pt3.x;
@@ -179,6 +187,7 @@ class FanBlade {
       // const numTicks = Math.round(len / (200 - 1) * (maxTicks - 1));
       const numTicks = Math.round(mapTo(len, 1, 200, 1, MAX_TICKS));
 
+      context.strokeStyle= '#ff0000';
       for (let j = 1; j < numTicks; j++) {
         const b = j / numTicks;
         // if (palette.length && tickSequence.length) {

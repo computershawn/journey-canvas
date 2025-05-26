@@ -120,23 +120,28 @@ const ControlPanel = ({
           size='sm'
           defaultValue={cycleFrame}
           label='Frame'
-          wd={240}
           min={1}
           max={DURATION_FRAMES}
           onValueChange={updateFrame}
         />
+        <IconButton
+          size='xs'
+          aria-label='Play or pause animation'
+          onClick={() => setPlaying(!playing)}
+          w='full'
+        >
+          {playing ? <FaPlay color='green' /> : <FaPause color='black' />}
+        </IconButton>
         <Slider
           size='sm'
           defaultValue={balance}
           label='Balance'
-          wd={240}
           onValueChange={updateBalance}
         />
         <Slider
           size='sm'
           defaultValue={diff}
           label='Difference'
-          wd={240}
           onValueChange={updateDiff}
         />
 
@@ -156,14 +161,14 @@ const ControlPanel = ({
             </>
           )}
         </Button> */}
-        <IconButton
+        {/* <IconButton
           size='xs'
           aria-label='Play or pause animation'
           onClick={() => setPlaying(!playing)}
           w='full'
         >
           {playing ? <FaPlay color='green' /> : <FaPause color='black' />}
-        </IconButton>
+        </IconButton> */}
       </VStack>
 
       <VStack w='full' gap={2} align='flex-start'>
@@ -228,7 +233,9 @@ const ControlPanel = ({
             Color
           </Switch>
           <HStack>
-            {colorChecked && palette.length > 0 && <Chips palette={palette} selectedIndex={backgroundIndex} />}
+            {colorChecked && palette.length > 0 && (
+              <Chips palette={palette} selectedIndex={backgroundIndex} />
+            )}
             <IconButton
               size='xs'
               aria-label='Pick random palette'
@@ -245,15 +252,15 @@ const ControlPanel = ({
             size='sm'
             checked={colorsLoaded && bgChecked}
             onCheckedChange={(e) => setBgChecked(e.checked)}
-            disabled={!colorsLoaded}
+            disabled={!colorsLoaded || !colorChecked}
           >
             Background
           </Switch>
           <HStack>
-            {bgChecked && palette.length > 0 && (
+            {colorChecked && bgChecked && palette.length > 0 && (
               <Box
                 w={12}
-                h={8}
+                h={6}
                 bg={palette[backgroundIndex]}
                 border='1px solid black'
                 borderRadius='sm'
@@ -262,7 +269,7 @@ const ControlPanel = ({
             <IconButton
               size='xs'
               aria-label='Pick random palette'
-              disabled={!bgChecked || !colorsLoaded}
+              disabled={!colorChecked || !bgChecked || !colorsLoaded}
               onClick={cycleBackground}
             >
               <FaArrowRight color='black' />
