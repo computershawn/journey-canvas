@@ -35,6 +35,7 @@ function App() {
           onChangeComp={setCompIndex}
           palette={palette}
           setBgChecked={setBgChecked}
+          setBackgroundIndex={setBackgroundIndex}
           setPalette={setPalette}
         />
         <Artboard backgroundIndex={backgroundIndex} bgChecked={bgChecked} compIndex={compIndex} palette={palette} />

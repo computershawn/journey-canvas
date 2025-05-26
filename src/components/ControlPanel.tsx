@@ -37,6 +37,7 @@ const ControlPanel = ({
   bgChecked,
   onChangeComp,
   palette,
+  setBackgroundIndex,
   setBgChecked,
   setPalette,
 }: {
@@ -45,6 +46,7 @@ const ControlPanel = ({
   bgChecked: boolean;
   onChangeComp: (index: number) => void;
   palette: ColorArray;
+  setBackgroundIndex: (index: number) => void;
   setBgChecked: (checked: boolean) => void;
   setPalette: (palette: ColorArray) => void;
 }) => {
@@ -76,7 +78,9 @@ const ControlPanel = ({
   };
 
   const cycleBackground = () => {
-    console.log('cycle background color');
+    const index =
+      backgroundIndex < palette.length - 1 ? backgroundIndex + 1 : 0;
+    setBackgroundIndex(index);
   };
 
   const saveComp = () => {
@@ -224,7 +228,7 @@ const ControlPanel = ({
             Color
           </Switch>
           <HStack>
-            {colorChecked && palette.length > 0 && <Chips palette={palette} />}
+            {colorChecked && palette.length > 0 && <Chips palette={palette} selectedIndex={backgroundIndex} />}
             <IconButton
               size='xs'
               aria-label='Pick random palette'
@@ -249,7 +253,7 @@ const ControlPanel = ({
             {bgChecked && palette.length > 0 && (
               <Box
                 w={12}
-                h={6}
+                h={8}
                 bg={palette[backgroundIndex]}
                 border='1px solid black'
                 borderRadius='sm'
