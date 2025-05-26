@@ -4,7 +4,7 @@ import FanBlade from '../utils/fanBlade';
 import { CANV_HT, CANV_WD } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { mapTo } from '../utils/helpers';
-import { Point } from '../types';
+import { ColorArray, Point } from '../types';
 import { Box } from '@chakra-ui/react';
 
 const scale = 1;
@@ -15,8 +15,10 @@ const dpr = window.devicePixelRatio || 1;
 
 const Composition = ({
   bezierSplinePoints,
+  palette,
 }: {
   bezierSplinePoints: Point[];
+  palette: ColorArray;
 }) => {
   const { geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -147,8 +149,9 @@ const Composition = ({
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        fanBlades.forEach((fb) => {
-          fb.render(ctx, true);
+        fanBlades.forEach((fb, j) => {
+          // const co = palette[j];
+          fb.render(ctx, palette, true);
         });
       }
     };
@@ -157,7 +160,7 @@ const Composition = ({
       update();
       draw();
     }
-  }, [balance, cycleFrame, diff, fanBlades, geomChecked, nullElements]);
+  }, [balance, cycleFrame, diff, fanBlades, geomChecked, nullElements, palette]);
 
   if (!bezierSplinePoints?.length) {
     return null;

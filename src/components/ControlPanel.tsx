@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   FaArrowRotateRight,
   FaCloudArrowDown,
@@ -27,19 +27,23 @@ import Chips from './Chips';
 import CompSelector from './CompSelector';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
-import { useFetchColors } from '../hooks/useFetchColors';
 import { getRandomIndex } from '../utils/helpers';
 
 const ControlPanel = ({
+  allColors,
   onChangeComp,
+  palette,
+  setPalette,
 }: {
+  allColors: ColorArray[];
   onChangeComp: (index: number) => void;
+  palette: ColorArray;
+  setPalette: (palette: ColorArray) => void;
 }) => {
   const [parxChecked, setParxChecked] = useState(true);
   const [colorChecked, setColorChecked] = useState(true);
   const [bgChecked, setBgChecked] = useState(true);
   const [playing, setPlaying] = useState(false);
-  const [palette, setPalette] = useState<ColorArray>([]);
   const {
     balance,
     setBalance,
@@ -53,16 +57,7 @@ const ControlPanel = ({
     setPathsChecked,
   } = useControls();
 
-  const { allColors } = useFetchColors();
   const colorsLoaded = allColors.length > 0;
-
-  useEffect(() => {
-    if (colorsLoaded) {
-      const randomIndex = getRandomIndex(allColors.length);
-      const pal = allColors[randomIndex];
-      setPalette(pal);
-    }
-  }, [allColors, colorsLoaded]);
 
   const pickColors = () => {
     if (colorsLoaded) {

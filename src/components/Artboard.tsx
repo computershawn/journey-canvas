@@ -1,11 +1,19 @@
 import { useMemo, useState } from 'react';
 
 import { NUM_POINTS } from '../constants';
-import { CtrlPoint } from '../types';
+import { ColorArray, CtrlPoint } from '../types';
 import BeziControls from './BeziControls';
 import Composition from './Composition';
 
-const Artboard = ({ compIndex }: { compIndex: number }) => {
+const Artboard = ({
+  backgroundIndex,
+  compIndex,
+  palette,
+}: {
+  backgroundIndex: number;
+  compIndex: number;
+  palette: ColorArray;
+}) => {
   // const compRef = useRef<HTMLCanvasElement | null>(null);
   const [beziCtrlPts, setBeziCtrlPts] = useState<CtrlPoint[]>([]);
 
@@ -63,9 +71,7 @@ const Artboard = ({ compIndex }: { compIndex: number }) => {
 
   return (
     <>
-      <Composition
-        bezierSplinePoints={bezierSplinePoints}
-      />
+      <Composition bezierSplinePoints={bezierSplinePoints} palette={palette} />
       <BeziControls
         compIndex={compIndex}
         points={beziCtrlPts}

@@ -1,5 +1,5 @@
 import { MAX_TICKS } from '../constants';
-import { Pt, Quad } from '../types';
+import { ColorArray, Pt, Quad } from '../types';
 import { mapTo } from './helpers';
 
 class FanBlade {
@@ -10,7 +10,7 @@ class FanBlade {
   points: Quad;
   co: string;
   altColorIndex: number;
-  altColorOpacity: number;
+  altColorOpacity: string;
   tickSpacing: number;
   colorStartIndex: number;
 
@@ -24,7 +24,7 @@ class FanBlade {
     this.altColorIndex = Math.floor(Math.random() * numColors);
     const n0 = 143;
     const n1 = 247;
-    this.altColorOpacity = Math.round(n0 + Math.random() * (n1 - n0));
+    this.altColorOpacity = Math.round(n0 + Math.random() * (n1 - n0)).toString(16);
     this.tickSpacing = tickSpacing;
     this.colorStartIndex = Math.floor(Math.random() * MAX_TICKS);
   }
@@ -121,12 +121,12 @@ class FanBlade {
   //   }
   // }
 
-  render(context: CanvasRenderingContext2D, showColor: boolean) {
+  render(context: CanvasRenderingContext2D, palette: ColorArray, showColor: boolean) {
     const {
-      // altColorIndex,
-      // altColorOpacity,
+      altColorIndex,
+      altColorOpacity,
       isOpaque,
-      // co,
+      co,
       points: { pt0, pt1, pt2, pt3 },
       tickSpacing,
     } = this;
@@ -140,14 +140,16 @@ class FanBlade {
 
     // strokeWeight(1);
     // stroke(0, 63);
-    // fill(co);
-    // if (showColor && !isOpaque && palette.length) {
-    //   const c = palette[altColorIndex];
-    //   const altColor = color(red(c), green(c), blue(c), altColorOpacity);
-    //     fill(altColor);
-    // }
 
-    context.fillStyle = 'white';
+    if (showColor && !isOpaque && palette.length) {
+      const altColor = `${palette[altColorIndex]}${altColorOpacity}`;;
+      // const altColor = color(red(c), green(c), blue(c), altColorOpacity);
+      context.fillStyle = altColor;
+    } else {
+      context.fillStyle = co;
+    }
+
+    // context.fillStyle = 'white';
     context.beginPath();
     context.moveTo(pt0.x, pt0.y);
     context.lineTo(pt1.x, pt1.y);
