@@ -19,13 +19,13 @@ export type CurveSetPoints = {
 export type Pt = {
   x: number;
   y: number;
-}
+};
 
 export type Quad = {
-  pt0: Pt,
-  pt1: Pt,
-  pt2: Pt,
-  pt3: Pt,
+  pt0: Pt;
+  pt1: Pt;
+  pt2: Pt;
+  pt3: Pt;
 };
 
 export interface ControlsContextType {
@@ -40,3 +40,5 @@ export interface ControlsContextType {
   pathsChecked: boolean;
   setPathsChecked: (value: boolean) => void;
 }
+
+export type ColorArray = string[];

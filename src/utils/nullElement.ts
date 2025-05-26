@@ -1,10 +1,8 @@
 import { Pt } from '../types';
 import { mapTo } from './helpers';
 
-const durationFrames = 384;
-const radius = 80;
-// const diff = 0.5;
-// const balance = 0.5;
+const DURATION_FRAMES = 384; // TODO: Consider making this variable
+const radius = 80; // TODO: Consider making this variable
 class NullElement {
   point0: Pt;
   point1: Pt;
@@ -26,7 +24,7 @@ class NullElement {
     const PI = Math.PI;
     const { angleOffset, counter } = this;
     const c = frameNum + counter;
-    const unitAmount = (c % durationFrames) / durationFrames;
+    const unitAmount = (c % DURATION_FRAMES) / DURATION_FRAMES;
     const sinAmount = Math.sin(unitAmount * 2 * PI);
     const a = (0.5 * PI + angleOffset) * sinAmount;
     const len = mapTo(sinAmount, -1, 1, radius, radius * diff);

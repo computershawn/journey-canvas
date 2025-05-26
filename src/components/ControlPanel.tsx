@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FaArrowRotateRight,
   FaCloudArrowDown,
@@ -14,17 +14,21 @@ import {
   ButtonGroup,
   Flex,
   Heading,
+  HStack,
   IconButton,
   SliderValueChangeDetails,
   Text,
   VStack,
 } from '@chakra-ui/react';
 
-import { NUM_POINTS } from '../constants';
-import CompSelector from './CompSelector';
 import { useControls } from '../hooks/useControls';
+import { ColorArray } from '../types';
+import Chips from './Chips';
+import CompSelector from './CompSelector';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
+import { useFetchColors } from '../hooks/useFetchColors';
+import { getRandomIndex } from '../utils/helpers';
 
 const ControlPanel = ({
   onChangeComp,
@@ -35,6 +39,7 @@ const ControlPanel = ({
   const [colorChecked, setColorChecked] = useState(true);
   const [bgChecked, setBgChecked] = useState(true);
   const [playing, setPlaying] = useState(false);
+  const [palette, setPalette] = useState<ColorArray>([]);
   const {
     balance,
     setBalance,
@@ -48,8 +53,23 @@ const ControlPanel = ({
     setPathsChecked,
   } = useControls();
 
+  const { allColors } = useFetchColors();
+  const colorsLoaded = allColors.length > 0;
+
+  useEffect(() => {
+    if (colorsLoaded) {
+      const randomIndex = getRandomIndex(allColors.length);
+      const pal = allColors[randomIndex];
+      setPalette(pal);
+    }
+  }, [allColors, colorsLoaded]);
+
   const pickColors = () => {
-    console.log('pick colors');
+    if (colorsLoaded) {
+      const randomIndex = getRandomIndex(allColors.length);
+      const pal = allColors[randomIndex];
+      setPalette(pal);
+    }
   };
 
   const cycleBackground = () => {
@@ -66,9 +86,7 @@ const ControlPanel = ({
 
   const updateFrame = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
-    // console.log('go to frame number', value);
     setCycleFrame(value);
-    // goToFrameNumber(value);
   };
 
   const updateBalance = (details: SliderValueChangeDetails) => {
@@ -78,11 +96,10 @@ const ControlPanel = ({
 
   const updateDiff = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
-    // const num = mapTo(value, 0, 100, 1, 8);
-    // console.log('set diff to', num);
-    // setDiff(num);
     setDiff(value);
   };
+
+  const DURATION_FRAMES = 384; // TODO: Consider making this variable
 
   return (
     <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
@@ -98,7 +115,7 @@ const ControlPanel = ({
           label='Frame'
           wd={240}
           min={1}
-          max={384}
+          max={DURATION_FRAMES}
           onValueChange={updateFrame}
         />
         <Slider
@@ -145,7 +162,7 @@ const ControlPanel = ({
       <VStack w='full' gap={2} align='flex-start'>
         <Flex w='100%' align='center' justify='space-between'>
           <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>
-            Paths
+            Guide Paths
           </Text>
           <IconButton
             size='xs'
@@ -197,19 +214,23 @@ const ControlPanel = ({
         <Flex w='100%' align='center' justify='space-between'>
           <Switch
             size='sm'
-            checked={colorChecked}
+            checked={colorsLoaded && colorChecked}
             onCheckedChange={(e) => setColorChecked(e.checked)}
+            disabled={!colorsLoaded}
           >
             Color
           </Switch>
-          <IconButton
-            size='xs'
-            aria-label='Pick random palette'
-            disabled={!colorChecked}
-            onClick={pickColors}
-          >
-            <FaArrowRotateRight color='black' />
-          </IconButton>
+          <HStack>
+            {colorChecked && palette.length > 0 && <Chips palette={palette} />}
+            <IconButton
+              size='xs'
+              aria-label='Pick random palette'
+              disabled={!colorChecked || !colorsLoaded}
+              onClick={pickColors}
+            >
+              <FaArrowRotateRight color='black' />
+            </IconButton>
+          </HStack>
         </Flex>
 
         <Flex w='100%' align='center' justify='space-between'>

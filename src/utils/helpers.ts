@@ -34,8 +34,8 @@ export const getArcPoints = (arcAngle, numPoints, r, cx = 0, cy = 0) => {
 };
 
 // GET RANDOM INDEX OF ITEM IN ARRAY
-export const getRandomIndex = (len) => {
-  return Math.floor(Math.random(len));
+export const getRandomIndex = (len: number) => {
+  return Math.floor(Math.random() * len);
 };
 
 // JUMP TO A SPECIFIC FRAME NUMBER IN THE UNFURLY ANIMATION
@@ -149,12 +149,12 @@ export const uniqueID = () => {
   return id;
 };
 
-export const getColors = async () => {
-  const colorsUrl =
-    'https://raw.githubusercontent.com/Jam3/nice-color-palettes/master/1000.json';
-  const data = await fetch(colorsUrl).then((res) => res.json());
-  return data;
-};
+// export const getColors = async () => {
+//   const colorsUrl =
+//     'https://raw.githubusercontent.com/Jam3/nice-color-palettes/master/1000.json';
+//   const data = await fetch(colorsUrl).then((res) => res.json());
+//   return data;
+// };
 
 export const initPalette = async () => {
   const allCo = await getColors();
