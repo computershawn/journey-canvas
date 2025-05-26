@@ -143,7 +143,6 @@ class FanBlade {
 
     if (showColor && !isOpaque && palette.length) {
       const altColor = `${palette[altColorIndex]}${altColorOpacity}`;;
-      // const altColor = color(red(c), green(c), blue(c), altColorOpacity);
       context.fillStyle = altColor;
     } else {
       context.fillStyle = co;

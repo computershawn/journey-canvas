@@ -12,6 +12,8 @@ import { getRandomIndex } from './utils/helpers';
 function App() {
   const [compIndex, setCompIndex] = useState(0);
   const [palette, setPalette] = useState<ColorArray>([]);
+  const [bgChecked, setBgChecked] = useState(true);
+  const [backgroundIndex, setBackgroundIndex] = useState(1);
 
   const { allColors } = useFetchColors();
 
@@ -28,11 +30,14 @@ function App() {
       <HStack align='flex-start'>
         <ControlPanel
           allColors={allColors}
+          backgroundIndex={backgroundIndex}
+          bgChecked={bgChecked}
           onChangeComp={setCompIndex}
           palette={palette}
+          setBgChecked={setBgChecked}
           setPalette={setPalette}
         />
-        <Artboard compIndex={compIndex} palette={palette} backgroundIndex={1} />
+        <Artboard backgroundIndex={backgroundIndex} bgChecked={bgChecked} compIndex={compIndex} palette={palette} />
       </HStack>
     </ControlsProvider>
   );

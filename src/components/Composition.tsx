@@ -14,11 +14,15 @@ const NUM_COLORS = 5;
 const dpr = window.devicePixelRatio || 1;
 
 const Composition = ({
+  backgroundIndex,
   bezierSplinePoints,
   palette,
+  showBackground,
 }: {
+  backgroundIndex: number;
   bezierSplinePoints: Point[];
   palette: ColorArray;
+  showBackground: boolean;
 }) => {
   const { geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -147,10 +151,10 @@ const Composition = ({
         // Scale all drawing operations by the dpr, so you don't have to worry about the difference.
         ctx.scale(dpr, dpr);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#fff';
+        // ctx.fillStyle = '#fff';
+        ctx.fillStyle = (showBackground && palette[backgroundIndex]) || '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        fanBlades.forEach((fb, j) => {
-          // const co = palette[j];
+        fanBlades.forEach((fb) => {
           fb.render(ctx, palette, true);
         });
       }
@@ -160,7 +164,17 @@ const Composition = ({
       update();
       draw();
     }
-  }, [balance, cycleFrame, diff, fanBlades, geomChecked, nullElements, palette]);
+  }, [
+    backgroundIndex,
+    balance,
+    cycleFrame,
+    diff,
+    fanBlades,
+    geomChecked,
+    nullElements,
+    palette,
+    showBackground,
+  ]);
 
   if (!bezierSplinePoints?.length) {
     return null;

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  FaArrowRight,
   FaArrowRotateRight,
   FaCloudArrowDown,
   FaEye,
@@ -10,6 +11,7 @@ import {
 } from 'react-icons/fa6';
 
 import {
+  Box,
   Button,
   ButtonGroup,
   Flex,
@@ -31,18 +33,24 @@ import { getRandomIndex } from '../utils/helpers';
 
 const ControlPanel = ({
   allColors,
+  backgroundIndex,
+  bgChecked,
   onChangeComp,
   palette,
+  setBgChecked,
   setPalette,
 }: {
   allColors: ColorArray[];
+  backgroundIndex: number;
+  bgChecked: boolean;
   onChangeComp: (index: number) => void;
   palette: ColorArray;
+  setBgChecked: (checked: boolean) => void;
   setPalette: (palette: ColorArray) => void;
 }) => {
   const [parxChecked, setParxChecked] = useState(true);
   const [colorChecked, setColorChecked] = useState(true);
-  const [bgChecked, setBgChecked] = useState(true);
+  // const [bgChecked, setBgChecked] = useState(true);
   const [playing, setPlaying] = useState(false);
   const {
     balance,
@@ -231,19 +239,31 @@ const ControlPanel = ({
         <Flex w='100%' align='center' justify='space-between'>
           <Switch
             size='sm'
-            checked={bgChecked}
+            checked={colorsLoaded && bgChecked}
             onCheckedChange={(e) => setBgChecked(e.checked)}
+            disabled={!colorsLoaded}
           >
             Background
           </Switch>
-          <IconButton
-            size='xs'
-            aria-label='Pick random palette'
-            disabled={!bgChecked}
-            onClick={cycleBackground}
-          >
-            <FaArrowRotateRight color='black' />
-          </IconButton>
+          <HStack>
+            {bgChecked && palette.length > 0 && (
+              <Box
+                w={12}
+                h={6}
+                bg={palette[backgroundIndex]}
+                border='1px solid black'
+                borderRadius='sm'
+              />
+            )}
+            <IconButton
+              size='xs'
+              aria-label='Pick random palette'
+              disabled={!bgChecked || !colorsLoaded}
+              onClick={cycleBackground}
+            >
+              <FaArrowRight color='black' />
+            </IconButton>
+          </HStack>
         </Flex>
       </VStack>
 
