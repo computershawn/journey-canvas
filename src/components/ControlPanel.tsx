@@ -35,24 +35,27 @@ const ControlPanel = ({
   allColors,
   backgroundIndex,
   bgChecked,
+  colorChecked,
   onChangeComp,
   palette,
   setBackgroundIndex,
   setBgChecked,
+  setColorChecked,
   setPalette,
 }: {
   allColors: ColorArray[];
   backgroundIndex: number;
   bgChecked: boolean;
+  colorChecked?: boolean;
   onChangeComp: (index: number) => void;
   palette: ColorArray;
   setBackgroundIndex: (index: number) => void;
   setBgChecked: (checked: boolean) => void;
+  setColorChecked: (checked: boolean) => void;
   setPalette: (palette: ColorArray) => void;
 }) => {
   const [parxChecked, setParxChecked] = useState(true);
-  const [colorChecked, setColorChecked] = useState(true);
-  // const [bgChecked, setBgChecked] = useState(true);
+  // const [colorChecked, setColorChecked] = useState(true);
   const [playing, setPlaying] = useState(false);
   const {
     balance,

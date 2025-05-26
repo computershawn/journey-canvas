@@ -14,7 +14,12 @@ class FanBlade {
   tickSpacing: number;
   colorStartIndex: number;
 
-  constructor(_pts: Quad, _index: number, numColors: number, tickSpacing: number) {
+  constructor(
+    _pts: Quad,
+    _index: number,
+    numColors: number,
+    tickSpacing: number
+  ) {
     this.center = { x: 0, y: 0 };
     this.index = _index;
     this.isOpaque = Math.random() > 0.3;
@@ -24,7 +29,9 @@ class FanBlade {
     this.altColorIndex = Math.floor(Math.random() * numColors);
     const n0 = 143;
     const n1 = 247;
-    this.altColorOpacity = Math.round(n0 + Math.random() * (n1 - n0)).toString(16);
+    this.altColorOpacity = Math.round(n0 + Math.random() * (n1 - n0)).toString(
+      16
+    );
     this.tickSpacing = tickSpacing;
     this.colorStartIndex = Math.floor(Math.random() * MAX_TICKS);
   }
@@ -121,7 +128,11 @@ class FanBlade {
   //   }
   // }
 
-  render(context: CanvasRenderingContext2D, palette: ColorArray, showColor: boolean) {
+  render(
+    context: CanvasRenderingContext2D,
+    palette: ColorArray,
+    showColor: boolean
+  ) {
     const {
       altColorIndex,
       altColorOpacity,
@@ -141,15 +152,14 @@ class FanBlade {
     // strokeWeight(1);
     // stroke(0, 63);
 
-    if (showColor && !isOpaque && palette.length) {
-      const altColor = `${palette[altColorIndex]}${altColorOpacity}`;;
-      context.fillStyle = altColor;
-    } else {
-      context.fillStyle = co;
-    }
+    const coco =
+      showColor && !isOpaque && palette.length
+        ? `${palette[altColorIndex]}${altColorOpacity}`
+        : co;
+    context.fillStyle = coco;
 
     // context.fillStyle = 'white';
-    context.strokeStyle= '#000000';
+    context.strokeStyle = '#000000';
     context.beginPath();
     context.moveTo(pt0.x, pt0.y);
     context.lineTo(pt1.x, pt1.y);
@@ -159,16 +169,8 @@ class FanBlade {
     context.stroke();
     context.fill();
 
-    // noFill();
     // Render tick marks
     if (isOpaque && showColor) {
-      // if (palette.length) {
-      //   const altColor = `${palette[altColorIndex]}${altColorOpacity}`;;
-      //   context.strokeStyle = altColor;
-      // } else {
-      //   context.strokeStyle = '#000000';
-      // }
-
       const dx1 = pt0.x - pt1.x;
       const dy1 = pt0.y - pt1.y;
       const dx2 = pt2.x - pt3.x;
@@ -187,7 +189,7 @@ class FanBlade {
       // const numTicks = Math.round(len / (200 - 1) * (maxTicks - 1));
       const numTicks = Math.round(mapTo(len, 1, 200, 1, MAX_TICKS));
 
-      context.strokeStyle= '#ff0000';
+      context.strokeStyle = `${palette[altColorIndex]}${altColorOpacity}`;
       for (let j = 1; j < numTicks; j++) {
         const b = j / numTicks;
         // if (palette.length && tickSequence.length) {

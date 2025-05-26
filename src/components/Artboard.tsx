@@ -8,11 +8,13 @@ import Composition from './Composition';
 const Artboard = ({
   backgroundIndex,
   bgChecked,
+  colorChecked,
   compIndex,
   palette,
 }: {
   backgroundIndex: number;
   bgChecked: boolean;
+  colorChecked: boolean;
   compIndex: number;
   palette: ColorArray;
 }) => {
@@ -74,6 +76,7 @@ const Artboard = ({
     <>
       <Composition
         backgroundIndex={backgroundIndex}
+        renderColors={colorChecked}
         showBackground={bgChecked}
         bezierSplinePoints={bezierSplinePoints}
         palette={palette}

@@ -17,11 +17,13 @@ const Composition = ({
   backgroundIndex,
   bezierSplinePoints,
   palette,
+  renderColors,
   showBackground,
 }: {
   backgroundIndex: number;
   bezierSplinePoints: Point[];
   palette: ColorArray;
+  renderColors: boolean;
   showBackground: boolean;
 }) => {
   const { geomChecked } = useControls();
@@ -155,7 +157,7 @@ const Composition = ({
         ctx.fillStyle = (showBackground && palette[backgroundIndex]) || '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         fanBlades.forEach((fb) => {
-          fb.render(ctx, palette, true);
+          fb.render(ctx, palette, renderColors);
         });
       }
     };
@@ -173,6 +175,7 @@ const Composition = ({
     geomChecked,
     nullElements,
     palette,
+    renderColors,
     showBackground,
   ]);
 
