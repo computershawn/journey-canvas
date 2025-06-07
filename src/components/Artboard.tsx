@@ -4,7 +4,8 @@ import { NUM_POINTS } from '../constants';
 import { ColorArray, CtrlPoint } from '../types';
 import BeziControls from './BeziControls';
 import Composition from './Composition';
-import Temp from './Temp';
+// import Temp1 from './Temp1';
+import Temp2 from './Temp2';
 
 const Artboard = ({
   backgroundIndex,
@@ -73,7 +74,8 @@ const Artboard = ({
     return [];
   }, [beziCtrlPts]);
 
-  return <Temp />
+  // return <Temp1 />
+  return <Temp2 />
 
   return (
     <>
