@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 function Temp2() {
   const [t, setT] = useState(0);
   const animationFrameId = useRef<null | number>(null);
-  const isPlayingRef = useRef<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const animate = () => {
     setT((prevT) => {
@@ -12,11 +12,8 @@ function Temp2() {
 
       return prevT + 1;
     });
-    animationFrameId.current = requestAnimationFrame(animate);
-  };
 
-  const play = () => {
-    animate();
+    animationFrameId.current = requestAnimationFrame(animate);
   };
 
   const pause = () => {
@@ -26,24 +23,30 @@ function Temp2() {
   };
 
   const handleClick = () => {
-    if (isPlayingRef.current) {
+    if (isPlaying) {
       pause();
     } else {
-      play();
+      animate();
     }
-    isPlayingRef.current = !isPlayingRef.current;
-  };
 
-  console.log('isPlayingRef.current', isPlayingRef.current);
+    setIsPlaying((prev) => !prev);
+    // console.log('isPlaying', !isPlaying);
+  };
 
   return (
     <Box w={800} h={400}>
-      <Box m={4} w='32px' h='32px' bg='red' transform={`translateX(${t}px)`} />
+      <Ting t={t} />
       <Button variant='outline' onClick={handleClick}>
-        do it
+        {isPlaying ? 'Pause' : 'Play'}
       </Button>
     </Box>
   );
 }
 
 export default Temp2;
+
+const Ting = ({ t }: { t: number }) => {
+  return (
+    <Box m={4} w='32px' h='32px' bg='red' transform={`translateX(${t}px)`} />
+  );
+};
