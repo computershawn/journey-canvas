@@ -1,36 +1,15 @@
 import { Box, Button } from '@chakra-ui/react';
-import { useState, useRef } from 'react';
+import { useAnimationLoop } from '../hooks/useAnimationLoop';
 
 function Temp2() {
-  const [t, setT] = useState(0);
-  const animationFrameId = useRef<null | number>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const animate = () => {
-    setT((prevT) => {
-      if (prevT > 200) return 0;
-
-      return prevT + 1;
-    });
-
-    animationFrameId.current = requestAnimationFrame(animate);
-  };
-
-  const pause = () => {
-    if (typeof animationFrameId.current === 'number') {
-      cancelAnimationFrame(animationFrameId.current);
-    }
-  };
+  const { t, isPlaying, play, pause } = useAnimationLoop(200);
 
   const handleClick = () => {
     if (isPlaying) {
       pause();
     } else {
-      animate();
+      play();
     }
-
-    setIsPlaying((prev) => !prev);
-    // console.log('isPlaying', !isPlaying);
   };
 
   return (
