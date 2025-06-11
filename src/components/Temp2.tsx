@@ -1,6 +1,6 @@
 import { Box, Button } from '@chakra-ui/react';
 
-import { useTimeLoop } from '../hooks/useAnimationLoop';
+import { useTimeLoop } from '../hooks/useTimeLoop';
 
 const pad = 16;
 const wd = 32;
