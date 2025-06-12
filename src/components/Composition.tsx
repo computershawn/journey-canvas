@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
+import { FaPause, FaPlay } from 'react-icons/fa6';
 
 import { Box, Flex, IconButton, VStack } from '@chakra-ui/react';
 
@@ -9,7 +10,6 @@ import { ColorArray, Point } from '../types';
 import FanBlade from '../utils/fanBlade';
 import { mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
-import { FaPause, FaPlay } from 'react-icons/fa6';
 
 const scale = 1;
 const NUM_COLORS = 5;
@@ -179,9 +179,9 @@ const Composition = ({
           // w='full'
           w={`${btnWidth}px`}
         >
-          {isPlaying ? <FaPlay color='green' /> : <FaPause color='black' />}
+          {isPlaying ? <FaPlay color='#2bb79b' /> : <FaPause color='black' />}
         </IconButton>
-        <Box h='1px' w={`${value * progressWidth}px`} bg='#a2ffec' />
+        <Box h='1px' style={{ width: `${value * progressWidth}px`}} bg='#a2ffec' />
       </Flex>
     </VStack>
   ) : (
