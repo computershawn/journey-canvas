@@ -154,20 +154,34 @@ const Composition = ({
     return null;
   }
 
+  const pad = 4;
+  const extraPadding = 8;
+  const gap = 8;
+  const btnWidth = 48;
+  const progressWidth = 1280 - btnWidth - pad - pad - gap - extraPadding;
+
   return geomChecked ? (
-    <VStack align="flex-start">
-      <canvas id='composition' ref={canvasRef} style={canvasStyle} />
-      <Flex w="full" bg="#444" p={1} alignItems="center" gap={1} borderRadius="sm">
+    <VStack align='flex-start'>
+      <canvas ref={canvasRef} style={canvasStyle} />
+      <Flex
+        w={1280}
+        bg='#292929'
+        outline="1px solid #404040"
+        p={`${pad}px`}
+        alignItems='center'
+        gap={`${gap}px`}
+        borderRadius='sm'
+      >
         <IconButton
           size='xs'
           aria-label='Play or pause animation'
           onClick={() => (isPlaying ? pause() : play())}
           // w='full'
-          w="3rem"
+          w={`${btnWidth}px`}
         >
           {isPlaying ? <FaPlay color='green' /> : <FaPause color='black' />}
         </IconButton>
-        <Box h="1px" w={`${value * 960}px`} bg="white" />
+        <Box h='1px' w={`${value * progressWidth}px`} bg='#a2ffec' />
       </Flex>
     </VStack>
   ) : (
