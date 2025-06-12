@@ -16,6 +16,15 @@ const NUM_COLORS = 5;
 // Get the device pixel ratio, falling back to 1.
 const dpr = window.devicePixelRatio || 1;
 
+const canvasStyle: React.CSSProperties = {
+  position: 'relative',
+  pointerEvents: 'none',
+  transform: 'scale: (0.5)',
+  width: `${CANV_WD}px`,
+  height: `${CANV_HT}px`,
+  marginTop: '8px',
+};
+
 const Composition = ({
   backgroundIndex,
   bezierSplinePoints,
@@ -146,18 +155,7 @@ const Composition = ({
 
   return geomChecked ? (
     <>
-      <canvas
-        id='composition'
-        ref={canvasRef}
-        style={{
-          position: 'relative',
-          pointerEvents: 'none',
-          transform: 'scale: (0.5)',
-          width: `${CANV_WD}px`,
-          height: `${CANV_HT}px`,
-          marginTop: '8px',
-        }}
-      />
+      <canvas id='composition' ref={canvasRef} style={canvasStyle} />
       <Button variant='outline' onClick={() => (isPlaying ? pause() : play())}>
         {isPlaying ? 'Pause' : 'Play'}
       </Button>
