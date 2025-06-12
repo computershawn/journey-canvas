@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Flex, IconButton, VStack } from '@chakra-ui/react';
 
 import { CANV_HT, CANV_WD, DURATION_FRAMES } from '../constants';
 import { useControls } from '../hooks/useControls';
@@ -9,6 +9,7 @@ import { ColorArray, Point } from '../types';
 import FanBlade from '../utils/fanBlade';
 import { mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
+import { FaPause, FaPlay } from 'react-icons/fa6';
 
 const scale = 1;
 const NUM_COLORS = 5;
@@ -154,12 +155,21 @@ const Composition = ({
   }
 
   return geomChecked ? (
-    <>
+    <VStack align="flex-start">
       <canvas id='composition' ref={canvasRef} style={canvasStyle} />
-      <Button variant='outline' onClick={() => (isPlaying ? pause() : play())}>
-        {isPlaying ? 'Pause' : 'Play'}
-      </Button>
-    </>
+      <Flex w="full" bg="#444" p={1} alignItems="center" gap={1} borderRadius="sm">
+        <IconButton
+          size='xs'
+          aria-label='Play or pause animation'
+          onClick={() => (isPlaying ? pause() : play())}
+          // w='full'
+          w="3rem"
+        >
+          {isPlaying ? <FaPlay color='green' /> : <FaPause color='black' />}
+        </IconButton>
+        <Box h="1px" w={`${value * 960}px`} bg="white" />
+      </Flex>
+    </VStack>
   ) : (
     <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
   );
