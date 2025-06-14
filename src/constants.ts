@@ -11,3 +11,5 @@ export const NUM_POINTS = 325;
 
 // TODO: Consider making this user-controllable
 export const DURATION_FRAMES = 384;
+
+export const MINTY = '#a2ffec';

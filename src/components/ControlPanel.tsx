@@ -6,8 +6,8 @@ import {
   FaEye,
   FaEyeSlash,
   FaFloppyDisk,
-  FaPause,
-  FaPlay,
+  // FaPause,
+  // FaPlay,
 } from 'react-icons/fa6';
 
 import {
@@ -23,7 +23,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { DURATION_FRAMES } from '../constants';
+// import { DURATION_FRAMES } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { ColorArray } from '../types';
 import { getRandomIndex } from '../utils/helpers';
@@ -57,12 +57,12 @@ const ControlPanel = ({
 }) => {
   const [parxChecked, setParxChecked] = useState(true);
   // const [colorChecked, setColorChecked] = useState(true);
-  const [playing, setPlaying] = useState(false);
+  // const [playing, setPlaying] = useState(false);
   const {
     balance,
     setBalance,
-    cycleFrame,
-    setCycleFrame,
+    // cycleFrame,
+    // setCycleFrame,
     diff,
     setDiff,
     geomChecked,
@@ -95,10 +95,10 @@ const ControlPanel = ({
     console.log('export current comp as image');
   };
 
-  const updateFrame = (details: SliderValueChangeDetails) => {
-    const value = details.value[0];
-    setCycleFrame(value);
-  };
+  // const updateFrame = (details: SliderValueChangeDetails) => {
+  //   const value = details.value[0];
+  //   setCycleFrame(value);
+  // };
 
   const updateBalance = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
@@ -118,7 +118,7 @@ const ControlPanel = ({
       <CompSelector onChangeComp={onChangeComp} />
 
       <VStack w='full' gap={4} align='flex-start'>
-        <Slider
+        {/* <Slider
           size='sm'
           defaultValue={cycleFrame}
           label='Frame'
@@ -133,7 +133,7 @@ const ControlPanel = ({
           w='full'
         >
           {playing ? <FaPlay color='green' /> : <FaPause color='black' />}
-        </IconButton>
+        </IconButton> */}
         <Slider
           size='sm'
           defaultValue={balance}

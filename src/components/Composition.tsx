@@ -1,15 +1,22 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FaPause, FaPlay } from 'react-icons/fa6';
 
-import { Box, Flex, IconButton, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  IconButton,
+  SliderValueChangeDetails,
+  VStack,
+} from '@chakra-ui/react';
 
-import { CANV_HT, CANV_WD, DURATION_FRAMES } from '../constants';
+import { CANV_HT, CANV_WD, DURATION_FRAMES, MINTY } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { useTimeLoop } from '../hooks/useTimeLoop';
 import { ColorArray, Point } from '../types';
 import FanBlade from '../utils/fanBlade';
 import { mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
+import Slider from './ui/slider';
 
 const scale = 1;
 const NUM_COLORS = 5;
@@ -41,6 +48,8 @@ const Composition = ({
 }) => {
   const { geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [manualFrame, setManualFrame] = useState(1);
+
   const nullElements = useMemo(() => {
     const temp = [];
     if (bezierSplinePoints?.length) {
@@ -77,7 +86,7 @@ const Composition = ({
   const { balance, diff } = useControls();
 
   const { isPlaying, play, pause, value } = useTimeLoop(15000);
-  const cycleFrame = Math.round(value * DURATION_FRAMES);
+  const cycleFrame = 1 + Math.round(value * (DURATION_FRAMES - 1));
 
   useEffect(() => {
     const update = () => {
@@ -85,7 +94,8 @@ const Composition = ({
       const difference = mapTo(diff, 0, 100, 1, 8);
 
       nullElements.forEach((nE) => {
-        nE.update(cycleFrame, balance / 100, difference);
+        const frame = isPlaying ? cycleFrame : manualFrame;
+        nE.update(frame, balance / 100, difference);
       });
 
       for (let j = 0; j < nullElements.length - 1; j++) {
@@ -144,6 +154,8 @@ const Composition = ({
     diff,
     fanBlades,
     geomChecked,
+    isPlaying,
+    manualFrame,
     nullElements,
     palette,
     renderColors,
@@ -159,29 +171,82 @@ const Composition = ({
   const gap = 8;
   const btnWidth = 48;
   const progressWidth = 1280 - btnWidth - pad - pad - gap - extraPadding;
+  const trackHt = 6;
+  const barHt = 2.5;
+  const top = `${(barHt * 16) / 2 - 3}px`;
+  const left = `${pad + btnWidth + gap}px`;
+
+  const updateFrame = (details: SliderValueChangeDetails) => {
+    const value = details.value[0];
+    setManualFrame(value);
+  };
 
   return geomChecked ? (
     <VStack align='flex-start'>
       <canvas ref={canvasRef} style={canvasStyle} />
       <Flex
         w={1280}
+        h='2.5rem'
         bg='#292929'
-        outline="1px solid #404040"
+        outline='1px solid #404040'
         p={`${pad}px`}
         alignItems='center'
         gap={`${gap}px`}
         borderRadius='sm'
+        position='relative'
       >
         <IconButton
           size='xs'
           aria-label='Play or pause animation'
-          onClick={() => (isPlaying ? pause() : play())}
-          // w='full'
+          onClick={() => {
+            if (isPlaying) {
+              pause();
+              setManualFrame(cycleFrame);
+            } else {
+              play();
+            }
+          }}
           w={`${btnWidth}px`}
         >
           {isPlaying ? <FaPlay color='#2bb79b' /> : <FaPause color='black' />}
         </IconButton>
-        <Box h='1px' style={{ width: `${value * progressWidth}px`}} bg='#a2ffec' />
+        {isPlaying ? (
+          <Flex w='full' h='100%' onClick={pause}>
+            <Box
+              h={`${trackHt}px`}
+              w={progressWidth}
+              bg='#111'
+              borderRadius='full'
+              position='absolute'
+              top={top}
+              left={left}
+            />
+            <Box
+              h={`${trackHt}px`}
+              style={{ width: `${value * progressWidth}px` }}
+              bg={MINTY}
+              borderRadius='full'
+              position='absolute'
+              top={top}
+              left={left}
+              zIndex={1}
+            />
+          </Flex>
+        ) : (
+          // See if it's possible to show a slider component here when animation is paused
+          <Flex w='full' h='100%' align='center' onClick={pause}>
+            <Slider
+              size='sm'
+              defaultValue={isPlaying ? cycleFrame : manualFrame}
+              // label='Frame'
+              min={1}
+              max={DURATION_FRAMES}
+              onValueChange={updateFrame}
+              showValueText={false}
+              isAnimProgressBar
+            />
+          </Flex>
+        )}
       </Flex>
     </VStack>
   ) : (
