@@ -7,6 +7,10 @@ export function useTimeLoop(duration: number) {
   const zero = useRef(0);
   const lastValue = useRef(0); // Track the last value
 
+  const resetLastValue = (v: number) => {
+    lastValue.current = v;
+  };
+
   const pause = () => {
     if (isPlaying && typeof animationFrameId.current === 'number') {
       setIsPlaying(false);
@@ -42,9 +46,11 @@ export function useTimeLoop(duration: number) {
   }, []);
 
   return {
-    value,
     isPlaying,
-    play,
     pause,
+    play,
+    resetLastValue,
+    setValue,
+    value,
   };
 }

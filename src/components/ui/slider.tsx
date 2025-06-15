@@ -6,24 +6,28 @@ import { MINTY } from '../../constants';
 
 type SliderProps = {
   defaultValue?: number;
-  label?: string;
-  size?: 'sm' | 'md' | 'lg';
-  min?: number;
-  max?: number;
-  onValueChange?: (details: SliderValueChangeDetails) => void;
-  showValueText?: boolean;
   isAnimProgressBar?: boolean;
+  label?: string;
+  max?: number;
+  min?: number;
+  onValueChange?: (details: SliderValueChangeDetails) => void;
+  onValueChangeEnd?: (details: SliderValueChangeDetails) => void;
+  showValueText?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  value?: number;
 };
 
 const Slider = ({
   defaultValue = 50,
-  label,
-  size = 'md',
-  min,
-  max,
-  onValueChange,
-  showValueText = true,
   isAnimProgressBar = false,
+  label,
+  max,
+  min,
+  onValueChange,
+  onValueChangeEnd,
+  showValueText = true,
+  size = 'md',
+  value,
 }: SliderProps) => {
   const minValue = min || 0;
   const maxValue = max || 100;
@@ -35,7 +39,9 @@ const Slider = ({
       min={minValue}
       max={maxValue}
       size={size}
+      value={value ? [value] : undefined}
       onValueChange={onValueChange}
+      onValueChangeEnd={onValueChangeEnd}
     >
       {!!label && <ChakraSlider.Label>{label}</ChakraSlider.Label>}
       {showValueText && <ChakraSlider.ValueText />}

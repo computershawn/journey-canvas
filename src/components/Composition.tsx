@@ -85,7 +85,8 @@ const Composition = ({
   // const { balance, cycleFrame, diff } = useControls();
   const { balance, diff } = useControls();
 
-  const { isPlaying, play, pause, value } = useTimeLoop(15000);
+  const { isPlaying, pause, play, resetLastValue, setValue, value } =
+    useTimeLoop(15000);
   const cycleFrame = 1 + Math.round(value * (DURATION_FRAMES - 1));
 
   useEffect(() => {
@@ -181,6 +182,13 @@ const Composition = ({
     setManualFrame(value);
   };
 
+  const handleValueChangeEnd = (details: SliderValueChangeDetails) => {
+    const value = details.value[0];
+    const v = mapTo(value, 1, DURATION_FRAMES, 0, 1);
+    resetLastValue(v);
+    setValue(v);
+  };
+
   return geomChecked ? (
     <VStack align='flex-start'>
       <canvas ref={canvasRef} style={canvasStyle} />
@@ -236,14 +244,15 @@ const Composition = ({
           // See if it's possible to show a slider component here when animation is paused
           <Flex w='full' h='100%' align='center' onClick={pause}>
             <Slider
-              size='sm'
-              defaultValue={isPlaying ? cycleFrame : manualFrame}
-              // label='Frame'
-              min={1}
-              max={DURATION_FRAMES}
-              onValueChange={updateFrame}
-              showValueText={false}
+              defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
               isAnimProgressBar
+              max={DURATION_FRAMES}
+              min={1}
+              onValueChange={updateFrame}
+              onValueChangeEnd={handleValueChangeEnd}
+              showValueText={false}
+              size='sm'
+              value={manualFrame}
             />
           </Flex>
         )}
