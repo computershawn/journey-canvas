@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import {
   FaArrowRotateRight,
-  FaCloudArrowDown,
   FaEye,
   FaEyeSlash,
   FaFloppyDisk,
@@ -10,7 +9,6 @@ import {
 
 import {
   Button,
-  ButtonGroup,
   Flex,
   Heading,
   HStack,
@@ -76,10 +74,6 @@ const ControlPanel = ({
 
   const saveComp = () => {
     console.log('save current composition to storage');
-  };
-
-  const exportImage = () => {
-    console.log('export current comp as image');
   };
 
   const updateBalance = (details: SliderValueChangeDetails) => {
@@ -211,14 +205,15 @@ const ControlPanel = ({
         </Flex>
       </VStack>
 
-      <ButtonGroup size='xs' variant='outline' w='full' pt={4} mt='auto'>
-        <Button aria-label='Save composition' flexGrow={1} onClick={saveComp}>
-          <FaFloppyDisk color='black' /> Save
-        </Button>
-        <Button aria-label='Export as JPEG' flexGrow={1} onClick={exportImage}>
-          <FaCloudArrowDown color='black' /> Export
-        </Button>
-      </ButtonGroup>
+      <Button
+        variant='outline'
+        w='full'
+        mt='auto'
+        aria-label='Save composition'
+        onClick={saveComp}
+      >
+        <FaFloppyDisk color='black' /> Save Composition
+      </Button>
     </VStack>
   );
 };
