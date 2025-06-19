@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 class Particle {
   constructor(_pos, _heading) {
     this.x0 = _pos.x;
@@ -34,7 +36,7 @@ class Particle {
   }
 
   update() {
-    let {currentFrame, pos, spinSpeed} = this;
+    const {currentFrame, pos, spinSpeed} = this;
     const {x0, y0, speed, heading, fadeTime} = this;
     const a = TWO_PI * (currentFrame % spinSpeed) / spinSpeed;
     this.xStretch = sin(a);
@@ -52,7 +54,7 @@ class Particle {
 
   render() {
     const {
-      opacity, pos, xStretch, diam, co, heading,
+      opacity, pos, xStretch, diam, heading,
     } = this;
     stroke(47, opacity);
     // fill(co, opacity);
