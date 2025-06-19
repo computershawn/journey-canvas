@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+// TODO: Add typings to this file
 
 // EASING FUNCTIONS
 export const easeInCubic = (t) => {

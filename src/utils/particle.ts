@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+// TODO: Add typings to this file or delete this file if not needed
 class Particle {
   constructor(_pos, _heading) {
     this.x0 = _pos.x;

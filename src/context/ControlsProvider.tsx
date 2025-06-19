@@ -4,10 +4,18 @@ import { getAllComps, getComp } from '../utils/helpers';
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
   const comps = getAllComps();
-  const currentComp = getComp(comps[0]);
-  const storedBalance = parseInt(currentComp.storedBalance);
-  const storedCycleFrame = parseInt(currentComp.storedCycleFrame);
-  const storedDiff = parseInt(currentComp.storedDiff);
+  const isComp = comps.length > 0;
+
+  let storedBalance = 50;
+  let storedCycleFrame = 1;
+  let storedDiff = 50;
+
+  if (isComp) {
+    const currentComp = getComp(comps[0]);
+    storedBalance = parseInt(currentComp.storedBalance);
+    storedCycleFrame = parseInt(currentComp.storedCycleFrame);
+    storedDiff = parseInt(currentComp.storedDiff);
+  }
 
   const [balance, setBalance] = useState(storedBalance);
   const [cycleFrame, setCycleFrame] = useState(storedCycleFrame);

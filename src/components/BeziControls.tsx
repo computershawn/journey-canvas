@@ -95,17 +95,36 @@ const BeziControls = ({
   }, []);
 
   useEffect(() => {
+    // TODO: This can be more concisely written
     const comps = getAllComps();
-    const csp: CurveSetPoints = comps[compIndex].curveSetPoints;
-    const temp: CtrlPoint[] = [
-      { x: csp.pt1.x, y: csp.pt1.y, child: [1] },
-      { x: csp.pt4.x, y: csp.pt4.y, child: null },
-      { x: csp.pt5.x, y: csp.pt5.y, child: null },
-      { x: csp.pt2.x, y: csp.pt2.y, child: [2, -1] },
-      { x: csp.pt6.x, y: csp.pt6.y, child: null },
-      { x: csp.pt3.x, y: csp.pt3.y, child: [4] },
-    ];
-    setBeziCtrlPts(temp);
+    if (comps.length) {
+      const csp: CurveSetPoints = comps[compIndex].curveSetPoints;
+      const temp: CtrlPoint[] = [
+        { x: csp.pt1.x, y: csp.pt1.y, child: [1] },
+        { x: csp.pt4.x, y: csp.pt4.y, child: null },
+        { x: csp.pt5.x, y: csp.pt5.y, child: null },
+        { x: csp.pt2.x, y: csp.pt2.y, child: [2, -1] },
+        { x: csp.pt6.x, y: csp.pt6.y, child: null },
+        { x: csp.pt3.x, y: csp.pt3.y, child: [4] },
+      ];
+      setBeziCtrlPts(temp);
+    } else {
+      const d = [];
+      for (let i = 0; i < 6; i++) {
+        d.push({
+          x: Math.random() * CANV_WD,
+          y: Math.random() * CANV_HT,
+        });
+      }
+      setBeziCtrlPts([
+        { x: d[0].x, y: d[0].y, child: [1] },
+        { x: d[1].x, y: d[1].y, child: null },
+        { x: d[2].x, y: d[2].y, child: null },
+        { x: d[3].x, y: d[3].y, child: [2, -1] },
+        { x: d[4].x, y: d[4].y, child: null },
+        { x: d[5].x, y: d[5].y, child: [4] },
+      ]);
+    }
   }, [compIndex, setBeziCtrlPts]);
 
   useEffect(() => {

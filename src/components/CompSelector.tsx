@@ -13,7 +13,7 @@ const CompSelector = ({
 }) => {
   const numComps = getAllComps().length;
   const [value, setValue] = useState<string[]>([`${PREFIX} 1`]);
-  const frameworks = useMemo(() => {
+  const compList = useMemo(() => {
     const items = Array(numComps)
       .fill(0)
       .map((_, i) => ({ label: `comp ${i + 1}`, value: `comp ${i + 1}` }));
@@ -24,7 +24,7 @@ const CompSelector = ({
   }, [numComps]);
 
   const handleValueChange = (e: { value: string[] }) => {
-    const index = frameworks.items.findIndex(
+    const index = compList.items.findIndex(
       (item) => item.value === e.value[0]
     );
     setValue(e.value);
@@ -33,17 +33,18 @@ const CompSelector = ({
 
   return (
     <Select.Root
-      collection={frameworks}
+      collection={compList}
       size='xs'
       width='full'
       value={value}
       onValueChange={handleValueChange}
+      disabled={numComps === 0}
     >
       <Select.HiddenSelect />
       <Select.Label>Saved Comps</Select.Label>
       <Select.Control>
         <Select.Trigger>
-          <Select.ValueText placeholder='Select framework' />
+          <Select.ValueText placeholder='Select composition' />
         </Select.Trigger>
         <Select.IndicatorGroup>
           <Select.Indicator />
@@ -52,9 +53,9 @@ const CompSelector = ({
       <Portal>
         <Select.Positioner>
           <Select.Content>
-            {frameworks.items.map((framework) => (
-              <Select.Item item={framework} key={framework.value}>
-                {framework.label}
+            {compList.items.map((comp) => (
+              <Select.Item item={comp} key={comp.value}>
+                {comp.label}
                 <Select.ItemIndicator />
               </Select.Item>
             ))}
