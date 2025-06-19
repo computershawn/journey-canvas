@@ -86,7 +86,6 @@ const Artboard = ({
         points={beziCtrlPts}
         setBeziCtrlPts={setBeziCtrlPts}
       />
-      {/* <BeziControls wd={1280} ht={720} /> */}
     </>
   );
 };
