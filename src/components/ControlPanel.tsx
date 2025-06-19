@@ -1,17 +1,14 @@
 import { useState } from 'react';
+
 import {
-  FaArrowRight,
   FaArrowRotateRight,
   FaCloudArrowDown,
   FaEye,
   FaEyeSlash,
   FaFloppyDisk,
-  // FaPause,
-  // FaPlay,
 } from 'react-icons/fa6';
 
 import {
-  Box,
   Button,
   ButtonGroup,
   Flex,
@@ -23,10 +20,10 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-// import { DURATION_FRAMES } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { ColorArray } from '../types';
 import { getRandomIndex } from '../utils/helpers';
+import BgColorSelect from './BgColorSelect';
 import Chips from './Chips';
 import CompSelector from './CompSelector';
 import Slider from './ui/slider';
@@ -56,13 +53,9 @@ const ControlPanel = ({
   setPalette: (palette: ColorArray) => void;
 }) => {
   const [parxChecked, setParxChecked] = useState(true);
-  // const [colorChecked, setColorChecked] = useState(true);
-  // const [playing, setPlaying] = useState(false);
   const {
     balance,
     setBalance,
-    // cycleFrame,
-    // setCycleFrame,
     diff,
     setDiff,
     geomChecked,
@@ -81,12 +74,6 @@ const ControlPanel = ({
     }
   };
 
-  const cycleBackground = () => {
-    const index =
-      backgroundIndex < palette.length - 1 ? backgroundIndex + 1 : 0;
-    setBackgroundIndex(index);
-  };
-
   const saveComp = () => {
     console.log('save current composition to storage');
   };
@@ -94,11 +81,6 @@ const ControlPanel = ({
   const exportImage = () => {
     console.log('export current comp as image');
   };
-
-  // const updateFrame = (details: SliderValueChangeDetails) => {
-  //   const value = details.value[0];
-  //   setCycleFrame(value);
-  // };
 
   const updateBalance = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
@@ -118,22 +100,6 @@ const ControlPanel = ({
       <CompSelector onChangeComp={onChangeComp} />
 
       <VStack w='full' gap={4} align='flex-start'>
-        {/* <Slider
-          size='sm'
-          defaultValue={cycleFrame}
-          label='Frame'
-          min={1}
-          max={DURATION_FRAMES}
-          onValueChange={updateFrame}
-        />
-        <IconButton
-          size='xs'
-          aria-label='Play or pause animation'
-          onClick={() => setPlaying(!playing)}
-          w='full'
-        >
-          {playing ? <FaPlay color='green' /> : <FaPause color='black' />}
-        </IconButton> */}
         <Slider
           size='sm'
           defaultValue={balance}
@@ -146,35 +112,10 @@ const ControlPanel = ({
           label='Difference'
           onValueChange={updateDiff}
         />
-
-        {/* <Button
-          variant='outline'
-          aria-label='Play animation'
-          w='full'
-          onClick={() => setPlaying(!playing)}
-        >
-          {playing ? (
-            <>
-              <FaPlay color='green' /> Play
-            </>
-          ) : (
-            <>
-              <FaPlay color='black' /> Pause
-            </>
-          )}
-        </Button> */}
-        {/* <IconButton
-          size='xs'
-          aria-label='Play or pause animation'
-          onClick={() => setPlaying(!playing)}
-          w='full'
-        >
-          {playing ? <FaPlay color='green' /> : <FaPause color='black' />}
-        </IconButton> */}
       </VStack>
 
       <VStack w='full' gap={2} align='flex-start'>
-        <Flex w='100%' align='center' justify='space-between'>
+        <Flex w='100%' h={8} align='center' justify='space-between'>
           <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>
             Guide Paths
           </Text>
@@ -191,7 +132,7 @@ const ControlPanel = ({
           </IconButton>
         </Flex>
 
-        <Flex w='100%' align='center' justify='space-between'>
+        <Flex w='100%' h={8} align='center' justify='space-between'>
           <Text textStyle='sm' opacity={geomChecked ? 1 : '0.625'}>
             Geometry
           </Text>
@@ -208,7 +149,7 @@ const ControlPanel = ({
           </IconButton>
         </Flex>
 
-        <Flex w='100%' align='center' justify='space-between'>
+        <Flex w='100%' h={8} align='center' justify='space-between'>
           <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
             Particles
           </Text>
@@ -225,58 +166,48 @@ const ControlPanel = ({
           </IconButton>
         </Flex>
 
-        <Flex w='100%' align='center' justify='space-between'>
+        <Flex w='100%' h={8} align='center' justify='space-between'>
           <Switch
             size='sm'
             checked={colorsLoaded && colorChecked}
             onCheckedChange={(e) => setColorChecked(e.checked)}
             disabled={!colorsLoaded}
+            opacity={colorChecked ? 1 : '0.625'}
           >
             Colors
           </Switch>
-          <HStack>
-            {colorChecked && palette.length > 0 && (
-              <Chips palette={palette} selectedIndex={backgroundIndex} />
-            )}
-            <IconButton
-              size='xs'
-              aria-label='Pick random palette'
-              disabled={!colorChecked || !colorsLoaded}
-              onClick={pickColors}
-            >
-              <FaArrowRotateRight color='black' />
-            </IconButton>
-          </HStack>
+          {colorChecked && palette.length > 0 && (
+            <HStack>
+              <Chips palette={palette} />
+              <IconButton
+                size='xs'
+                aria-label='Pick random palette'
+                disabled={!colorChecked || !colorsLoaded}
+                onClick={pickColors}
+              >
+                <FaArrowRotateRight color='black' />
+              </IconButton>
+            </HStack>
+          )}
         </Flex>
 
-        <Flex w='100%' align='center' justify='space-between'>
+        <Flex w='100%' h={8} align='center' justify='space-between'>
           <Switch
             size='sm'
             checked={colorsLoaded && bgChecked}
             onCheckedChange={(e) => setBgChecked(e.checked)}
             disabled={!colorsLoaded || !colorChecked}
+            opacity={colorChecked && !bgChecked ? '0.625' : '1'}
           >
             Background
           </Switch>
-          <HStack>
-            {colorChecked && bgChecked && palette.length > 0 && (
-              <Box
-                w={12}
-                h={6}
-                bg={palette[backgroundIndex]}
-                border='1px solid black'
-                borderRadius='sm'
-              />
-            )}
-            <IconButton
-              size='xs'
-              aria-label='Pick random palette'
-              disabled={!colorChecked || !bgChecked || !colorsLoaded}
-              onClick={cycleBackground}
-            >
-              <FaArrowRight color='black' />
-            </IconButton>
-          </HStack>
+          {colorChecked && bgChecked && palette.length > 0 && (
+            <BgColorSelect
+              palette={palette}
+              pickColor={setBackgroundIndex}
+              selectedIndex={backgroundIndex}
+            />
+          )}
         </Flex>
       </VStack>
 
