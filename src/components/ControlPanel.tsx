@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   FaArrowRotateRight,
@@ -19,8 +20,8 @@ import {
 } from '@chakra-ui/react';
 
 import { useControls } from '../hooks/useControls';
-import { ColorArray } from '../types';
-import { getRandomIndex } from '../utils/helpers';
+import { ColorArray, CtrlPoint } from '../types';
+import { getRandomIndex, saveComp } from '../utils/helpers';
 import BgColorSelect from './BgColorSelect';
 import Chips from './Chips';
 import CompSelector from './CompSelector';
@@ -30,6 +31,7 @@ import Switch from './ui/switch';
 const ControlPanel = ({
   allColors,
   backgroundIndex,
+  beziCtrlPts,
   bgChecked,
   colorChecked,
   onChangeComp,
@@ -41,6 +43,7 @@ const ControlPanel = ({
 }: {
   allColors: ColorArray[];
   backgroundIndex: number;
+  beziCtrlPts: CtrlPoint[];
   bgChecked: boolean;
   colorChecked?: boolean;
   onChangeComp: (index: number) => void;
@@ -72,10 +75,6 @@ const ControlPanel = ({
     }
   };
 
-  const saveComp = () => {
-    console.log('save current composition to storage');
-  };
-
   const updateBalance = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
     setBalance(value);
@@ -84,6 +83,12 @@ const ControlPanel = ({
   const updateDiff = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
     setDiff(value);
+  };
+
+  const handleClickSave = () => {
+    const id = uuidv4();
+
+    saveComp({ balance, diff, id, beziCtrlPts });
   };
 
   return (
@@ -210,8 +215,7 @@ const ControlPanel = ({
         w='full'
         mt='auto'
         aria-label='Save composition'
-        onClick={saveComp}
-        disabled
+        onClick={handleClickSave}
       >
         <FaFloppyDisk color='black' /> Save Composition
       </Button>

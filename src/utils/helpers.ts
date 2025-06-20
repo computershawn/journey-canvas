@@ -50,34 +50,32 @@ export const goToFrameNumber = (frameNum) => {
 };
 
 // SAVE SETTINGS OF CURRENT COMPOSITION
-export const saveComp = () => {
-  const comps = getAllComps();
+export const saveComp = (values: CompValues) => {
+  const temp = [...getAllComps()]; // Clone the array to be safe
 
-  const diffValue = document.querySelector('#diff').value;
-  const balanceValue = document.querySelector('#balance').value;
-  const frameValue = document.querySelector('#frame-number').value;
+  const { balance, beziCtrlPts, diff, id } = values;
+  if (beziCtrlPts.length < 6) {
+    throw new Error('beziCtrlPts must contain at least 6 points');
+  }
 
   const curveSetPoints = {
-    pt1: { x: bezi.cs.anchor11.c.x, y: bezi.cs.anchor11.c.y },
-    pt2: { x: bezi.cs.anchor12.c.x, y: bezi.cs.anchor12.c.y },
-    pt3: { x: bezi.cs.anchor22.c.x, y: bezi.cs.anchor22.c.y },
-    pt4: { x: bezi.cs.ctrl11.c.x, y: bezi.cs.ctrl11.c.y },
-    pt5: { x: bezi.cs.ctrl12.c.x, y: bezi.cs.ctrl12.c.y },
-    pt6: { x: bezi.cs.ctrl22.c.x, y: bezi.cs.ctrl22.c.y },
+    pt1: { x: beziCtrlPts[0].x, y: beziCtrlPts[0].y }, // OK
+    pt4: { x: beziCtrlPts[1].x, y: beziCtrlPts[1].y },
+    pt5: { x: beziCtrlPts[2].x, y: beziCtrlPts[2].y },
+    pt2: { x: beziCtrlPts[3].x, y: beziCtrlPts[3].y },
+    pt6: { x: beziCtrlPts[4].x, y: beziCtrlPts[4].y },
+    pt3: { x: beziCtrlPts[5].x, y: beziCtrlPts[5].y },
   };
 
-  settings = {
-    id: uniqueID(),
-    balance: balanceValue,
-    currentCycleFrame: frameValue,
-    diff: diffValue,
+  const settings = {
+    id,
+    balance,
+    diff,
     curveSetPoints,
   };
 
-  comps.push(settings);
-  window.localStorage.setItem('saved_comps', JSON.stringify(comps));
-
-  return comps.length;
+  temp.push(settings);
+  window.localStorage.setItem('saved_comps', JSON.stringify(temp));
 };
 
 // REMOVE COMPOSITION SETTINGS
@@ -88,7 +86,7 @@ export const removeComp = (compID) => {
   window.localStorage.setItem('saved_comps', JSON.stringify(updatedComps));
 };
 
-export const getAllComps = () => {
+export const getAllComps = (): CompValues[] => {
   const savedComps = window.localStorage.getItem('saved_comps');
 
   if (!savedComps) {
@@ -100,20 +98,16 @@ export const getAllComps = () => {
 
 export const getComp = (compObj) => {
   const keys = Object.keys(compObj);
-  const hasAllKeys = [
-    'balance',
-    'currentCycleFrame',
-    'diff',
-    'id',
-    'curveSetPoints',
-  ].every((item) => keys.includes(item));
+  const hasAllKeys = ['balance', 'curveSetPoints', 'diff', 'id'].every((item) =>
+    keys.includes(item)
+  );
 
   if (hasAllKeys) {
     return {
-      storedBalance: compObj.balance,
-      storedCycleFrame: compObj.currentCycleFrame,
-      storedDiff: compObj.diff,
+      balance: compObj.balance,
       curveSetPoints: compObj.curveSetPoints,
+      diff: compObj.diff,
+      id: compObj.id,
     };
   }
 
@@ -138,30 +132,8 @@ window.onclick = function (event) {
   }
 };
 
-// CREATE UNIQUE ID
-export const uniqueID = () => {
-  const chars = '0123456789abcdef';
-  const len = chars.length;
-  let id = '';
-  for (let i = 0; i < 8; i++) {
-    const i = getRandomIndex(len);
-    const c = chars[i];
-    id += c;
-  }
-
-  return id;
-};
-
-// export const getColors = async () => {
-//   const colorsUrl =
-//     'https://raw.githubusercontent.com/Jam3/nice-color-palettes/master/1000.json';
-//   const data = await fetch(colorsUrl).then((res) => res.json());
-//   return data;
-// };
-
 export const initPalette = async () => {
   const allCo = await getColors();
-  // document.getElementById("start-btn").disabled = false;
 
   return allCo;
 };
@@ -193,8 +165,6 @@ export const renderFan = (fanBladesArr, nullRefs) => {
     const px3 = nextRef.point0.x + nextRef.x;
     const py3 = nextRef.point0.y + nextRef.y;
 
-    // const co = color(lerpColor(color(239), white, values[i]), 223);
-    // const co = color(255, 239);
     const fb = fanBladesArr[j];
     const pv0 = { x: px0, y: py0 };
     const pv1 = { x: px1, y: py1 };
@@ -203,7 +173,6 @@ export const renderFan = (fanBladesArr, nullRefs) => {
 
     fb.update(pv0, pv1, pv2, pv3);
     fb.render();
-    // noLoop();
   }
 };
 

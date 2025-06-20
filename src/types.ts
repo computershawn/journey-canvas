@@ -31,8 +31,6 @@ export type Quad = {
 export interface ControlsContextType {
   balance: number;
   setBalance: (value: number) => void;
-  cycleFrame: number;
-  setCycleFrame: (value: number) => void;
   diff: number;
   setDiff: (value: number) => void;
   geomChecked: boolean;
@@ -42,3 +40,10 @@ export interface ControlsContextType {
 }
 
 export type ColorArray = string[];
+
+export type CompValues = {
+  balance: number;
+  beziCtrlPts: CtrlPoint[];
+  diff: number;
+  id: string;
+};

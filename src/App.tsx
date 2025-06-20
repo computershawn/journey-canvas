@@ -6,15 +6,16 @@ import Artboard from './components/Artboard';
 import ControlPanel from './components/ControlPanel';
 import { ControlsProvider } from './context/ControlsProvider';
 import { useFetchColors } from './hooks/useFetchColors';
-import { ColorArray } from './types';
+import { ColorArray, CtrlPoint } from './types';
 import { getRandomIndex } from './utils/helpers';
 
 function App() {
-  const [compIndex, setCompIndex] = useState(0);
-  const [palette, setPalette] = useState<ColorArray>([]);
+  const [backgroundIndex, setBackgroundIndex] = useState(1);
+  const [beziCtrlPts, setBeziCtrlPts] = useState<CtrlPoint[]>([]);
   const [bgChecked, setBgChecked] = useState(true);
   const [colorChecked, setColorChecked] = useState(true);
-  const [backgroundIndex, setBackgroundIndex] = useState(1);
+  const [compIndex, setCompIndex] = useState(0);
+  const [palette, setPalette] = useState<ColorArray>([]);
 
   const { allColors } = useFetchColors();
 
@@ -32,6 +33,7 @@ function App() {
         <ControlPanel
           allColors={allColors}
           backgroundIndex={backgroundIndex}
+          beziCtrlPts={beziCtrlPts}
           bgChecked={bgChecked}
           colorChecked={colorChecked}
           onChangeComp={setCompIndex}
@@ -43,10 +45,12 @@ function App() {
         />
         <Artboard
           backgroundIndex={backgroundIndex}
+          beziCtrlPts={beziCtrlPts}
           bgChecked={bgChecked}
           colorChecked={colorChecked}
           compIndex={compIndex}
           palette={palette}
+          setBeziCtrlPts={setBeziCtrlPts}
         />
       </HStack>
     </ControlsProvider>

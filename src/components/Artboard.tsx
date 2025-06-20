@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { NUM_POINTS } from '../constants';
 import { ColorArray, CtrlPoint } from '../types';
@@ -7,19 +7,21 @@ import Composition from './Composition';
 
 const Artboard = ({
   backgroundIndex,
+  beziCtrlPts,
   bgChecked,
   colorChecked,
   compIndex,
   palette,
+  setBeziCtrlPts,
 }: {
   backgroundIndex: number;
+  beziCtrlPts: CtrlPoint[];
   bgChecked: boolean;
   colorChecked: boolean;
   compIndex: number;
   palette: ColorArray;
+  setBeziCtrlPts: (points: CtrlPoint[]) => void;
 }) => {
-  const [beziCtrlPts, setBeziCtrlPts] = useState<CtrlPoint[]>([]);
-
   const bezierSplinePoints = useMemo(() => {
     const getBezierSegmentPoints = (
       p0: CtrlPoint,
