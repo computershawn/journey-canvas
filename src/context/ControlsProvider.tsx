@@ -4,15 +4,9 @@ import { getAllComps, getComp } from '../utils/helpers';
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
   const comps = getAllComps();
-
-  let storedBalance = 50;
-  let storedDiff = 50;
-
-  if (comps.length > 0) {
-    const currentComp = getComp(comps[0]);
-    storedBalance = parseInt(currentComp.balance);
-    storedDiff = parseInt(currentComp.diff);
-  }
+  const firstComp = comps.length > 0 ? getComp(comps[0]) : null;
+  const storedBalance = firstComp ? parseInt(firstComp.balance) : 50;
+  const storedDiff = firstComp ? parseInt(firstComp.diff) : 50;
 
   const [balance, setBalance] = useState(storedBalance);
   const [diff, setDiff] = useState(storedDiff);
@@ -23,6 +17,7 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
     <ControlsContext.Provider
       value={{
         balance,
+        comps,
         diff,
         geomChecked,
         pathsChecked,

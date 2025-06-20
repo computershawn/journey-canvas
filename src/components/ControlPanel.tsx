@@ -21,7 +21,7 @@ import {
 
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
-import { getAllComps, getRandomIndex } from '../utils/helpers';
+import { getRandomIndex } from '../utils/helpers';
 import BgColorSelect from './BgColorSelect';
 import Chips from './Chips';
 import CompSelector from './CompSelector';
@@ -63,6 +63,7 @@ const ControlPanel = ({
     setGeomChecked,
     pathsChecked,
     setPathsChecked,
+    comps,
   } = useControls();
 
   const colorsLoaded = allColors.length > 0;
@@ -101,19 +102,19 @@ const ControlPanel = ({
       pt3: { x: beziCtrlPts[5].x, y: beziCtrlPts[5].y },
     };
 
-    const settings = {
-      id: uuidv4(),
-      balance,
-      diff,
-      curveSetPoints,
-    };
+    const updated = [
+      ...comps,
+      {
+        id: uuidv4(),
+        balance,
+        diff,
+        curveSetPoints,
+      },
+    ];
 
-    const prevComps = getAllComps();
-
-    window.localStorage.setItem(
-      'saved_comps',
-      JSON.stringify([...prevComps, settings])
-    );
+    window.localStorage.setItem('saved_comps', JSON.stringify(updated));
+    // TODO: Make comps a state in ControlsProvider and then update it here
+    // setComps(updated);
   };
 
   return (
@@ -121,7 +122,7 @@ const ControlPanel = ({
       <Heading size='lg' mb={4}>
         journey
       </Heading>
-      <CompSelector onChangeComp={onChangeComp} />
+      <CompSelector numComps={comps.length} onChangeComp={onChangeComp} />
 
       <VStack w='full' gap={4} align='flex-start'>
         <Slider

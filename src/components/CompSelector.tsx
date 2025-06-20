@@ -2,21 +2,23 @@ import { useMemo, useState } from 'react';
 
 import { Portal, Select, createListCollection } from '@chakra-ui/react';
 
-import { getAllComps } from '../utils/helpers';
-
 const PREFIX = 'comp';
 
 const CompSelector = ({
+  numComps,
   onChangeComp,
 }: {
+  numComps: number;
   onChangeComp: (index: number) => void;
 }) => {
-  const numComps = getAllComps().length;
   const [value, setValue] = useState<string[]>([`${PREFIX} 1`]);
   const compList = useMemo(() => {
     const items = Array(numComps)
       .fill(0)
-      .map((_, i) => ({ label: `comp ${i + 1}`, value: `comp ${i + 1}` }));
+      .map((_, i) => ({
+        label: `${PREFIX} ${i + 1}`,
+        value: `${PREFIX} ${i + 1}`,
+      }));
 
     return createListCollection({
       items,
@@ -24,9 +26,7 @@ const CompSelector = ({
   }, [numComps]);
 
   const handleValueChange = (e: { value: string[] }) => {
-    const index = compList.items.findIndex(
-      (item) => item.value === e.value[0]
-    );
+    const index = compList.items.findIndex((item) => item.value === e.value[0]);
     setValue(e.value);
     onChangeComp(index);
   };
@@ -41,7 +41,7 @@ const CompSelector = ({
       disabled={numComps === 0}
     >
       <Select.HiddenSelect />
-      <Select.Label>Saved Comps</Select.Label>
+      <Select.Label>Saved Compositions</Select.Label>
       <Select.Control>
         <Select.Trigger>
           <Select.ValueText placeholder='Select composition' />

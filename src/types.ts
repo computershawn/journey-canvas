@@ -37,6 +37,7 @@ export interface ControlsContextType {
   setGeomChecked: (value: boolean) => void;
   pathsChecked: boolean;
   setPathsChecked: (value: boolean) => void;
+  comps: CompValues[];
 }
 
 export type ColorArray = string[];

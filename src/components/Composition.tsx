@@ -216,7 +216,7 @@ const Composition = ({
           }}
           w={`${btnWidth}px`}
         >
-          {isPlaying ? <FaPlay color='#2bb79b' /> : <FaPause color='black' />}
+          {isPlaying ? <FaPause color='black' /> : <FaPlay color='#2bb79b' />}
         </IconButton>
         {isPlaying ? (
           <Flex w='full' h='100%' onClick={pause}>
