@@ -62,27 +62,10 @@ export const removeComp = (compID: string) => {
 };
 
 export const getAllComps = (): CompValues[] => {
-  const savedComps = window.localStorage.getItem('saved_comps');
+  const savedComps = window.localStorage.getItem('saved_comps') || '';
+  const parsed = JSON.parse(savedComps);
 
-  return (savedComps ? JSON.parse(savedComps) : []) as CompValues[];
-};
-
-export const getComp = (compObj: CompValues) => {
-  const keys = Object.keys(compObj);
-  const hasAllKeys = ['balance', 'curveSetPoints', 'diff', 'id'].every((item) =>
-    keys.includes(item)
-  );
-
-  if (hasAllKeys) {
-    return {
-      balance: compObj.balance,
-      curveSetPoints: compObj.curveSetPoints,
-      diff: compObj.diff,
-      id: compObj.id,
-    };
-  }
-
-  return {};
+  return (savedComps ? parsed : []) as CompValues[];
 };
 
 // DROPDOWN

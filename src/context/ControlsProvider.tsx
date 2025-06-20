@@ -1,12 +1,12 @@
 import { useState, ReactNode } from 'react';
 import { ControlsContext } from './ControlsContext';
-import { getAllComps, getComp } from '../utils/helpers';
+import { getAllComps } from '../utils/helpers';
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
-  const comps = getAllComps();
-  const firstComp = comps.length > 0 ? getComp(comps[0]) : null;
-  const storedBalance = firstComp ? parseInt(firstComp.balance) : 50;
-  const storedDiff = firstComp ? parseInt(firstComp.diff) : 50;
+  const storedComps = getAllComps();
+  const firstComp = storedComps.length > 0 ? storedComps[0] : null;
+  const storedBalance = firstComp ? firstComp.balance : 50;
+  const storedDiff = firstComp ? firstComp.diff : 50;
 
   const [balance, setBalance] = useState(storedBalance);
   const [diff, setDiff] = useState(storedDiff);
@@ -17,7 +17,7 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
     <ControlsContext.Provider
       value={{
         balance,
-        comps,
+        comps: storedComps,
         diff,
         geomChecked,
         pathsChecked,
