@@ -49,39 +49,10 @@ export const goToFrameNumber = (frameNum) => {
   }
 };
 
-// SAVE SETTINGS OF CURRENT COMPOSITION
-export const saveComp = (values: CompValues) => {
-  const temp = [...getAllComps()]; // Clone the array to be safe
-
-  const { balance, beziCtrlPts, diff, id } = values;
-  if (beziCtrlPts.length < 6) {
-    throw new Error('beziCtrlPts must contain at least 6 points');
-  }
-
-  const curveSetPoints = {
-    pt1: { x: beziCtrlPts[0].x, y: beziCtrlPts[0].y }, // OK
-    pt4: { x: beziCtrlPts[1].x, y: beziCtrlPts[1].y },
-    pt5: { x: beziCtrlPts[2].x, y: beziCtrlPts[2].y },
-    pt2: { x: beziCtrlPts[3].x, y: beziCtrlPts[3].y },
-    pt6: { x: beziCtrlPts[4].x, y: beziCtrlPts[4].y },
-    pt3: { x: beziCtrlPts[5].x, y: beziCtrlPts[5].y },
-  };
-
-  const settings = {
-    id,
-    balance,
-    diff,
-    curveSetPoints,
-  };
-
-  temp.push(settings);
-  window.localStorage.setItem('saved_comps', JSON.stringify(temp));
-};
-
 // REMOVE COMPOSITION SETTINGS
 export const removeComp = (compID) => {
-  const comps = getAllComps();
-  const updatedComps = comps.filter((item) => item.id !== compID);
+  const temp = [...getAllComps()];
+  const updatedComps = temp.filter((item) => item.id !== compID);
 
   window.localStorage.setItem('saved_comps', JSON.stringify(updatedComps));
 };

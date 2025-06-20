@@ -21,7 +21,7 @@ import {
 
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
-import { getRandomIndex, saveComp } from '../utils/helpers';
+import { getAllComps, getRandomIndex } from '../utils/helpers';
 import BgColorSelect from './BgColorSelect';
 import Chips from './Chips';
 import CompSelector from './CompSelector';
@@ -85,10 +85,35 @@ const ControlPanel = ({
     setDiff(value);
   };
 
+  // Save settings of current composition
+  // TODO: Save current color palettea and background index
   const handleClickSave = () => {
-    const id = uuidv4();
+    if (beziCtrlPts.length < 6) {
+      throw new Error('beziCtrlPts must contain at least 6 points');
+    }
 
-    saveComp({ balance, diff, id, beziCtrlPts });
+    const curveSetPoints = {
+      pt1: { x: beziCtrlPts[0].x, y: beziCtrlPts[0].y },
+      pt4: { x: beziCtrlPts[1].x, y: beziCtrlPts[1].y },
+      pt5: { x: beziCtrlPts[2].x, y: beziCtrlPts[2].y },
+      pt2: { x: beziCtrlPts[3].x, y: beziCtrlPts[3].y },
+      pt6: { x: beziCtrlPts[4].x, y: beziCtrlPts[4].y },
+      pt3: { x: beziCtrlPts[5].x, y: beziCtrlPts[5].y },
+    };
+
+    const settings = {
+      id: uuidv4(),
+      balance,
+      diff,
+      curveSetPoints,
+    };
+
+    const prevComps = getAllComps();
+
+    window.localStorage.setItem(
+      'saved_comps',
+      JSON.stringify([...prevComps, settings])
+    );
   };
 
   return (
