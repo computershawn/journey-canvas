@@ -64,6 +64,7 @@ const ControlPanel = ({
     pathsChecked,
     setPathsChecked,
     comps,
+    setComps,
   } = useControls();
 
   const colorsLoaded = allColors.length > 0;
@@ -113,8 +114,7 @@ const ControlPanel = ({
     ];
 
     window.localStorage.setItem('saved_comps', JSON.stringify(updated));
-    // TODO: Make comps a state in ControlsProvider and then update it here
-    // setComps(updated);
+    setComps(updated);
   };
 
   return (

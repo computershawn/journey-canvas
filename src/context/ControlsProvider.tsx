@@ -1,22 +1,30 @@
-import { useState, ReactNode, useMemo } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
 
 import { ControlsContext } from './ControlsContext';
 import { getAllComps } from '../utils/helpers';
+import { CompValues } from '../types';
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
-  const comps = useMemo(() => {
-    const storedComps = getAllComps();
-    return storedComps;
-  }, []);
+  // const comps = useMemo(() => {
+  //   const storedComps = getAllComps();
 
-  const firstComp = comps.length > 0 ? comps[0] : null;
-  const storedBalance = firstComp ? firstComp.balance : 50;
-  const storedDiff = firstComp ? firstComp.diff : 50;
-
-  const [balance, setBalance] = useState(storedBalance);
-  const [diff, setDiff] = useState(storedDiff);
+  //   return storedComps;
+  // }, []);
+  const [comps, setComps] = useState<CompValues[]>([]);
+  const [balance, setBalance] = useState(50);
+  const [diff, setDiff] = useState(50);
   const [geomChecked, setGeomChecked] = useState(true);
   const [pathsChecked, setPathsChecked] = useState(true);
+
+  useEffect(() => {
+    const storedComps = getAllComps();
+    const firstComp = storedComps.length > 0 ? storedComps[0] : null;
+    if (firstComp) {
+      setBalance(firstComp.balance);
+      setComps(storedComps);
+      setDiff(firstComp.diff);
+    }
+  }, []);
 
   return (
     <ControlsContext.Provider
@@ -27,6 +35,7 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
         geomChecked,
         pathsChecked,
         setBalance,
+        setComps,
         setDiff,
         setGeomChecked,
         setPathsChecked,

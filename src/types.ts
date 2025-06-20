@@ -38,6 +38,7 @@ export interface ControlsContextType {
   pathsChecked: boolean;
   setPathsChecked: (value: boolean) => void;
   comps: CompValues[];
+  setComps: (comps: CompValues[]) => void;
 }
 
 export type ColorArray = string[];
