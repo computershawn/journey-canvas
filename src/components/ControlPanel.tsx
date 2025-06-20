@@ -211,6 +211,7 @@ const ControlPanel = ({
         mt='auto'
         aria-label='Save composition'
         onClick={saveComp}
+        disabled
       >
         <FaFloppyDisk color='black' /> Save Composition
       </Button>

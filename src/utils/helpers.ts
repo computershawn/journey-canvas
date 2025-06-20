@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+// TODO: Add typings to this file
+
 // EASING FUNCTIONS
 export const easeInCubic = (t) => {
   return t * t * t;
@@ -124,10 +128,9 @@ export const toggleDropdown = () => {
 // CLOSE THE DROPDOWN IF THE USER CLICKS OUTSIDE OF IT
 window.onclick = function (event) {
   if (!event.target.matches('.dropbtn')) {
-    var dropdowns = document.getElementsByClassName('dropdown-content');
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
+    const dropdowns = document.getElementsByClassName('dropdown-content');
+    for (let i = 0; i < dropdowns.length; i++) {
+      const openDropdown = dropdowns[i];
       if (openDropdown.classList.contains('show')) {
         openDropdown.classList.remove('show');
       }
