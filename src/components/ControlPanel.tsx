@@ -122,6 +122,7 @@ const ControlPanel = ({
     window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
     setCompName([name]);
+    onChangeComp(updated.length - 1);
   };
 
   return (
