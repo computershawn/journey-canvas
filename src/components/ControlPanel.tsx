@@ -5,11 +5,9 @@ import {
   FaArrowRotateRight,
   FaEye,
   FaEyeSlash,
-  FaFloppyDisk,
 } from 'react-icons/fa6';
 
 import {
-  Button,
   Flex,
   Heading,
   HStack,
@@ -28,6 +26,7 @@ import Chips from './Chips';
 import CompSelector from './CompSelector';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
+import SaveComp from './SaveComp';
 
 const ControlPanel = ({
   allColors,
@@ -91,7 +90,7 @@ const ControlPanel = ({
 
   // Save settings of current composition
   // TODO: Save current color palettea and background index
-  const handleClickSave = () => {
+  const handleClickSave = (compName: string) => {
     if (beziCtrlPts.length < 6) {
       throw new Error('beziCtrlPts must contain at least 6 points');
     }
@@ -108,10 +107,11 @@ const ControlPanel = ({
     const updated = [
       ...comps,
       {
-        id: uuidv4(),
         balance,
-        diff,
+        name: compName,
         curveSetPoints,
+        diff,
+        id: uuidv4(),
       },
     ];
 
@@ -244,7 +244,7 @@ const ControlPanel = ({
         </Flex>
       </VStack>
 
-      <Button
+      {/* <Button
         variant='outline'
         w='full'
         mt='auto'
@@ -252,7 +252,8 @@ const ControlPanel = ({
         onClick={handleClickSave}
       >
         <FaFloppyDisk color='black' /> Save Composition
-      </Button>
+      </Button> */}
+      <SaveComp onClickSave={handleClickSave} />
     </VStack>
   );
 };
