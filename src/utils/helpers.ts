@@ -62,10 +62,9 @@ export const removeComp = (compID: string) => {
 };
 
 export const getAllComps = (): CompValues[] => {
-  const savedComps = window.localStorage.getItem('saved_comps') || '';
-  const parsed = JSON.parse(savedComps);
+  const savedComps = window.localStorage.getItem('saved_comps');
 
-  return (savedComps ? parsed : []) as CompValues[];
+  return (savedComps ? JSON.parse(savedComps) : []) as CompValues[];
 };
 
 // DROPDOWN

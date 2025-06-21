@@ -19,6 +19,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { PREFIX } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
@@ -54,6 +55,7 @@ const ControlPanel = ({
   setPalette: (palette: ColorArray) => void;
 }) => {
   const [parxChecked, setParxChecked] = useState(true);
+  const [compName, setCompName] = useState<string[]>([`${PREFIX} 1`]);
   const {
     balance,
     setBalance,
@@ -115,6 +117,7 @@ const ControlPanel = ({
 
     window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
+    setCompName([`${PREFIX} ${updated.length}`]);
   };
 
   return (
@@ -122,7 +125,12 @@ const ControlPanel = ({
       <Heading size='lg' mb={4}>
         journey
       </Heading>
-      <CompSelector numComps={comps.length} onChangeComp={onChangeComp} />
+      <CompSelector
+        numComps={comps.length}
+        onChangeComp={onChangeComp}
+        compName={compName}
+        setCompName={setCompName}
+      />
 
       <VStack w='full' gap={4} align='flex-start'>
         <Slider

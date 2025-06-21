@@ -8,7 +8,7 @@ import {
   RADIUS,
 } from '../constants';
 import { useControls } from '../hooks/useControls';
-import { CtrlPoint, Point } from '../types';
+import { CompValues, CtrlPoint, Point } from '../types';
 
 const getBezierSegmentPoints = (
   p0: CtrlPoint,
@@ -56,13 +56,13 @@ const getBezierSplinePoints = (points: CtrlPoint[]) => {
 };
 
 const BeziControls = ({
+  comp,
   points,
   setBeziCtrlPts,
-  compIndex,
 }: {
+  comp: CompValues | null;
   points: CtrlPoint[];
   setBeziCtrlPts: (pts: CtrlPoint[]) => void;
-  compIndex: number;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [offsets, setOffsets] = useState({ x: 0, y: 0 });
@@ -93,17 +93,15 @@ const BeziControls = ({
     }
   }, []);
 
-  const { comps } = useControls();
-
   useEffect(() => {
     const chIdx = [[1], null, null, [2, -1], null, [4]];
-    const csp = comps[compIndex]?.curveSetPoints;
     const randPts = chIdx.map((c) => ({
       x: Math.random() * CANV_WD,
       y: Math.random() * CANV_HT,
       child: c,
     }));
 
+    const csp = comp?.curveSetPoints;
     const temp = csp
       ? [
           { x: csp.pt1.x, y: csp.pt1.y, child: chIdx[0] },
@@ -116,7 +114,7 @@ const BeziControls = ({
       : randPts;
 
     setBeziCtrlPts(temp);
-  }, [compIndex, comps, setBeziCtrlPts]);
+  }, [comp?.curveSetPoints, setBeziCtrlPts]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

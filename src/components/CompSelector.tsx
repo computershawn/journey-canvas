@@ -1,17 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { Portal, Select, createListCollection } from '@chakra-ui/react';
 
-const PREFIX = 'comp';
+import { PREFIX } from '../constants';
 
 const CompSelector = ({
   numComps,
   onChangeComp,
+  setCompName,
+  compName,
 }: {
   numComps: number;
   onChangeComp: (index: number) => void;
+  setCompName: (value: string[]) => void;
+  compName: string[];
 }) => {
-  const [value, setValue] = useState<string[]>([`${PREFIX} 1`]);
   const compList = useMemo(() => {
     const items = Array(numComps)
       .fill(0)
@@ -27,7 +30,7 @@ const CompSelector = ({
 
   const handleValueChange = (e: { value: string[] }) => {
     const index = compList.items.findIndex((item) => item.value === e.value[0]);
-    setValue(e.value);
+    setCompName(e.value);
     onChangeComp(index);
   };
 
@@ -36,7 +39,7 @@ const CompSelector = ({
       collection={compList}
       size='xs'
       width='full'
-      value={value}
+      value={compName}
       onValueChange={handleValueChange}
       disabled={numComps === 0}
     >
