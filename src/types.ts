@@ -49,4 +49,5 @@ export type CompValues = {
   curveSetPoints: CurveSetPoints;
   diff: number;
   id: string;
+  name: string;
 };

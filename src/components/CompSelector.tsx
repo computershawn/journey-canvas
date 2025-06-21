@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { Portal, Select, createListCollection } from '@chakra-ui/react';
 
-import { PREFIX } from '../constants';
+import { useControls } from '../hooks/useControls';
 
 const CompSelector = ({
   numComps,
@@ -15,18 +15,18 @@ const CompSelector = ({
   setCompName: (value: string[]) => void;
   compName: string[];
 }) => {
+  const { comps } = useControls();
+
   const compList = useMemo(() => {
-    const items = Array(numComps)
-      .fill(0)
-      .map((_, i) => ({
-        label: `${PREFIX} ${i + 1}`,
-        value: `${PREFIX} ${i + 1}`,
-      }));
+    const items = comps.map((item) => ({
+      label: item.name,
+      value: item.name,
+    }));
 
     return createListCollection({
       items,
     });
-  }, [numComps]);
+  }, [comps]);
 
   const handleValueChange = (e: { value: string[] }) => {
     const index = compList.items.findIndex((item) => item.value === e.value[0]);
@@ -47,7 +47,7 @@ const CompSelector = ({
       <Select.Label>Saved Compositions</Select.Label>
       <Select.Control>
         <Select.Trigger>
-          <Select.ValueText placeholder='Select composition' />
+          <Select.ValueText placeholder={'-'} />
         </Select.Trigger>
         <Select.IndicatorGroup>
           <Select.Indicator />
