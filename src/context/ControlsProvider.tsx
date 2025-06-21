@@ -5,11 +5,6 @@ import { getAllComps } from '../utils/helpers';
 import { CompValues } from '../types';
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
-  // const comps = useMemo(() => {
-  //   const storedComps = getAllComps();
-
-  //   return storedComps;
-  // }, []);
   const [comps, setComps] = useState<CompValues[]>([]);
   const [balance, setBalance] = useState(50);
   const [diff, setDiff] = useState(50);
