@@ -1,38 +1,36 @@
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
+
 import { ControlsContext } from './ControlsContext';
-import { getAllComps, getComp } from '../utils/helpers';
+import { getAllComps } from '../utils/helpers';
+import { CompValues } from '../types';
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
-  const comps = getAllComps();
-  const isComp = comps.length > 0;
-
-  let storedBalance = 50;
-  let storedCycleFrame = 1;
-  let storedDiff = 50;
-
-  if (isComp) {
-    const currentComp = getComp(comps[0]);
-    storedBalance = parseInt(currentComp.storedBalance);
-    storedCycleFrame = parseInt(currentComp.storedCycleFrame);
-    storedDiff = parseInt(currentComp.storedDiff);
-  }
-
-  const [balance, setBalance] = useState(storedBalance);
-  const [cycleFrame, setCycleFrame] = useState(storedCycleFrame);
-  const [diff, setDiff] = useState(storedDiff);
+  const [comps, setComps] = useState<CompValues[]>([]);
+  const [balance, setBalance] = useState(50);
+  const [diff, setDiff] = useState(50);
   const [geomChecked, setGeomChecked] = useState(true);
   const [pathsChecked, setPathsChecked] = useState(true);
+
+  useEffect(() => {
+    const storedComps = getAllComps();
+    const firstComp = storedComps.length > 0 ? storedComps[0] : null;
+    if (firstComp) {
+      setBalance(firstComp.balance);
+      setComps(storedComps);
+      setDiff(firstComp.diff);
+    }
+  }, []);
 
   return (
     <ControlsContext.Provider
       value={{
         balance,
-        cycleFrame,
+        comps,
         diff,
         geomChecked,
         pathsChecked,
         setBalance,
-        setCycleFrame,
+        setComps,
         setDiff,
         setGeomChecked,
         setPathsChecked,

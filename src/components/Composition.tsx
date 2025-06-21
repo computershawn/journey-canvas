@@ -171,7 +171,7 @@ const Composition = ({
   const extraPadding = 8;
   const gap = 8;
   const btnWidth = 48;
-  const progressWidth = 1280 - btnWidth - pad - pad - gap - extraPadding;
+  const progressWidth = CANV_WD - btnWidth - pad - pad - gap - extraPadding;
   const trackHt = 6;
   const barHt = 2.5;
   const top = `${(barHt * 16) / 2 - 3}px`;
@@ -216,7 +216,7 @@ const Composition = ({
           }}
           w={`${btnWidth}px`}
         >
-          {isPlaying ? <FaPlay color='#2bb79b' /> : <FaPause color='black' />}
+          {isPlaying ? <FaPause color='black' /> : <FaPlay color='#2bb79b' />}
         </IconButton>
         {isPlaying ? (
           <Flex w='full' h='100%' onClick={pause}>

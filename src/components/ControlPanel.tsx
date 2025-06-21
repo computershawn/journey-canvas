@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   FaArrowRotateRight,
@@ -18,8 +19,9 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { PREFIX } from '../constants';
 import { useControls } from '../hooks/useControls';
-import { ColorArray } from '../types';
+import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
 import BgColorSelect from './BgColorSelect';
 import Chips from './Chips';
@@ -30,6 +32,7 @@ import Switch from './ui/switch';
 const ControlPanel = ({
   allColors,
   backgroundIndex,
+  beziCtrlPts,
   bgChecked,
   colorChecked,
   onChangeComp,
@@ -41,6 +44,7 @@ const ControlPanel = ({
 }: {
   allColors: ColorArray[];
   backgroundIndex: number;
+  beziCtrlPts: CtrlPoint[];
   bgChecked: boolean;
   colorChecked?: boolean;
   onChangeComp: (index: number) => void;
@@ -51,6 +55,7 @@ const ControlPanel = ({
   setPalette: (palette: ColorArray) => void;
 }) => {
   const [parxChecked, setParxChecked] = useState(true);
+  const [compName, setCompName] = useState<string[]>([`${PREFIX} 1`]);
   const {
     balance,
     setBalance,
@@ -60,6 +65,8 @@ const ControlPanel = ({
     setGeomChecked,
     pathsChecked,
     setPathsChecked,
+    comps,
+    setComps,
   } = useControls();
 
   const colorsLoaded = allColors.length > 0;
@@ -72,10 +79,6 @@ const ControlPanel = ({
     }
   };
 
-  const saveComp = () => {
-    console.log('save current composition to storage');
-  };
-
   const updateBalance = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
     setBalance(value);
@@ -86,12 +89,48 @@ const ControlPanel = ({
     setDiff(value);
   };
 
+  // Save settings of current composition
+  // TODO: Save current color palettea and background index
+  const handleClickSave = () => {
+    if (beziCtrlPts.length < 6) {
+      throw new Error('beziCtrlPts must contain at least 6 points');
+    }
+
+    const curveSetPoints = {
+      pt1: { x: beziCtrlPts[0].x, y: beziCtrlPts[0].y },
+      pt4: { x: beziCtrlPts[1].x, y: beziCtrlPts[1].y },
+      pt5: { x: beziCtrlPts[2].x, y: beziCtrlPts[2].y },
+      pt2: { x: beziCtrlPts[3].x, y: beziCtrlPts[3].y },
+      pt6: { x: beziCtrlPts[4].x, y: beziCtrlPts[4].y },
+      pt3: { x: beziCtrlPts[5].x, y: beziCtrlPts[5].y },
+    };
+
+    const updated = [
+      ...comps,
+      {
+        id: uuidv4(),
+        balance,
+        diff,
+        curveSetPoints,
+      },
+    ];
+
+    window.localStorage.setItem('saved_comps', JSON.stringify(updated));
+    setComps(updated);
+    setCompName([`${PREFIX} ${updated.length}`]);
+  };
+
   return (
     <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
       <Heading size='lg' mb={4}>
         journey
       </Heading>
-      <CompSelector onChangeComp={onChangeComp} />
+      <CompSelector
+        numComps={comps.length}
+        onChangeComp={onChangeComp}
+        compName={compName}
+        setCompName={setCompName}
+      />
 
       <VStack w='full' gap={4} align='flex-start'>
         <Slider
@@ -210,8 +249,7 @@ const ControlPanel = ({
         w='full'
         mt='auto'
         aria-label='Save composition'
-        onClick={saveComp}
-        disabled
+        onClick={handleClickSave}
       >
         <FaFloppyDisk color='black' /> Save Composition
       </Button>

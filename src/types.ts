@@ -31,14 +31,22 @@ export type Quad = {
 export interface ControlsContextType {
   balance: number;
   setBalance: (value: number) => void;
-  cycleFrame: number;
-  setCycleFrame: (value: number) => void;
   diff: number;
   setDiff: (value: number) => void;
   geomChecked: boolean;
   setGeomChecked: (value: boolean) => void;
   pathsChecked: boolean;
   setPathsChecked: (value: boolean) => void;
+  comps: CompValues[];
+  setComps: (comps: CompValues[]) => void;
 }
 
 export type ColorArray = string[];
+
+export type CompValues = {
+  balance: number;
+  // beziCtrlPts: CtrlPoint[];
+  curveSetPoints: CurveSetPoints;
+  diff: number;
+  id: string;
+};

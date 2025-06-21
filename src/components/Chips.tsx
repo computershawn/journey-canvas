@@ -7,16 +7,15 @@ const Chips = ({ palette }: { palette: ColorArray }) => {
   }
 
   return (
-    <HStack gap='2px'>
-      {palette.map((co) => {
+    <HStack gap={0} outline='1px solid black' outlineOffset={1}>
+      {palette.map((co, j) => {
         return (
           <Box
             key={co}
-            w={2}
+            w={4}
             h={6}
             bg={co}
-            border='1px solid black'
-            borderRadius={4}
+            borderRight={j < palette.length - 1 ? "1px solid black" : 'none'}
           />
         );
       })}
