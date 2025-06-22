@@ -140,14 +140,14 @@ const ControlPanel = ({
       <VStack w='full' gap={4} align='flex-start'>
         <Slider
           size='sm'
-          defaultValue={balance}
           label='Balance'
+          value={balance}
           onValueChange={updateBalance}
         />
         <Slider
           size='sm'
-          defaultValue={diff}
           label='Difference'
+          value={diff}
           onValueChange={updateDiff}
         />
       </VStack>
