@@ -5,21 +5,37 @@ import {
   Dialog,
   Field,
   Input,
+  DialogOpenChangeDetails,
   Portal,
 } from '@chakra-ui/react';
 import { FaFloppyDisk } from 'react-icons/fa6';
+import { useControls } from '../hooks/useControls';
+
+const MSG = {
+  ERROR: 'This comp name already exists! Please type a different name.',
+  HELPER: 'Comp name should have at least 3 letters.',
+};
 
 const SaveComp = ({ onClickSave }: { onClickSave: (name: string) => void }) => {
   const [compName, setCompName] = useState('');
   const [open, setOpen] = useState(false);
+  const [nameExists, setNameExists] = useState(false);
+
+  const { comps } = useControls();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setCompName(e.target.value);
+    setNameExists(false);
   };
 
   const isValidCompName = compName.trim().length >= 3;
 
   const handleSave = () => {
+    const exists = comps.some((item) => item.name === compName.trim());
+    if (exists) {
+      setNameExists(true);
+      return;
+    }
     setOpen(false);
     onClickSave(compName);
   };
@@ -31,8 +47,16 @@ const SaveComp = ({ onClickSave }: { onClickSave: (name: string) => void }) => {
     }
   };
 
+  const onOpenChange = (details: DialogOpenChangeDetails) => {
+    if (!details.open) {
+      setCompName('');
+      setNameExists(false);
+    }
+    setOpen(details.open);
+  };
+
   return (
-    <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Trigger asChild>
         <Button
           variant='outline'
@@ -52,14 +76,13 @@ const SaveComp = ({ onClickSave }: { onClickSave: (name: string) => void }) => {
             </Dialog.Header>
             <Dialog.Body>
               <form onSubmit={onSubmitForm}>
-                <Field.Root>
+                <Field.Root invalid={nameExists}>
                   <Input
                     placeholder='Enter a name for this composition'
                     onChange={onChange}
                   />
-                  <Field.HelperText>
-                    Comp name should have at least 3 letters
-                  </Field.HelperText>
+                  <Field.HelperText>{MSG.HELPER}</Field.HelperText>
+                  {nameExists && <Field.ErrorText>{MSG.ERROR}</Field.ErrorText>}
                 </Field.Root>
               </form>
             </Dialog.Body>

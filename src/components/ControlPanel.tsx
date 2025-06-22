@@ -114,7 +114,7 @@ const ControlPanel = ({
       {
         backgroundIndex,
         balance,
-        name,
+        name: name.trim(),
         curveSetPoints,
         diff,
         id,
