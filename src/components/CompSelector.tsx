@@ -1,8 +1,16 @@
 import { useMemo } from 'react';
 
-import { Portal, Select, createListCollection } from '@chakra-ui/react';
+import {
+  Box,
+  HStack,
+  Portal,
+  Select,
+  Text,
+  createListCollection,
+} from '@chakra-ui/react';
 
 import { useControls } from '../hooks/useControls';
+import DeleteComp from './DeleteComp';
 
 const CompSelector = ({
   numComps,
@@ -36,37 +44,44 @@ const CompSelector = ({
   };
 
   return (
-    <Select.Root
-      collection={compList}
-      size='xs'
-      width='full'
-      value={compId}
-      onValueChange={handleValueChange}
-      disabled={numComps === 0}
-    >
-      <Select.HiddenSelect />
-      <Select.Label>Saved Compositions</Select.Label>
-      <Select.Control>
-        <Select.Trigger>
-          <Select.ValueText placeholder={'-'} />
-        </Select.Trigger>
-        <Select.IndicatorGroup>
-          <Select.Indicator />
-        </Select.IndicatorGroup>
-      </Select.Control>
-      <Portal>
-        <Select.Positioner>
-          <Select.Content>
-            {compList.items.map((item) => (
-              <Select.Item item={item} key={item.id}>
-                {item.label}
-                <Select.ItemIndicator />
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Portal>
-    </Select.Root>
+    <Box w='full'>
+      <HStack justify='space-between' mb='1.5'>
+        <Text textStyle='sm' fontWeight='medium'>
+          Saved Compositions
+        </Text>
+        <DeleteComp />
+      </HStack>
+      <Select.Root
+        collection={compList}
+        size='xs'
+        width='full'
+        value={compId}
+        onValueChange={handleValueChange}
+        disabled={numComps === 0}
+      >
+        <Select.HiddenSelect />
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder={'-'} />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Portal>
+          <Select.Positioner>
+            <Select.Content>
+              {compList.items.map((item) => (
+                <Select.Item item={item} key={item.id}>
+                  {item.label}
+                  <Select.ItemIndicator />
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Positioner>
+        </Portal>
+      </Select.Root>
+    </Box>
   );
 };
 
