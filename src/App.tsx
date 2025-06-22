@@ -20,12 +20,17 @@ function App() {
   const { allColors } = useFetchColors();
 
   useEffect(() => {
-    if (allColors.length > 0) {
+    const savedComps = window.localStorage.getItem('saved_comps');
+    if (savedComps) {
+      const parsed = JSON.parse(savedComps);
+      const pal = parsed?.[0]?.palette;
+      setPalette(pal);
+    } else if (allColors.length > 0) {
       const randomIndex = getRandomIndex(allColors.length);
       const pal = allColors[randomIndex];
       setPalette(pal);
     }
-  }, [allColors, allColors.length]);
+  }, [allColors]);
 
   return (
     <ControlsProvider>

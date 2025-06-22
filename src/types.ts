@@ -45,9 +45,9 @@ export type ColorArray = string[];
 
 export type CompValues = {
   balance: number;
-  // beziCtrlPts: CtrlPoint[];
   curveSetPoints: CurveSetPoints;
   diff: number;
   id: string;
   name: string;
+  palette: ColorArray;
 };

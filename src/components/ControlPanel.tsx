@@ -93,7 +93,6 @@ const ControlPanel = ({
   };
 
   // Save settings of current composition
-  // TODO: Save current color palettea and background index
   const handleClickSave = (name: string) => {
     if (beziCtrlPts.length < 6) {
       throw new Error('beziCtrlPts must contain at least 6 points');
@@ -116,6 +115,7 @@ const ControlPanel = ({
         curveSetPoints,
         diff,
         id: uuidv4(),
+        palette,
       },
     ];
 
@@ -125,13 +125,14 @@ const ControlPanel = ({
     onChangeComp(updated.length - 1);
   };
 
-  // Set index and set slider values based
-  // on the newly selected composition
+  // Set index and set slider values based on the newly selected composition
   const handleChangeComp = (i: number) => {
     const newBalance = comps[i].balance ?? 0;
     const newDiff = comps[i].diff ?? 0;
+    const newPalette = comps[i].palette ?? Array(5).fill('#fff');
     setBalance(newBalance);
     setDiff(newDiff);
+    setPalette(newPalette);
     onChangeComp(i);
   };
 
