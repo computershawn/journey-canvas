@@ -7,13 +7,13 @@ import { useControls } from '../hooks/useControls';
 const CompSelector = ({
   numComps,
   onChangeComp,
-  setCompName,
-  compName,
+  setCompId,
+  compId,
 }: {
   numComps: number;
   onChangeComp: (index: number) => void;
-  setCompName: (value: string[]) => void;
-  compName: string[];
+  setCompId: (value: string[]) => void;
+  compId: string[];
 }) => {
   const { comps } = useControls();
 
@@ -21,7 +21,7 @@ const CompSelector = ({
     const items = comps.map((item) => ({
       id: item.id,
       label: item.name,
-      value: item.name,
+      value: item.id,
     }));
 
     return createListCollection({
@@ -31,7 +31,7 @@ const CompSelector = ({
 
   const handleValueChange = (e: { value: string[] }) => {
     const index = compList.items.findIndex((item) => item.value === e.value[0]);
-    setCompName(e.value);
+    setCompId(e.value);
     onChangeComp(index);
   };
 
@@ -40,7 +40,7 @@ const CompSelector = ({
       collection={compList}
       size='xs'
       width='full'
-      value={compName}
+      value={compId}
       onValueChange={handleValueChange}
       disabled={numComps === 0}
     >

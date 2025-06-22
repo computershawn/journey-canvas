@@ -49,7 +49,7 @@ const ControlPanel = ({
   setPalette: (palette: ColorArray) => void;
 }) => {
   // const [parxChecked, setParxChecked] = useState(true);
-  const [compName, setCompName] = useState<string[]>(['-']);
+  const [compId, setCompId] = useState<string[]>(['-']);
   const {
     balance,
     setBalance,
@@ -67,8 +67,8 @@ const ControlPanel = ({
     const savedComps = window.localStorage.getItem('saved_comps');
     if (savedComps) {
       const parsed = JSON.parse(savedComps);
-      const defaultCompName = parsed?.[0]?.name || '-';
-      setCompName([defaultCompName]);
+      const defaultCompId = parsed?.[0]?.id || '0';
+      setCompId([defaultCompId]);
     }
   }, []);
 
@@ -122,7 +122,7 @@ const ControlPanel = ({
 
     window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
-    setCompName([name]);
+    setCompId([name]);
     onChangeComp(updated.length - 1);
   };
 
@@ -148,8 +148,8 @@ const ControlPanel = ({
       <CompSelector
         numComps={comps.length}
         onChangeComp={handleChangeComp}
-        compName={compName}
-        setCompName={setCompName}
+        compId={compId}
+        setCompId={setCompId}
       />
 
       <VStack w='full' gap={4} align='flex-start'>
