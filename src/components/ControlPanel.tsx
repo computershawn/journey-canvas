@@ -1,15 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import {
-  FaArrowRotateRight,
-  FaEye,
-  FaEyeSlash,
-  FaFloppyDisk,
-} from 'react-icons/fa6';
+import { FaArrowRotateRight, FaEye, FaEyeSlash } from 'react-icons/fa6';
 
 import {
-  Button,
   Flex,
   Heading,
   HStack,
@@ -19,7 +13,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { PREFIX } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
@@ -28,6 +21,7 @@ import Chips from './Chips';
 import CompSelector from './CompSelector';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
+import SaveComp from './SaveComp';
 
 const ControlPanel = ({
   allColors,
@@ -54,8 +48,8 @@ const ControlPanel = ({
   setColorChecked: (checked: boolean) => void;
   setPalette: (palette: ColorArray) => void;
 }) => {
-  const [parxChecked, setParxChecked] = useState(true);
-  const [compName, setCompName] = useState<string[]>([`${PREFIX} 1`]);
+  // const [parxChecked, setParxChecked] = useState(true);
+  const [compId, setCompId] = useState<string[]>(['-']);
   const {
     balance,
     setBalance,
@@ -68,6 +62,15 @@ const ControlPanel = ({
     comps,
     setComps,
   } = useControls();
+
+  useEffect(() => {
+    const savedComps = window.localStorage.getItem('saved_comps');
+    if (savedComps) {
+      const parsed = JSON.parse(savedComps);
+      const defaultCompId = parsed?.[0]?.id || '0';
+      setCompId([defaultCompId]);
+    }
+  }, []);
 
   const colorsLoaded = allColors.length > 0;
 
@@ -90,8 +93,7 @@ const ControlPanel = ({
   };
 
   // Save settings of current composition
-  // TODO: Save current color palettea and background index
-  const handleClickSave = () => {
+  const handleClickSave = (name: string) => {
     if (beziCtrlPts.length < 6) {
       throw new Error('beziCtrlPts must contain at least 6 points');
     }
@@ -105,19 +107,38 @@ const ControlPanel = ({
       pt3: { x: beziCtrlPts[5].x, y: beziCtrlPts[5].y },
     };
 
+    const id = uuidv4();
+
     const updated = [
       ...comps,
       {
-        id: uuidv4(),
+        backgroundIndex,
         balance,
-        diff,
+        name: name.trim(),
         curveSetPoints,
+        diff,
+        id,
+        palette,
       },
     ];
 
     window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
-    setCompName([`${PREFIX} ${updated.length}`]);
+    setCompId([id]);
+    onChangeComp(updated.length - 1);
+  };
+
+  // Set index and set slider values based on the newly selected composition
+  const handleChangeComp = (i: number) => {
+    const newBalance = comps[i].balance ?? 0;
+    const newDiff = comps[i].diff ?? 0;
+    const newPalette = comps[i].palette ?? Array(5).fill('#fff');
+    const newBgIndex = comps[i].backgroundIndex ?? 0;
+    setBackgroundIndex(newBgIndex);
+    setBalance(newBalance);
+    setDiff(newDiff);
+    setPalette(newPalette);
+    onChangeComp(i);
   };
 
   return (
@@ -125,24 +146,25 @@ const ControlPanel = ({
       <Heading size='lg' mb={4}>
         journey
       </Heading>
+
       <CompSelector
         numComps={comps.length}
-        onChangeComp={onChangeComp}
-        compName={compName}
-        setCompName={setCompName}
+        onChangeComp={handleChangeComp}
+        compId={compId}
+        setCompId={setCompId}
       />
 
       <VStack w='full' gap={4} align='flex-start'>
         <Slider
           size='sm'
-          defaultValue={balance}
           label='Balance'
+          value={balance}
           onValueChange={updateBalance}
         />
         <Slider
           size='sm'
-          defaultValue={diff}
           label='Difference'
+          value={diff}
           onValueChange={updateDiff}
         />
       </VStack>
@@ -182,7 +204,7 @@ const ControlPanel = ({
           </IconButton>
         </Flex>
 
-        <Flex w='100%' h={8} align='center' justify='space-between'>
+        {/* <Flex w='100%' h={8} align='center' justify='space-between'>
           <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
             Particles
           </Text>
@@ -197,7 +219,7 @@ const ControlPanel = ({
               <FaEyeSlash color='black' />
             )}
           </IconButton>
-        </Flex>
+        </Flex> */}
 
         <Flex w='100%' h={8} align='center' justify='space-between'>
           <Switch
@@ -243,16 +265,7 @@ const ControlPanel = ({
           )}
         </Flex>
       </VStack>
-
-      <Button
-        variant='outline'
-        w='full'
-        mt='auto'
-        aria-label='Save composition'
-        onClick={handleClickSave}
-      >
-        <FaFloppyDisk color='black' /> Save Composition
-      </Button>
+      <SaveComp onClickSave={handleClickSave} />
     </VStack>
   );
 };

@@ -10,7 +10,7 @@ import { ColorArray, CtrlPoint } from './types';
 import { getRandomIndex } from './utils/helpers';
 
 function App() {
-  const [backgroundIndex, setBackgroundIndex] = useState(1);
+  const [backgroundIndex, setBackgroundIndex] = useState(0);
   const [beziCtrlPts, setBeziCtrlPts] = useState<CtrlPoint[]>([]);
   const [bgChecked, setBgChecked] = useState(true);
   const [colorChecked, setColorChecked] = useState(true);
@@ -20,12 +20,19 @@ function App() {
   const { allColors } = useFetchColors();
 
   useEffect(() => {
-    if (allColors.length > 0) {
+    const savedComps = window.localStorage.getItem('saved_comps');
+    if (savedComps) {
+      const parsed = JSON.parse(savedComps);
+      const pal = parsed?.[0]?.palette ?? Array(5).fill('#fff');
+      const bgIndex = parsed?.[0].backgroundIndex ?? 0;
+      setBackgroundIndex(bgIndex);
+      setPalette(pal);
+    } else if (allColors.length > 0) {
       const randomIndex = getRandomIndex(allColors.length);
       const pal = allColors[randomIndex];
       setPalette(pal);
     }
-  }, [allColors, allColors.length]);
+  }, [allColors]);
 
   return (
     <ControlsProvider>

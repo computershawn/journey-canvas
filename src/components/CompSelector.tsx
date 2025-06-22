@@ -2,35 +2,36 @@ import { useMemo } from 'react';
 
 import { Portal, Select, createListCollection } from '@chakra-ui/react';
 
-import { PREFIX } from '../constants';
+import { useControls } from '../hooks/useControls';
 
 const CompSelector = ({
   numComps,
   onChangeComp,
-  setCompName,
-  compName,
+  setCompId,
+  compId,
 }: {
   numComps: number;
   onChangeComp: (index: number) => void;
-  setCompName: (value: string[]) => void;
-  compName: string[];
+  setCompId: (value: string[]) => void;
+  compId: string[];
 }) => {
+  const { comps } = useControls();
+
   const compList = useMemo(() => {
-    const items = Array(numComps)
-      .fill(0)
-      .map((_, i) => ({
-        label: `${PREFIX} ${i + 1}`,
-        value: `${PREFIX} ${i + 1}`,
-      }));
+    const items = comps.map((item) => ({
+      id: item.id,
+      label: item.name,
+      value: item.id,
+    }));
 
     return createListCollection({
       items,
     });
-  }, [numComps]);
+  }, [comps]);
 
   const handleValueChange = (e: { value: string[] }) => {
     const index = compList.items.findIndex((item) => item.value === e.value[0]);
-    setCompName(e.value);
+    setCompId(e.value);
     onChangeComp(index);
   };
 
@@ -39,7 +40,7 @@ const CompSelector = ({
       collection={compList}
       size='xs'
       width='full'
-      value={compName}
+      value={compId}
       onValueChange={handleValueChange}
       disabled={numComps === 0}
     >
@@ -47,7 +48,7 @@ const CompSelector = ({
       <Select.Label>Saved Compositions</Select.Label>
       <Select.Control>
         <Select.Trigger>
-          <Select.ValueText placeholder='Select composition' />
+          <Select.ValueText placeholder={'-'} />
         </Select.Trigger>
         <Select.IndicatorGroup>
           <Select.Indicator />
@@ -56,9 +57,9 @@ const CompSelector = ({
       <Portal>
         <Select.Positioner>
           <Select.Content>
-            {compList.items.map((comp) => (
-              <Select.Item item={comp} key={comp.value}>
-                {comp.label}
+            {compList.items.map((item) => (
+              <Select.Item item={item} key={item.id}>
+                {item.label}
                 <Select.ItemIndicator />
               </Select.Item>
             ))}

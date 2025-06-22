@@ -46,7 +46,7 @@ const Composition = ({
   renderColors: boolean;
   showBackground: boolean;
 }) => {
-  const { geomChecked } = useControls();
+  const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
 
@@ -81,9 +81,6 @@ const Composition = ({
 
     return temp;
   }, [nullElements.length]);
-
-  // const { balance, cycleFrame, diff } = useControls();
-  const { balance, diff } = useControls();
 
   const { isPlaying, pause, play, resetLastValue, setValue, value } =
     useTimeLoop(15000);

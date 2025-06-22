@@ -44,9 +44,11 @@ export interface ControlsContextType {
 export type ColorArray = string[];
 
 export type CompValues = {
+  backgroundIndex: number;
   balance: number;
-  // beziCtrlPts: CtrlPoint[];
   curveSetPoints: CurveSetPoints;
   diff: number;
   id: string;
+  name: string;
+  palette: ColorArray;
 };
