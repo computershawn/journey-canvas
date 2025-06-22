@@ -48,7 +48,7 @@ const ControlPanel = ({
   setColorChecked: (checked: boolean) => void;
   setPalette: (palette: ColorArray) => void;
 }) => {
-  const [parxChecked, setParxChecked] = useState(true);
+  // const [parxChecked, setParxChecked] = useState(true);
   const [compName, setCompName] = useState<string[]>(['-']);
   const {
     balance,
@@ -198,7 +198,7 @@ const ControlPanel = ({
           </IconButton>
         </Flex>
 
-        <Flex w='100%' h={8} align='center' justify='space-between'>
+        {/* <Flex w='100%' h={8} align='center' justify='space-between'>
           <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
             Particles
           </Text>
@@ -213,7 +213,7 @@ const ControlPanel = ({
               <FaEyeSlash color='black' />
             )}
           </IconButton>
-        </Flex>
+        </Flex> */}
 
         <Flex w='100%' h={8} align='center' justify='space-between'>
           <Switch
