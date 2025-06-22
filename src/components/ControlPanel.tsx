@@ -125,14 +125,25 @@ const ControlPanel = ({
     onChangeComp(updated.length - 1);
   };
 
+  // Set index and set slider values based
+  // on the newly selected composition
+  const handleChangeComp = (i: number) => {
+    const newBalance = comps[i].balance ?? 0;
+    const newDiff = comps[i].diff ?? 0;
+    setBalance(newBalance);
+    setDiff(newDiff);
+    onChangeComp(i);
+  };
+
   return (
     <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
       <Heading size='lg' mb={4}>
         journey
       </Heading>
+
       <CompSelector
         numComps={comps.length}
-        onChangeComp={onChangeComp}
+        onChangeComp={handleChangeComp}
         compName={compName}
         setCompName={setCompName}
       />
