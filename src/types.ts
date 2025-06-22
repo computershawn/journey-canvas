@@ -44,6 +44,7 @@ export interface ControlsContextType {
 export type ColorArray = string[];
 
 export type CompValues = {
+  backgroundIndex: number;
   balance: number;
   curveSetPoints: CurveSetPoints;
   diff: number;

@@ -110,6 +110,7 @@ const ControlPanel = ({
     const updated = [
       ...comps,
       {
+        backgroundIndex,
         balance,
         name,
         curveSetPoints,
@@ -130,6 +131,8 @@ const ControlPanel = ({
     const newBalance = comps[i].balance ?? 0;
     const newDiff = comps[i].diff ?? 0;
     const newPalette = comps[i].palette ?? Array(5).fill('#fff');
+    const newBgIndex = comps[i].backgroundIndex ?? 0;
+    setBackgroundIndex(newBgIndex);
     setBalance(newBalance);
     setDiff(newDiff);
     setPalette(newPalette);

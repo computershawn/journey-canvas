@@ -44,7 +44,7 @@ const BgColorSelect = ({
                 {palette.map((co, j) => {
                   return (
                     <Box
-                      key={co}
+                      key={`${j}-${co}`}
                       w={BOX_SIZE}
                       h={BOX_SIZE}
                       bg={co}
