@@ -107,6 +107,8 @@ const ControlPanel = ({
       pt3: { x: beziCtrlPts[5].x, y: beziCtrlPts[5].y },
     };
 
+    const id = uuidv4();
+
     const updated = [
       ...comps,
       {
@@ -115,14 +117,14 @@ const ControlPanel = ({
         name,
         curveSetPoints,
         diff,
-        id: uuidv4(),
+        id,
         palette,
       },
     ];
 
     window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
-    setCompId([name]);
+    setCompId([id]);
     onChangeComp(updated.length - 1);
   };
 
