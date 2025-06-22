@@ -19,6 +19,7 @@ const CompSelector = ({
 
   const compList = useMemo(() => {
     const items = comps.map((item) => ({
+      id: item.id,
       label: item.name,
       value: item.name,
     }));
@@ -56,9 +57,9 @@ const CompSelector = ({
       <Portal>
         <Select.Positioner>
           <Select.Content>
-            {compList.items.map((comp) => (
-              <Select.Item item={comp} key={comp.value}>
-                {comp.label}
+            {compList.items.map((item) => (
+              <Select.Item item={item} key={item.id}>
+                {item.label}
                 <Select.ItemIndicator />
               </Select.Item>
             ))}
