@@ -10,14 +10,13 @@ import {
   HStack,
   Text,
   ButtonGroup,
-  Box,
   Flex,
 } from '@chakra-ui/react';
-import { FaTrash } from 'react-icons/fa6';
+import { FaCheck, FaPen, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useControls } from '../hooks/useControls';
 import { CompValues } from '../types';
 
-const DeleteComp = () => {
+const EditComp = () => {
   const [open, setOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState<string | null>(null);
   const [deleteList, setDeleteList] = useState<string[]>([]);
@@ -49,7 +48,7 @@ const DeleteComp = () => {
           variant='outline'
           size='xs'
         >
-          <FaTrash />
+          <FaPen />
         </IconButton>
       </Dialog.Trigger>
       <Portal>
@@ -57,7 +56,7 @@ const DeleteComp = () => {
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>Delete Composition</Dialog.Title>
+              <Dialog.Title>Edit Comps</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
               {deleteList.length === comps.length ? (
@@ -77,28 +76,37 @@ const DeleteComp = () => {
                           {comp.name}
                         </Text>
                         <ButtonGroup variant='outline' size='xs'>
-                          {idToDelete === comp.id && (
-                            <Box>
-                              <Button
+                          {idToDelete === comp.id ? (
+                            <HStack>
+                              <Text color='red'>Delete?</Text>
+                              <IconButton
+                                aria-label='Confirm'
+                                rounded='full'
+                                size='xs'
+                                onClick={deleteQueuedComp}
+                              >
+                                <FaCheck />
+                              </IconButton>
+                              <IconButton
+                                aria-label='Cancel'
+                                rounded='full'
                                 size='xs'
                                 onClick={() => setIdToDelete(null)}
                               >
-                                Cancel
-                              </Button>
-                              <Button size='xs' onClick={deleteQueuedComp}>
-                                Delete
-                              </Button>
-                            </Box>
+                                <FaXmark />
+                              </IconButton>
+                            </HStack>
+                          ) : (
+                            <IconButton
+                              aria-label='Delete comps'
+                              rounded='full'
+                              size='xs'
+                              onClick={() => setIdToDelete(comp.id)}
+                              disabled={idToDelete === comp.id}
+                            >
+                              <FaTrash />
+                            </IconButton>
                           )}
-                          <IconButton
-                            aria-label='Delete comps'
-                            rounded='full'
-                            size='xs'
-                            onClick={() => setIdToDelete(comp.id)}
-                            disabled={idToDelete === comp.id}
-                          >
-                            <FaTrash />
-                          </IconButton>
                         </ButtonGroup>
                       </HStack>
                     );
@@ -108,7 +116,7 @@ const DeleteComp = () => {
             </Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant='outline' aria-label='Cancel'>
+                <Button variant='outline' aria-label='Done'>
                   Done
                 </Button>
               </Dialog.ActionTrigger>
@@ -123,4 +131,4 @@ const DeleteComp = () => {
   );
 };
 
-export default DeleteComp;
+export default EditComp;

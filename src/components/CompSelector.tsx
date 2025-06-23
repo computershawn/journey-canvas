@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 
 import { useControls } from '../hooks/useControls';
-import DeleteComp from './DeleteComp';
+import EditComp from './EditComp';
 
 const CompSelector = ({
   numComps,
@@ -49,7 +49,7 @@ const CompSelector = ({
         <Text textStyle='sm' fontWeight='medium'>
           Saved Compositions
         </Text>
-        <DeleteComp />
+        <EditComp />
       </HStack>
       <Select.Root
         collection={compList}
