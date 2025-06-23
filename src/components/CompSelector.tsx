@@ -1,16 +1,8 @@
 import { useMemo } from 'react';
 
-import {
-  Box,
-  HStack,
-  Portal,
-  Select,
-  Text,
-  createListCollection,
-} from '@chakra-ui/react';
+import { Box, Portal, Select, createListCollection } from '@chakra-ui/react';
 
 import { useControls } from '../hooks/useControls';
-import EditComp from './EditComp';
 
 const CompSelector = ({
   numComps,
@@ -45,12 +37,6 @@ const CompSelector = ({
 
   return (
     <Box w='full'>
-      <HStack justify='space-between' mb='1.5'>
-        <Text textStyle='sm' fontWeight='medium'>
-          Saved Compositions
-        </Text>
-        <EditComp />
-      </HStack>
       <Select.Root
         collection={compList}
         size='xs'
@@ -60,6 +46,7 @@ const CompSelector = ({
         disabled={numComps === 0}
       >
         <Select.HiddenSelect />
+        <Select.Label>Saved Compositions</Select.Label>
         <Select.Control>
           <Select.Trigger>
             <Select.ValueText placeholder={'-'} />

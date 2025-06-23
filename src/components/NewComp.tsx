@@ -8,7 +8,6 @@ import {
   DialogOpenChangeDetails,
   Portal,
 } from '@chakra-ui/react';
-import { FaFloppyDisk } from 'react-icons/fa6';
 import { useControls } from '../hooks/useControls';
 
 const MSG = {
@@ -16,9 +15,16 @@ const MSG = {
   HELPER: 'Comp name should have at least 3 letters.',
 };
 
-const SaveComp = ({ onClickSave }: { onClickSave: (name: string) => void }) => {
+const NewComp = ({
+  onClickSave,
+  open,
+  setOpen,
+}: {
+  onClickSave: (name: string) => void;
+  open: boolean;
+  setOpen: (val: boolean) => void;
+}) => {
   const [compName, setCompName] = useState('');
-  const [open, setOpen] = useState(false);
   const [nameExists, setNameExists] = useState(false);
 
   const { comps } = useControls();
@@ -57,22 +63,12 @@ const SaveComp = ({ onClickSave }: { onClickSave: (name: string) => void }) => {
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Trigger asChild>
-        <Button
-          variant='outline'
-          w='full'
-          mt='auto'
-          aria-label='Save composition'
-        >
-          <FaFloppyDisk color='black' /> Save Composition
-        </Button>
-      </Dialog.Trigger>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>Save Composition</Dialog.Title>
+              <Dialog.Title>New Composition</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
               <form onSubmit={onSubmitForm}>
@@ -111,4 +107,4 @@ const SaveComp = ({ onClickSave }: { onClickSave: (name: string) => void }) => {
   );
 };
 
-export default SaveComp;
+export default NewComp;

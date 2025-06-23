@@ -21,7 +21,9 @@ import Chips from './Chips';
 import CompSelector from './CompSelector';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
-import SaveComp from './SaveComp';
+import NewComp from './NewComp';
+import OptionsMenu from './OptionsMenu';
+import EditComps from './ManageComps';
 
 const ControlPanel = ({
   allColors,
@@ -50,6 +52,9 @@ const ControlPanel = ({
 }) => {
   // const [parxChecked, setParxChecked] = useState(true);
   const [compId, setCompId] = useState<string[]>(['-']);
+  const [isCreateCompOpen, setIsCreateCompOpen] = useState(false);
+  const [isEditCompsOpen, setIsEditCompsOpen] = useState(false);
+
   const {
     balance,
     setBalance,
@@ -141,10 +146,26 @@ const ControlPanel = ({
     onChangeComp(i);
   };
 
+  const openCreateComp = () => {
+    setIsCreateCompOpen(true);
+    setIsEditCompsOpen(false);
+  };
+  const openEditComps = () => {
+    setIsCreateCompOpen(false);
+    setIsEditCompsOpen(true);
+  };
+
   return (
     <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
-      <Heading size='lg' mb={4}>
-        journey
+      <Heading size='lg' mb={4} w="full">
+        <Flex justify='space-between'>
+          journey
+          <OptionsMenu
+            onUpdateExistingComp={() => console.log('update')}
+            onCreateComp={openCreateComp}
+            onEditComps={openEditComps}
+          />
+        </Flex>
       </Heading>
 
       <CompSelector
@@ -265,7 +286,16 @@ const ControlPanel = ({
           )}
         </Flex>
       </VStack>
-      <SaveComp onClickSave={handleClickSave} />
+
+      {/* Dialog for creating a new comp */}
+      <NewComp
+        onClickSave={handleClickSave}
+        open={isCreateCompOpen}
+        setOpen={setIsCreateCompOpen}
+      />
+
+      {/* Dialog for editing existing comps */}
+      <EditComps open={isEditCompsOpen} setOpen={setIsEditCompsOpen} />
     </VStack>
   );
 };

@@ -12,28 +12,31 @@ import {
   ButtonGroup,
   Flex,
 } from '@chakra-ui/react';
-import { FaCheck, FaPen, FaTrash, FaXmark } from 'react-icons/fa6';
+import { FaCheck, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useControls } from '../hooks/useControls';
 import { CompValues } from '../types';
 
-const EditComp = () => {
-  const [open, setOpen] = useState(false);
+const ManageComps = ({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (val: boolean) => void;
+}) => {
   const [idToDelete, setIdToDelete] = useState<string | null>(null);
   const [deleteList, setDeleteList] = useState<string[]>([]);
 
   const { comps, setComps } = useControls();
 
   const deleteComps = () => {
-    const updated = comps.filter(item => !deleteList.includes(item.id));
-    // console.log('comps', comps);
-    // console.log('updated', updated);
+    const updated = comps.filter((item) => !deleteList.includes(item.id));
     setComps(updated);
     setDeleteList([]);
   };
 
   const onOpenChange = (details: DialogOpenChangeDetails) => {
     if (!details.open) {
-      if(deleteList.length > 0) {
+      if (deleteList.length > 0) {
         deleteComps();
       }
     }
@@ -49,22 +52,12 @@ const EditComp = () => {
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Trigger asChild>
-        <IconButton
-          aria-label='Delete comps'
-          rounded='full'
-          variant='outline'
-          size='xs'
-        >
-          <FaPen />
-        </IconButton>
-      </Dialog.Trigger>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>Edit Comps</Dialog.Title>
+              <Dialog.Title>Manage Comps</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
               {deleteList.length === comps.length ? (
@@ -139,4 +132,4 @@ const EditComp = () => {
   );
 };
 
-export default EditComp;
+export default ManageComps;
