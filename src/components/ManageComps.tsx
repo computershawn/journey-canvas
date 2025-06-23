@@ -30,6 +30,7 @@ const ManageComps = ({
 
   const deleteComps = () => {
     const updated = comps.filter((item) => !deleteList.includes(item.id));
+    window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
     setDeleteList([]);
   };
