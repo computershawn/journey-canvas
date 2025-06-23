@@ -170,6 +170,11 @@ const Composition = ({
     setValue(v);
   };
 
+  const handleClickTimeline = () => {
+    pause();
+    setManualFrame(cycleFrame);
+  };
+
   return geomChecked ? (
     <VStack align='flex-start'>
       <canvas ref={canvasRef} style={canvasStyle} />
@@ -189,8 +194,7 @@ const Composition = ({
           aria-label='Play or pause animation'
           onClick={() => {
             if (isPlaying) {
-              pause();
-              setManualFrame(cycleFrame);
+              handleClickTimeline();
             } else {
               play();
             }
@@ -200,7 +204,7 @@ const Composition = ({
           {isPlaying ? <FaPause color='black' /> : <FaPlay color='#2bb79b' />}
         </IconButton>
         {isPlaying ? (
-          <Flex w='full' h='100%' onClick={pause}>
+          <Flex w='full' h='100%' onClick={handleClickTimeline}>
             <Box
               h={`${trackHt}px`}
               w={progressWidth}
@@ -222,8 +226,7 @@ const Composition = ({
             />
           </Flex>
         ) : (
-          // See if it's possible to show a slider component here when animation is paused
-          <Flex w='full' h='100%' align='center' onClick={pause}>
+          <Flex w='full' h='100%' align='center'>
             <Slider
               defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
               isAnimProgressBar
