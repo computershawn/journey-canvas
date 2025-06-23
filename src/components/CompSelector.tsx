@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { Portal, Select, createListCollection } from '@chakra-ui/react';
+import { Box, Portal, Select, createListCollection } from '@chakra-ui/react';
 
 import { useControls } from '../hooks/useControls';
 
@@ -36,37 +36,39 @@ const CompSelector = ({
   };
 
   return (
-    <Select.Root
-      collection={compList}
-      size='xs'
-      width='full'
-      value={compId}
-      onValueChange={handleValueChange}
-      disabled={numComps === 0}
-    >
-      <Select.HiddenSelect />
-      <Select.Label>Saved Compositions</Select.Label>
-      <Select.Control>
-        <Select.Trigger>
-          <Select.ValueText placeholder={'-'} />
-        </Select.Trigger>
-        <Select.IndicatorGroup>
-          <Select.Indicator />
-        </Select.IndicatorGroup>
-      </Select.Control>
-      <Portal>
-        <Select.Positioner>
-          <Select.Content>
-            {compList.items.map((item) => (
-              <Select.Item item={item} key={item.id}>
-                {item.label}
-                <Select.ItemIndicator />
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Portal>
-    </Select.Root>
+    <Box w='full'>
+      <Select.Root
+        collection={compList}
+        size='xs'
+        width='full'
+        value={compId}
+        onValueChange={handleValueChange}
+        disabled={numComps === 0}
+      >
+        <Select.HiddenSelect />
+        <Select.Label>Saved Compositions</Select.Label>
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder={'-'} />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Portal>
+          <Select.Positioner>
+            <Select.Content>
+              {compList.items.map((item) => (
+                <Select.Item item={item} key={item.id}>
+                  {item.label}
+                  <Select.ItemIndicator />
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Positioner>
+        </Portal>
+      </Select.Root>
+    </Box>
   );
 };
 
