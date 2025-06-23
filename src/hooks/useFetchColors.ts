@@ -8,7 +8,7 @@ export const useFetchColors = () => {
   useEffect(() => {
     const getColors = async () => {
       const colorsUrl =
-        'https://raw.githubusercontent.com/Jam3/nice-color-palettes/master/1000.json';
+        'https://raw.githubusercontent.com/Jam3/nice-color-palettes/master/200.json';
 
       try {
         const data: ColorArray[] = await fetch(colorsUrl).then((res) =>
