@@ -1,8 +1,13 @@
 import { useState, ReactNode, useEffect } from 'react';
 
 import { ControlsContext } from './ControlsContext';
-import { getAllComps } from '../utils/helpers';
 import { CompValues } from '../types';
+
+const getAllComps = (): CompValues[] => {
+  const savedComps = window.localStorage.getItem('saved_comps');
+
+  return (savedComps ? JSON.parse(savedComps) : []) as CompValues[];
+};
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
   const [comps, setComps] = useState<CompValues[]>([]);
