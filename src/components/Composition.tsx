@@ -87,6 +87,10 @@ const Composition = ({
   const cycleFrame = 1 + Math.round(value * (DURATION_FRAMES - 1));
 
   useEffect(() => {
+    if (!geomChecked) {
+      return;
+    }
+
     const update = () => {
       // Update all positions of our references
       const difference = mapTo(diff, 0, 100, 1, 8);
@@ -141,10 +145,8 @@ const Composition = ({
       }
     };
 
-    if (geomChecked) {
-      update();
-      draw();
-    }
+    update();
+    draw();
   }, [
     backgroundIndex,
     balance,

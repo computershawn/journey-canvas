@@ -21,13 +21,21 @@ const EditComp = () => {
   const [idToDelete, setIdToDelete] = useState<string | null>(null);
   const [deleteList, setDeleteList] = useState<string[]>([]);
 
-  const { comps } = useControls();
+  const { comps, setComps } = useControls();
+
+  const deleteComps = () => {
+    const updated = comps.filter(item => !deleteList.includes(item.id));
+    // console.log('comps', comps);
+    // console.log('updated', updated);
+    setComps(updated);
+    setDeleteList([]);
+  };
 
   const onOpenChange = (details: DialogOpenChangeDetails) => {
     if (!details.open) {
-      // UPDATE COMPS ARRAY HERE
-      console.log('update comps array based on deleteList');
-      setDeleteList([]);
+      if(deleteList.length > 0) {
+        deleteComps();
+      }
     }
     setOpen(details.open);
   };
