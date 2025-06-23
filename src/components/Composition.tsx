@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { FaPause, FaPlay } from 'react-icons/fa6';
 
 import {
@@ -50,6 +50,9 @@ const Composition = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
 
+  const canvas = canvasRef.current;
+  const ctx = canvas?.getContext('2d');
+
   const nullElements = useMemo(() => {
     const temp = [];
     if (bezierSplinePoints?.length) {
@@ -86,81 +89,60 @@ const Composition = ({
     useTimeLoop(15000);
   const cycleFrame = 1 + Math.round(value * (DURATION_FRAMES - 1));
 
-  useEffect(() => {
-    if (!geomChecked) {
-      return;
+  const update = () => {
+    // Update all positions of our references
+    const difference = mapTo(diff, 0, 100, 1, 8);
+
+    nullElements.forEach((nE) => {
+      const frame = isPlaying ? cycleFrame : manualFrame;
+      nE.update(frame, balance / 100, difference);
+    });
+
+    for (let j = 0; j < nullElements.length - 1; j++) {
+      const thisRef = nullElements[j];
+      const nextRef = nullElements[j + 1];
+
+      const px0 = thisRef.point0.x + thisRef.x;
+      const py0 = thisRef.point0.y + thisRef.y;
+      const px1 = thisRef.point1.x + thisRef.x;
+      const py1 = thisRef.point1.y + thisRef.y;
+      const px2 = nextRef.point1.x + nextRef.x;
+      const py2 = nextRef.point1.y + nextRef.y;
+      const px3 = nextRef.point0.x + nextRef.x;
+      const py3 = nextRef.point0.y + nextRef.y;
+
+      const pv0 = { x: scale * px0, y: scale * py0 };
+      const pv1 = { x: scale * px1, y: scale * py1 };
+      const pv2 = { x: scale * px2, y: scale * py2 };
+      const pv3 = { x: scale * px3, y: scale * py3 };
+
+      fanBlades[j].update(pv0, pv1, pv2, pv3);
     }
+  };
 
-    const update = () => {
-      // Update all positions of our references
-      const difference = mapTo(diff, 0, 100, 1, 8);
-
-      nullElements.forEach((nE) => {
-        const frame = isPlaying ? cycleFrame : manualFrame;
-        nE.update(frame, balance / 100, difference);
+  const draw = () => {
+    if (canvas && ctx) {
+      // Get the size of the canvas in CSS pixels.
+      const rect = canvas.getBoundingClientRect();
+      // Give the canvas pixel dimensions of their CSS size * the device pixel ratio.
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      // Scale all drawing operations by the dpr, so you don't have to worry about the difference.
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle =
+        (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      fanBlades.forEach((fb) => {
+        fb.render(ctx, palette, renderColors);
       });
+    }
+  };
 
-      for (let j = 0; j < nullElements.length - 1; j++) {
-        const thisRef = nullElements[j];
-        const nextRef = nullElements[j + 1];
-
-        const px0 = thisRef.point0.x + thisRef.x;
-        const py0 = thisRef.point0.y + thisRef.y;
-        const px1 = thisRef.point1.x + thisRef.x;
-        const py1 = thisRef.point1.y + thisRef.y;
-        const px2 = nextRef.point1.x + nextRef.x;
-        const py2 = nextRef.point1.y + nextRef.y;
-        const px3 = nextRef.point0.x + nextRef.x;
-        const py3 = nextRef.point0.y + nextRef.y;
-
-        const pv0 = { x: scale * px0, y: scale * py0 };
-        const pv1 = { x: scale * px1, y: scale * py1 };
-        const pv2 = { x: scale * px2, y: scale * py2 };
-        const pv3 = { x: scale * px3, y: scale * py3 };
-
-        fanBlades[j].update(pv0, pv1, pv2, pv3);
-      }
-    };
-
-    const draw = () => {
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext('2d');
-
-      if (canvas && ctx) {
-        // Get the size of the canvas in CSS pixels.
-        const rect = canvas.getBoundingClientRect();
-        // Give the canvas pixel dimensions of their CSS size * the device pixel ratio.
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        // Scale all drawing operations by the dpr, so you don't have to worry about the difference.
-        ctx.scale(dpr, dpr);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle =
-          (showBackground && renderColors && palette[backgroundIndex]) ||
-          '#fff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        fanBlades.forEach((fb) => {
-          fb.render(ctx, palette, renderColors);
-        });
-      }
-    };
-
+  if (geomChecked) {
     update();
     draw();
-  }, [
-    backgroundIndex,
-    balance,
-    cycleFrame,
-    diff,
-    fanBlades,
-    geomChecked,
-    isPlaying,
-    manualFrame,
-    nullElements,
-    palette,
-    renderColors,
-    showBackground,
-  ]);
+  }
 
   if (!bezierSplinePoints?.length) {
     return null;
