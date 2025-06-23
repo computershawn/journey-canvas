@@ -21,7 +21,7 @@ import Chips from './Chips';
 import CompSelector from './CompSelector';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
-import NewComp from './NewComp';
+import NewComp from './CreateComp';
 import OptionsMenu from './OptionsMenu';
 import EditComps from './ManageComps';
 
@@ -97,7 +97,7 @@ const ControlPanel = ({
     setDiff(value);
   };
 
-  // Save settings of current composition
+  // Save current as new composition
   const handleClickSave = (name: string) => {
     if (beziCtrlPts.length < 6) {
       throw new Error('beziCtrlPts must contain at least 6 points');
@@ -133,6 +133,39 @@ const ControlPanel = ({
     onChangeComp(updated.length - 1);
   };
 
+  // Update current composition
+  const handleClickUpdate = () => {
+    if (beziCtrlPts.length < 6) {
+      throw new Error('beziCtrlPts must contain at least 6 points');
+    }
+
+    const curveSetPoints = {
+      pt1: { x: beziCtrlPts[0].x, y: beziCtrlPts[0].y },
+      pt4: { x: beziCtrlPts[1].x, y: beziCtrlPts[1].y },
+      pt5: { x: beziCtrlPts[2].x, y: beziCtrlPts[2].y },
+      pt2: { x: beziCtrlPts[3].x, y: beziCtrlPts[3].y },
+      pt6: { x: beziCtrlPts[4].x, y: beziCtrlPts[4].y },
+      pt3: { x: beziCtrlPts[5].x, y: beziCtrlPts[5].y },
+    };
+
+    const updated = comps.map((c) => {
+      if (c.id === compId[0]) {
+        return {
+          ...c,
+          backgroundIndex,
+          balance,
+          curveSetPoints,
+          diff,
+          palette,
+        };
+      }
+      return c;
+    });
+
+    window.localStorage.setItem('saved_comps', JSON.stringify(updated));
+    setComps(updated);
+  };
+
   // Set index and set slider values based on the newly selected composition
   const handleChangeComp = (i: number) => {
     const newBalance = comps[i].balance ?? 0;
@@ -157,11 +190,11 @@ const ControlPanel = ({
 
   return (
     <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
-      <Heading size='lg' mb={4} w="full">
+      <Heading size='lg' mb={4} w='full'>
         <Flex justify='space-between'>
           journey
           <OptionsMenu
-            onUpdateExistingComp={() => console.log('update')}
+            onUpdateExistingComp={handleClickUpdate}
             onCreateComp={openCreateComp}
             onEditComps={openEditComps}
           />

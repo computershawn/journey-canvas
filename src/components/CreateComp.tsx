@@ -15,7 +15,7 @@ const MSG = {
   HELPER: 'Comp name should have at least 3 letters.',
 };
 
-const NewComp = ({
+const CreateComp = ({
   onClickSave,
   open,
   setOpen,
@@ -107,4 +107,4 @@ const NewComp = ({
   );
 };
 
-export default NewComp;
+export default CreateComp;
