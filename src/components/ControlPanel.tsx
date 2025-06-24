@@ -7,6 +7,7 @@ import {
   Heading,
   HStack,
   IconButton,
+  Link,
   SliderValueChangeDetails,
   Text,
   VStack,
@@ -24,6 +25,26 @@ import Switch from './ui/switch';
 import NewComp from './CreateComp';
 import OptionsMenu from './OptionsMenu';
 import EditComps from './ManageComps';
+
+const Tagline = () => (
+    <Text textStyle='sm' color='#000' mt="auto">
+      {/* <Box as='span' opacity='0.625'>
+        copyright © 2025 shawn jackson
+      </Box>{' '} */}
+      <Link
+        _hover={{ opacity: 1, color: '#000' }}
+        _focus={{ outlineWidth: 1, outlineColor: 'rgb(255,255,255,0.25)' }}
+        variant='plain'
+        href='https://github.com/computershawn/journey-canvas'
+        opacity={0.625}
+        target='_blank'
+        color='#000'
+        transition={'opacity 0.2s ease-in-out'}
+      >
+        @computershawn
+      </Link>
+    </Text>
+);
 
 const ControlPanel = ({
   allColors,
@@ -191,12 +212,12 @@ const ControlPanel = ({
   };
 
   const panelWidth = isWide ? 300 : 216;
-  
+
   return (
     <VStack w={panelWidth} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
       <Heading size='lg' mb={4} w='full'>
         <Flex justify='space-between'>
-          <img src={logoTypeUrl} alt="Journey Logo" width="80" />
+          <img src={logoTypeUrl} alt='Journey Logo' width='80' />
           <OptionsMenu
             onUpdateExistingComp={handleClickUpdate}
             onCreateComp={openCreateComp}
@@ -323,6 +344,7 @@ const ControlPanel = ({
           )}
         </Flex>
       </VStack>
+      <Tagline />
 
       {/* Dialog for creating a new comp */}
       <NewComp

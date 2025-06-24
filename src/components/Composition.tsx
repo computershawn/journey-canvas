@@ -5,9 +5,7 @@ import {
   Box,
   Flex,
   IconButton,
-  Link,
   SliderValueChangeDetails,
-  Text,
   VStack,
 } from '@chakra-ui/react';
 
@@ -241,7 +239,6 @@ const Composition = ({
           )}
         </Flex>
       </VStack>
-      <Tagline />
     </>
   ) : (
     <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
@@ -250,32 +247,3 @@ const Composition = ({
 
 export default Composition;
 
-const Tagline = () => (
-  <Flex
-    w='sm'
-    h={8}
-    position='absolute'
-    bottom={2}
-    right={6}
-    justify='flex-end'
-    align='center'
-  >
-    <Text textStyle='sm' color='#fff'>
-      {/* <Box as='span' opacity='0.625'>
-        copyright © 2025 shawn jackson
-      </Box>{' '} */}
-      <Link
-        _hover={{ opacity: 1, color: '#fff' }}
-        _focus={{ outlineWidth: 1, outlineColor: 'rgb(255,255,255,0.25)' }}
-        variant='plain'
-        href='https://github.com/computershawn/journey-canvas'
-        opacity={0.75}
-        target='_blank'
-        color='#fff'
-        transition={'opacity 0.2s ease-in-out'}
-      >
-        @computershawn
-      </Link>
-    </Text>
-  </Flex>
-);
