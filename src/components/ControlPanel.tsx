@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-
 import { FaArrowRotateRight, FaEye, FaEyeSlash } from 'react-icons/fa6';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   Flex,
@@ -13,6 +12,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import logoTypeUrl from '/journey-logotype.svg';
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
@@ -196,7 +196,7 @@ const ControlPanel = ({
     <VStack w={panelWidth} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
       <Heading size='lg' mb={4} w='full'>
         <Flex justify='space-between'>
-          journey
+          <img src={logoTypeUrl} alt="Journey Logo" width="80" />
           <OptionsMenu
             onUpdateExistingComp={handleClickUpdate}
             onCreateComp={openCreateComp}
