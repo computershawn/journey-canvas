@@ -10,6 +10,8 @@ import {
 import { useControls } from '../hooks/useControls';
 import { CompValues, CtrlPoint, Point } from '../types';
 
+const chIdx = [[1], null, null, [2, -1], null, [4]];
+
 const getBezierSegmentPoints = (
   p0: CtrlPoint,
   p1: CtrlPoint,
@@ -57,10 +59,12 @@ const getBezierSplinePoints = (points: CtrlPoint[]) => {
 
 const BeziControls = ({
   comp,
+  isWide,
   points,
   setBeziCtrlPts,
 }: {
   comp: CompValues | null;
+  isWide: boolean;
   points: CtrlPoint[];
   setBeziCtrlPts: (pts: CtrlPoint[]) => void;
 }) => {
@@ -94,7 +98,6 @@ const BeziControls = ({
   }, []);
 
   useEffect(() => {
-    const chIdx = [[1], null, null, [2, -1], null, [4]];
     const randPts = chIdx.map((c) => ({
       x: Math.random() * CANV_WD,
       y: Math.random() * CANV_HT,
@@ -287,6 +290,8 @@ const BeziControls = ({
     setDragIndex(-1);
   };
 
+  const left = isWide ? 308 : 224;
+
   return (
     <canvas
       ref={canvasRef}
@@ -295,7 +300,7 @@ const BeziControls = ({
       style={{
         position: 'absolute',
         top: '8px',
-        left: '308px',
+        left: `${left}px`,
         display: pathsChecked ? 'block' : 'none',
       }}
       onMouseDown={handleMouseDown}

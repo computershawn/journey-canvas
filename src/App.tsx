@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { HStack } from '@chakra-ui/react';
+import { HStack, useMediaQuery } from '@chakra-ui/react';
 
 import Artboard from './components/Artboard';
 import ControlPanel from './components/ControlPanel';
@@ -17,6 +17,7 @@ function App() {
   const [compIndex, setCompIndex] = useState(0);
   const [palette, setPalette] = useState<ColorArray>([]);
 
+  const [isWide] = useMediaQuery(['(min-width: 1596px)'])
   const { allColors } = useFetchColors();
 
   useEffect(() => {
@@ -49,6 +50,7 @@ function App() {
           setBackgroundIndex={setBackgroundIndex}
           setColorChecked={setColorChecked}
           setPalette={setPalette}
+          isWide={isWide}
         />
         <Artboard
           backgroundIndex={backgroundIndex}
@@ -56,6 +58,7 @@ function App() {
           bgChecked={bgChecked}
           colorChecked={colorChecked}
           compIndex={compIndex}
+          isWide={isWide}
           palette={palette}
           setBeziCtrlPts={setBeziCtrlPts}
         />

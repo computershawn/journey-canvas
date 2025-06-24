@@ -144,10 +144,6 @@ const Composition = ({
     draw();
   }
 
-  if (!bezierSplinePoints?.length) {
-    return null;
-  }
-
   const pad = 4;
   const extraPadding = 8;
   const gap = 8;
