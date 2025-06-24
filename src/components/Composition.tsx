@@ -5,7 +5,9 @@ import {
   Box,
   Flex,
   IconButton,
+  Link,
   SliderValueChangeDetails,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 
@@ -172,75 +174,108 @@ const Composition = ({
   };
 
   return geomChecked ? (
-    <VStack align='flex-start'>
-      <canvas ref={canvasRef} style={canvasStyle} />
-      <Flex
-        w={1280}
-        h='2.5rem'
-        bg='#292929'
-        outline='1px solid #404040'
-        p={`${pad}px`}
-        alignItems='center'
-        gap={`${gap}px`}
-        borderRadius='sm'
-        position='relative'
-      >
-        <IconButton
-          size='xs'
-          aria-label='Play or pause animation'
-          onClick={() => {
-            if (isPlaying) {
-              handleClickTimeline();
-            } else {
-              play();
-            }
-          }}
-          w={`${btnWidth}px`}
+    <>
+      <VStack align='flex-start'>
+        <canvas ref={canvasRef} style={canvasStyle} />
+        <Flex
+          w={1280}
+          h='2.5rem'
+          bg='#292929'
+          outline='1px solid #404040'
+          p={`${pad}px`}
+          alignItems='center'
+          gap={`${gap}px`}
+          borderRadius='sm'
+          position='relative'
         >
-          {isPlaying ? <FaPause color='black' /> : <FaPlay color='#2bb79b' />}
-        </IconButton>
-        {isPlaying ? (
-          <Flex w='full' h='100%' onClick={handleClickTimeline}>
-            <Box
-              h={`${trackHt}px`}
-              w={progressWidth}
-              bg='#111'
-              borderRadius='full'
-              position='absolute'
-              top={top}
-              left={left}
-            />
-            <Box
-              h={`${trackHt}px`}
-              style={{ width: `${value * progressWidth}px` }}
-              bg={MINTY}
-              borderRadius='full'
-              position='absolute'
-              top={top}
-              left={left}
-              zIndex={1}
-            />
-          </Flex>
-        ) : (
-          <Flex w='full' h='100%' align='center'>
-            <Slider
-              defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
-              isAnimProgressBar
-              max={DURATION_FRAMES}
-              min={1}
-              onValueChange={updateFrame}
-              onValueChangeEnd={handleValueChangeEnd}
-              showValueText={false}
-              size='sm'
-              value={manualFrame}
-            />
-          </Flex>
-        )}
-      </Flex>
-    </VStack>
+          <IconButton
+            size='xs'
+            aria-label='Play or pause animation'
+            onClick={() => {
+              if (isPlaying) {
+                handleClickTimeline();
+              } else {
+                play();
+              }
+            }}
+            w={`${btnWidth}px`}
+          >
+            {isPlaying ? <FaPause color='black' /> : <FaPlay color='#2bb79b' />}
+          </IconButton>
+          {isPlaying ? (
+            <Flex w='full' h='100%' onClick={handleClickTimeline}>
+              <Box
+                h={`${trackHt}px`}
+                w={progressWidth}
+                bg='#111'
+                borderRadius='full'
+                position='absolute'
+                top={top}
+                left={left}
+              />
+              <Box
+                h={`${trackHt}px`}
+                style={{ width: `${value * progressWidth}px` }}
+                bg={MINTY}
+                borderRadius='full'
+                position='absolute'
+                top={top}
+                left={left}
+                zIndex={1}
+              />
+            </Flex>
+          ) : (
+            <Flex w='full' h='100%' align='center'>
+              <Slider
+                defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
+                isAnimProgressBar
+                max={DURATION_FRAMES}
+                min={1}
+                onValueChange={updateFrame}
+                onValueChangeEnd={handleValueChangeEnd}
+                showValueText={false}
+                size='sm'
+                value={manualFrame}
+              />
+            </Flex>
+          )}
+        </Flex>
+      </VStack>
+      <Tagline />
+    </>
   ) : (
     <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
   );
 };
 
 export default Composition;
+
+const Tagline = () => (
+  <Flex
+    w='sm'
+    h={8}
+    position='absolute'
+    bottom={2}
+    right={6}
+    justify='flex-end'
+    align='center'
+  >
+    <Text textStyle='sm' color='#fff'>
+      {/* <Box as='span' opacity='0.625'>
+        copyright © 2025 shawn jackson
+      </Box>{' '} */}
+      <Link
+        _hover={{ opacity: 1, color: '#fff' }}
+        _focus={{ outlineWidth: 1, outlineColor: 'rgb(255,255,255,0.25)' }}
+        variant='plain'
+        href='https://github.com/computershawn/journey-canvas'
+        opacity={0.75}
+        target='_blank'
+        color='#fff'
+        transition={'opacity 0.2s ease-in-out'}
+      >
+        @computershawn
+      </Link>
+    </Text>
+  </Flex>
+);
