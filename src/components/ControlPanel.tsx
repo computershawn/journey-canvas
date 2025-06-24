@@ -37,6 +37,7 @@ const ControlPanel = ({
   setBgChecked,
   setColorChecked,
   setPalette,
+  isWide,
 }: {
   allColors: ColorArray[];
   backgroundIndex: number;
@@ -49,6 +50,7 @@ const ControlPanel = ({
   setBgChecked: (checked: boolean) => void;
   setColorChecked: (checked: boolean) => void;
   setPalette: (palette: ColorArray) => void;
+  isWide: boolean;
 }) => {
   // const [parxChecked, setParxChecked] = useState(true);
   const [compId, setCompId] = useState<string[]>(['-']);
@@ -188,8 +190,10 @@ const ControlPanel = ({
     setIsEditCompsOpen(true);
   };
 
+  const panelWidth = isWide ? 300 : 216;
+  
   return (
-    <VStack w={300} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
+    <VStack w={panelWidth} h='100vh' bg='#eee' p={4} align='flex-start' gap={6}>
       <Heading size='lg' mb={4} w='full'>
         <Flex justify='space-between'>
           journey
@@ -287,7 +291,7 @@ const ControlPanel = ({
           </Switch>
           {colorChecked && palette.length > 0 && (
             <HStack>
-              <Chips palette={palette} />
+              <Chips wide={isWide} palette={palette} />
               <IconButton
                 size='xs'
                 aria-label='Pick random palette'

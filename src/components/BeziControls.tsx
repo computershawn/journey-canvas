@@ -59,10 +59,12 @@ const getBezierSplinePoints = (points: CtrlPoint[]) => {
 
 const BeziControls = ({
   comp,
+  isWide,
   points,
   setBeziCtrlPts,
 }: {
   comp: CompValues | null;
+  isWide: boolean;
   points: CtrlPoint[];
   setBeziCtrlPts: (pts: CtrlPoint[]) => void;
 }) => {
@@ -288,6 +290,8 @@ const BeziControls = ({
     setDragIndex(-1);
   };
 
+  const left = isWide ? 308 : 224;
+
   return (
     <canvas
       ref={canvasRef}
@@ -296,7 +300,7 @@ const BeziControls = ({
       style={{
         position: 'absolute',
         top: '8px',
-        left: '308px',
+        left: `${left}px`,
         display: pathsChecked ? 'block' : 'none',
       }}
       onMouseDown={handleMouseDown}
