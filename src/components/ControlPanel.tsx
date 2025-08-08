@@ -27,7 +27,7 @@ import OptionsMenu from './OptionsMenu';
 import EditComps from './ManageComps';
 
 const Tagline = () => (
-    <Text textStyle='sm' color='#000' mt="auto">
+    <Text textStyle='sm' color='black' mt="auto">
       {/* <Box as='span' opacity='0.625'>
         copyright © 2025 shawn jackson
       </Box>{' '} */}

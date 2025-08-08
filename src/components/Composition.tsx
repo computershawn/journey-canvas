@@ -17,6 +17,7 @@ import FanBlade from '../utils/fanBlade';
 import { mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
 import Slider from './ui/slider';
+import VideoGen from './VideoGen';
 
 const scale = 1;
 const NUM_COLORS = 5;
@@ -49,6 +50,7 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
+  const [isRendering, setIsRendering] = useState(false);
 
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
@@ -171,12 +173,121 @@ const Composition = ({
     setManualFrame(cycleFrame);
   };
 
+  const simulateUploadFrame = async () => {
+    // Asynchronously get a Blob of the current canvas state
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 200);
+    });
+  };
+  // const uploadFrames = async (frames: Blob[]) => {
+  //   // Asynchronously get a Blob of the current canvas state
+  //   frames.forEach(async (frame: Blob, i: number) => {
+  //     await new Promise((resolve) => {
+  //       setTimeout(() => {
+  //         console.log(`frame ${i} size: ${frame.size} bytes`);
+  //         resolve(true);
+  //       }, 200);
+  //     });
+  //   });
+
+  // // const formData = new FormData();
+  // //   frames.forEach((frame, index) => {
+  // //     formData.append(`frame-${index}`, frame, `frame-${index}.jpeg`);
+  // //   });
+
+  // //   try {
+  // //     const response = await fetch('YOUR_FIREBASE_FUNCTION_URL', {
+  // //       method: 'POST',
+  // //       body: formData,
+  // //     });
+  // //     const result = await response.json();
+  // //     console.log('Video creation started:', result);
+  // //     // Handle success, e.g., show a link to the user
+  // //   } catch (error) {
+  // //     console.error('Upload failed:', error);
+  // //   }
+  // };
+  // const uploadFrame = async (frame: Blob, index: number) => {
+  //   // Asynchronously get a Blob of the current canvas state
+  //   await new Promise((resolve) => {
+  //     setTimeout(() => {
+  //       console.log(`frame ${index} size: ${frame.size} bytes`);
+  //       resolve(true);
+  //     }, 200);
+  //   });
+
+  //   // const formData = new FormData();
+  //   //   frames.forEach((frame, index) => {
+  //   //     formData.append(`frame-${index}`, frame, `frame-${index}.jpeg`);
+  //   //   });
+
+  //   //   try {
+  //   //     const response = await fetch('YOUR_FIREBASE_FUNCTION_URL', {
+  //   //       method: 'POST',
+  //   //       body: formData,
+  //   //     });
+  //   //     const result = await response.json();
+  //   //     console.log('Video creation started:', result);
+  //   //     // Handle success, e.g., show a link to the user
+  //   //   } catch (error) {
+  //   //     console.error('Upload failed:', error);
+  //   //   }
+  // };
+
+  const initRender = async () => {
+    console.log('initiate render via firebase');
+    setIsRendering(true);
+
+    for (let i = 0; i < DURATION_FRAMES; i++) {
+      setManualFrame(i);
+      await simulateUploadFrame();
+    }
+    console.log('done uploading. now wait for download link to become available');
+    setIsRendering(false);
+  };
+
+  // Example React component snippet for capturing frames
+  // const initRender = () => {
+  //   if (!canvas) {
+  //     return;
+  //   }
+  //   // const canvas = canvasRef.current;
+  //   // const newFrames: Blob[] = [];
+
+  //   // Example loop for capturing frames
+  //   for (let i = 0; i < DURATION_FRAMES; i++) {
+  //     // Assuming you have a function to draw the next frame
+  //     setManualFrame(i);
+
+  //     // Asynchronously get a Blob of the current canvas state
+  //     canvas.toBlob(
+  //       (blob) => {
+  //         if (blob !== null) await uploadFrame(blob, i);
+  //       },
+  //       'image/jpeg',
+  //       0.8
+  //     ); // Use JPEG for smaller file sizes
+  //   }
+
+  //   // This is a simplified example. In a real app, you'd use a loop with timing
+  //   // to capture frames at a consistent rate (e.g., 30fps).
+
+  //   // After all frames are captured, send them to the server
+  //   // uploadFrames(newFrames);
+  // };
+
+  const percentUploaded = Math.round(
+    (100 * (manualFrame - 1)) / (DURATION_FRAMES - 1)
+  );
+
   return geomChecked ? (
     <>
       <VStack align='flex-start'>
         <canvas ref={canvasRef} style={canvasStyle} />
         <Flex
-          w={1280}
+          w={CANV_WD}
           h='2.5rem'
           bg='#292929'
           outline='1px solid #404040'
@@ -238,6 +349,11 @@ const Composition = ({
             </Flex>
           )}
         </Flex>
+        <VideoGen
+          isRendering={isRendering}
+          initRender={initRender}
+          percentUploaded={percentUploaded}
+        />
       </VStack>
     </>
   ) : (
@@ -246,4 +362,3 @@ const Composition = ({
 };
 
 export default Composition;
-
