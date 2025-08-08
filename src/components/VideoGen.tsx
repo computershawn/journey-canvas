@@ -6,13 +6,13 @@ const gap = 8;
 
 interface VideoGenProps {
   isRendering: boolean;
-  initRender: () => void;
+  renderVideo: () => void;
   percentUploaded: number;
 }
 
 const VideoGen = ({
   isRendering,
-  initRender,
+  renderVideo,
   percentUploaded,
 }: VideoGenProps) => {
   return (
@@ -30,7 +30,7 @@ const VideoGen = ({
         aria-label=''
         size='xs'
         variant='outline'
-        onClick={initRender}
+        onClick={renderVideo}
         disabled={isRendering}
       >
         <FaFilm /> Render
