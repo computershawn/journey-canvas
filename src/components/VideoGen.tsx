@@ -1,5 +1,8 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { FaFilm } from 'react-icons/fa6';
+import AuthDialog from './AuthDialog';
+import { auth } from '../firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 const pad = 4;
 const gap = 8;
@@ -15,6 +18,8 @@ const VideoGen = ({
   renderVideo,
   percentUploaded,
 }: VideoGenProps) => {
+  const [authUser] = useAuthState(auth);
+
   return (
     <Flex
       h='2.5rem'
@@ -26,19 +31,25 @@ const VideoGen = ({
       borderRadius='sm'
       position='relative'
     >
-      <Button
-        aria-label=''
-        size='xs'
-        variant='outline'
-        onClick={renderVideo}
-        disabled={isRendering}
-      >
-        <FaFilm /> Render
-      </Button>
-      {isRendering && (
-        <Text textStyle='sm' color='white'>
-          Uploading {`${percentUploaded}%`}
-        </Text>
+      {authUser ? (
+        <>
+          <Button
+            aria-label=''
+            size='xs'
+            variant='outline'
+            onClick={renderVideo}
+            disabled={isRendering}
+          >
+            <FaFilm /> Render
+          </Button>
+          {isRendering && (
+            <Text textStyle='sm' color='white'>
+              Uploading {`${percentUploaded}%`}
+            </Text>
+          )}
+        </>
+      ) : (
+        <AuthDialog />
       )}
     </Flex>
   );
