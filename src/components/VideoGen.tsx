@@ -1,8 +1,12 @@
-import { Button, Flex, Text } from '@chakra-ui/react';
-import { FaFilm } from 'react-icons/fa6';
-import AuthDialog from './AuthDialog';
-import { auth } from '../firebase';
+import { Button, Flex, IconButton, Text } from '@chakra-ui/react';
+
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FaFilm } from 'react-icons/fa6';
+
+import { auth } from '../firebase';
+import { useLogout } from '../hooks/useLogout';
+import AuthDialog from './AuthDialog';
+import { toaster } from './Toastier';
 
 const pad = 4;
 const gap = 8;
@@ -13,12 +17,20 @@ interface VideoGenProps {
   percentUploaded: number;
 }
 
+const onErrorCallback = (errMsg: string) => {
+  toaster.create({
+    description: errMsg,
+    type: 'error',
+  });
+};
+
 const VideoGen = ({
   isRendering,
   renderVideo,
   percentUploaded,
 }: VideoGenProps) => {
   const [authUser] = useAuthState(auth);
+  const { handleLogout, isLoggingOut } = useLogout(onErrorCallback);
 
   return (
     <Flex
@@ -33,20 +45,28 @@ const VideoGen = ({
     >
       {authUser ? (
         <>
-          <Button
+          <IconButton
             aria-label=''
             size='xs'
             variant='outline'
             onClick={renderVideo}
             disabled={isRendering}
           >
-            <FaFilm /> Render
-          </Button>
+            <FaFilm />
+          </IconButton>
           {isRendering && (
             <Text textStyle='sm' color='white'>
               Uploading {`${percentUploaded}%`}
             </Text>
           )}
+          <Button
+            size='xs'
+            variant='outline'
+            loading={isLoggingOut}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
         </>
       ) : (
         <AuthDialog />

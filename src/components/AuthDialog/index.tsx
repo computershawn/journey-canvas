@@ -1,4 +1,4 @@
-import { Dialog, Button, Portal, CloseButton } from '@chakra-ui/react';
+import { Dialog, Portal, CloseButton, IconButton } from '@chakra-ui/react';
 import { FaFilm } from 'react-icons/fa6';
 import AuthForm from './AuthForm';
 
@@ -6,9 +6,13 @@ const AuthDialog = () => {
   return (
     <Dialog.Root placement='center' size='sm'>
       <Dialog.Trigger asChild>
-        <Button aria-label='' size='xs' variant='outline'>
-          <FaFilm /> Render
-        </Button>
+        <IconButton
+          aria-label='Export animation to video'
+          size='xs'
+          variant='outline'
+        >
+          <FaFilm />
+        </IconButton>
       </Dialog.Trigger>
       <Portal>
         <Dialog.Backdrop />
