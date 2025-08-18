@@ -1,3 +1,4 @@
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { useMemo, useRef, useState } from 'react';
 import { FaPause, FaPlay } from 'react-icons/fa6';
 
@@ -11,6 +12,7 @@ import {
 
 import { CANV_HT, CANV_WD, DURATION_FRAMES, MINTY } from '../constants';
 import { useControls } from '../hooks/useControls';
+import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
 import { ColorArray, Point } from '../types';
 import FanBlade from '../utils/fanBlade';
@@ -51,6 +53,7 @@ const Composition = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
   const [isRendering, setIsRendering] = useState(false);
+  const storage = getStorage();
 
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
@@ -90,6 +93,36 @@ const Composition = ({
   const { isPlaying, pause, play, resetLastValue, setValue, value } =
     useTimeLoop(15000);
   const cycleFrame = 1 + Math.round(value * (DURATION_FRAMES - 1));
+
+  const updateForRender = (frame: number) => {
+    // Update all positions of our references
+    const difference = mapTo(diff, 0, 100, 1, 8);
+
+    nullElements.forEach((nE) => {
+      nE.update(frame, balance / 100, difference);
+    });
+
+    for (let j = 0; j < nullElements.length - 1; j++) {
+      const thisRef = nullElements[j];
+      const nextRef = nullElements[j + 1];
+
+      const px0 = thisRef.point0.x + thisRef.x;
+      const py0 = thisRef.point0.y + thisRef.y;
+      const px1 = thisRef.point1.x + thisRef.x;
+      const py1 = thisRef.point1.y + thisRef.y;
+      const px2 = nextRef.point1.x + nextRef.x;
+      const py2 = nextRef.point1.y + nextRef.y;
+      const px3 = nextRef.point0.x + nextRef.x;
+      const py3 = nextRef.point0.y + nextRef.y;
+
+      const pv0 = { x: scale * px0, y: scale * py0 };
+      const pv1 = { x: scale * px1, y: scale * py1 };
+      const pv2 = { x: scale * px2, y: scale * py2 };
+      const pv3 = { x: scale * px3, y: scale * py3 };
+
+      fanBlades[j].update(pv0, pv1, pv2, pv3);
+    }
+  };
 
   const update = () => {
     // Update all positions of our references
@@ -173,41 +206,52 @@ const Composition = ({
     setManualFrame(cycleFrame);
   };
 
-  const uploadFrame = async (index: number) => {
+  // Render each frame and upload it to Firebase Storage
+  // TODO: It might be possible to use Promise.all and upload N number of frames in parallel
+  const uploadFrames = async () => {
     if (!canvas) {
+      console.error('No HTML canvas present');
       return;
     }
 
-    await new Promise((resolve) => {
-      setTimeout(() => {
+    const startFrame = 0;
+    const limit = 24;
+
+    try {
+      for (let i = startFrame; i < startFrame + limit; i++) {
+        updateForRender(i);
+        draw();
+        const paddedIndex = String(i).padStart(4, '0');
+        const imagePath = `frames/frame-${paddedIndex}`;
+        const storageRef = ref(storage, imagePath);
+
+        // Get a Blob of the current canvas state
         canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              console.error('Could not create blob from canvas');
-              return;
+          async (blob) => {
+            if (blob) {
+              // Upload the blob to Firebase
+              await uploadBytes(storageRef, blob);
             }
-            console.log(`uploading frame ${index}, ${blob.size} bytes`);
           },
-          'image/jpeg',
+          'image/jpeg', // Use JPEG for smaller file sizes
           0.8
-        ); // Use JPEG for smaller file sizes
-        resolve(true);
-      }, 200);
-    });
+        );
+      }
+    } catch (error) {
+      console.error('Error uploading frames:', error);
+    }
+
+    setIsRendering(false);
   };
 
-  const renderVideo = async () => {
-    console.log('initiate render via firebase');
-    setIsRendering(true);
+  const { processVideo, videoIsProcessing, videoCreateError } = useProcessVideo();
 
-    for (let i = 0; i < DURATION_FRAMES; i++) {
-      setManualFrame(i);
-      await uploadFrame(i + 1);
-    }
-    console.log(
-      'done uploading. now wait for download link to become available'
-    );
-    setIsRendering(false);
+  const renderVideo = async () => {
+    setIsRendering(true);
+    await uploadFrames();
+    console.log('Frames uploaded. Ready to render video.');
+    const blep = processVideo();
+    console.log('video has been processed', blep);
   };
 
   const percentUploaded = Math.round(
@@ -286,6 +330,16 @@ const Composition = ({
           renderVideo={renderVideo}
           percentUploaded={percentUploaded}
         />
+        {videoIsProcessing && (
+          <Box color='green.500'>
+            Video is being processed...
+          </Box>
+        )}
+        {videoCreateError && (
+          <Box color='red.500'>
+            {videoCreateError?.message || 'An error occurred while processing the video.'}
+          </Box>
+        )}
       </VStack>
     </>
   ) : (
