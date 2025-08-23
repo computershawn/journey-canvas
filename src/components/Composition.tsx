@@ -256,7 +256,7 @@ const Composition = ({
     for (let i = startFrame; i < startFrame + limit; i++) {
       updateForRender(i);
       draw();
-      const paddedIndex = String(i).padStart(4, '0');
+      const paddedIndex = String(i + 1).padStart(4, '0');
       const imagePath = `frames/frame-${paddedIndex}.jpg`;
       const storageRef = ref(storage, imagePath);
 
