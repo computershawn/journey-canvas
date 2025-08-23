@@ -257,7 +257,7 @@ const Composition = ({
       updateForRender(i);
       draw();
       const paddedIndex = String(i).padStart(4, '0');
-      const imagePath = `frames/frame-${paddedIndex}`;
+      const imagePath = `frames/frame-${paddedIndex}.jpg`;
       const storageRef = ref(storage, imagePath);
 
       // Wrap toBlob in a Promise so you can await it
