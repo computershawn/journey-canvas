@@ -1,7 +1,7 @@
 import { useHttpsCallable } from 'react-firebase-hooks/functions';
 import { fireFunctions } from '../firebase';
 
-const firebaseFunctionName = 'generateVideo';
+const firebaseFunctionName = 'videoGen';
 
 export const useProcessVideo = () => {
     const [executeCallable, executing, error] = useHttpsCallable(
