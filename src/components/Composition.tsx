@@ -208,6 +208,41 @@ const Composition = ({
 
   // Render each frame and upload it to Firebase Storage
   // TODO: It might be possible to use Promise.all and upload N number of frames in parallel
+  // const uploadFrames = async () => {
+  //   if (!canvas) {
+  //     console.error('No HTML canvas present');
+  //     return;
+  //   }
+
+  //   const startFrame = 0;
+  //   const limit = 24;
+
+  //   try {
+  //     for (let i = startFrame; i < startFrame + limit; i++) {
+  //       updateForRender(i);
+  //       draw();
+  //       const paddedIndex = String(i + 1).padStart(4, '0');
+  //       const imagePath = `frames/frame-${paddedIndex}.jpg`;
+  //       const storageRef = ref(storage, imagePath);
+
+  //       // Get a Blob of the current canvas state
+  //       canvas.toBlob(
+  //         async (blob) => {
+  //           if (blob) {
+  //             // Upload the blob to Firebase
+  //             await uploadBytes(storageRef, blob);
+  //           }
+  //         },
+  //         'image/jpeg', // Use JPEG for smaller file sizes
+  //         0.8,
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error('Error uploading frames:', error);
+  //   }
+
+  //   setIsRendering(false);
+  // };
   const uploadFrames = async () => {
     if (!canvas) {
       console.error('No HTML canvas present');
@@ -216,27 +251,40 @@ const Composition = ({
 
     const startFrame = 0;
     const limit = 24;
+    const uploadPromises: Promise<void>[] = [];
 
-    try {
-      for (let i = startFrame; i < startFrame + limit; i++) {
-        updateForRender(i);
-        draw();
-        const paddedIndex = String(i + 1).padStart(4, '0');
-        const imagePath = `frames/frame-${paddedIndex}.jpg`;
-        const storageRef = ref(storage, imagePath);
+    for (let i = startFrame; i < startFrame + limit; i++) {
+      updateForRender(i);
+      draw();
+      const paddedIndex = String(i).padStart(4, '0');
+      const imagePath = `frames/frame-${paddedIndex}`;
+      const storageRef = ref(storage, imagePath);
 
-        // Get a Blob of the current canvas state
+      // Wrap toBlob in a Promise so you can await it
+      const uploadPromise = new Promise<void>((resolve, reject) => {
         canvas.toBlob(
           async (blob) => {
             if (blob) {
-              // Upload the blob to Firebase
-              await uploadBytes(storageRef, blob);
+              try {
+                await uploadBytes(storageRef, blob);
+                resolve();
+              } catch (err) {
+                reject(err);
+              }
+            } else {
+              reject(new Error('Failed to create blob'));
             }
           },
-          'image/jpeg', // Use JPEG for smaller file sizes
+          'image/jpeg',
           0.8,
         );
-      }
+      });
+
+      uploadPromises.push(uploadPromise);
+    }
+
+    try {
+      await Promise.all(uploadPromises);
     } catch (error) {
       console.error('Error uploading frames:', error);
     }
@@ -251,7 +299,7 @@ const Composition = ({
     setIsRendering(true);
     await uploadFrames();
     console.log('Frames uploaded. Ready to render video.');
-    const blep = processVideo();
+    const blep = await processVideo();
     console.log('video has been processed', blep);
   };
 
