@@ -12,7 +12,7 @@ export const useProcessVideo = () => {
     return {
         processVideo: () =>
             executeCallable({
-                imagePrefix: 'frame-',
+                imagePrefix: 'frames/frame-',
                 imageCount: 24,
                 frameRate: 24,
                 outputFilename: 'output-video.mp4',
