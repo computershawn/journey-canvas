@@ -221,7 +221,7 @@ const Composition = ({
       for (let i = startFrame; i < startFrame + limit; i++) {
         updateForRender(i);
         draw();
-        const paddedIndex = String(i).padStart(4, '0');
+        const paddedIndex = String(i + 1).padStart(4, '0');
         const imagePath = `frames/frame-${paddedIndex}.jpg`;
         const storageRef = ref(storage, imagePath);
 
@@ -234,7 +234,7 @@ const Composition = ({
             }
           },
           'image/jpeg', // Use JPEG for smaller file sizes
-          0.8
+          0.8,
         );
       }
     } catch (error) {
@@ -244,7 +244,8 @@ const Composition = ({
     setIsRendering(false);
   };
 
-  const { processVideo, videoIsProcessing, videoCreateError } = useProcessVideo();
+  const { processVideo, videoIsProcessing, videoCreateError } =
+    useProcessVideo();
 
   const renderVideo = async () => {
     setIsRendering(true);
@@ -255,7 +256,7 @@ const Composition = ({
   };
 
   const percentUploaded = Math.round(
-    (100 * (manualFrame - 1)) / (DURATION_FRAMES - 1)
+    (100 * (manualFrame - 1)) / (DURATION_FRAMES - 1),
   );
 
   return geomChecked ? (
@@ -331,13 +332,12 @@ const Composition = ({
           percentUploaded={percentUploaded}
         />
         {videoIsProcessing && (
-          <Box color='green.500'>
-            Video is being processed...
-          </Box>
+          <Box color='green.500'>Video is being processed...</Box>
         )}
         {videoCreateError && (
           <Box color='red.500'>
-            {videoCreateError?.message || 'An error occurred while processing the video.'}
+            {videoCreateError?.message ||
+              'An error occurred while processing the video.'}
           </Box>
         )}
       </VStack>
