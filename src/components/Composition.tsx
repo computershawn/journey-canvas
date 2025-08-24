@@ -384,7 +384,7 @@ const Composition = ({
         )}
         {videoCreateError && (
           <Box color='red.500'>
-            {videoCreateError?.message ||
+            {videoCreateError ||
               'An error occurred while processing the video.'}
           </Box>
         )}
