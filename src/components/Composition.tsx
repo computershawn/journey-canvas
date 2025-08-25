@@ -300,7 +300,7 @@ const Composition = ({
     await uploadFrames();
     console.log('Frames uploaded. Ready to render video.');
     const blep = await processVideo();
-    console.log('video has been processed', blep);
+    console.log('Done.', blep);
   };
 
   const percentUploaded = Math.round(

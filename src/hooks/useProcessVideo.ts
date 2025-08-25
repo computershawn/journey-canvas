@@ -61,13 +61,13 @@ export const useProcessVideo = () => {
 
     try {
       // Get the ID token from the authenticated user
-      const idToken = await user?.getIdToken();
+      // const idToken = await user?.getIdToken();
 
       const response = await fetch(CLOUD_RUN_SERVICE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`, // Send the ID token for authentication
+          // 'Authorization': `Bearer ${idToken}`, // Send the ID token for authentication
         },
         body: JSON.stringify({
           imagePrefix: 'frames/frame-',
