@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { FaArrowRotateRight, FaEye, FaEyeSlash } from 'react-icons/fa6';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import {
+  FaArrowRightFromBracket,
+  FaArrowRotateRight,
+  FaEye,
+  FaEyeSlash,
+  FaUserAstronaut,
+} from 'react-icons/fa6';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -12,7 +19,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import logoTypeUrl from '/journey-logotype.svg';
+import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
@@ -25,6 +32,16 @@ import NewComp from './CreateComp';
 import OptionsMenu from './OptionsMenu';
 import EditComps from './ManageComps';
 import Tagline from './Tagline';
+import { toaster } from './Toastier';
+import logoTypeUrl from '/journey-logotype.svg';
+import { useLogout } from '../hooks/useLogout';
+
+const onErrorCallback = (errMsg: string) => {
+  toaster.create({
+    description: errMsg,
+    type: 'error',
+  });
+};
 
 const ControlPanel = ({
   allColors,
@@ -57,6 +74,8 @@ const ControlPanel = ({
   const [compId, setCompId] = useState<string[]>(['-']);
   const [isCreateCompOpen, setIsCreateCompOpen] = useState(false);
   const [isEditCompsOpen, setIsEditCompsOpen] = useState(false);
+  const [authUser] = useAuthState(auth);
+  const { handleLogout, isLoggingOut } = useLogout(onErrorCallback);
 
   const {
     balance,
@@ -265,21 +284,21 @@ const ControlPanel = ({
           </Flex>
 
           {/* <Flex w='100%' h={8} align='center' justify='space-between'>
-          <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
-            Particles
-          </Text>
-          <IconButton
-            size='xs'
-            aria-label='hide or show particles'
-            onClick={() => setParxChecked(!parxChecked)}
-          >
-            {parxChecked ? (
-              <FaEye color='black' />
-            ) : (
-              <FaEyeSlash color='black' />
-            )}
-          </IconButton>
-        </Flex> */}
+            <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
+              Particles
+            </Text>
+            <IconButton
+              size='xs'
+              aria-label='hide or show particles'
+              onClick={() => setParxChecked(!parxChecked)}
+            >
+              {parxChecked ? (
+                <FaEye color='black' />
+              ) : (
+                <FaEyeSlash color='black' />
+              )}
+            </IconButton>
+          </Flex> */}
 
           <Flex w='100%' h={8} align='center' justify='space-between'>
             <Switch
@@ -324,6 +343,27 @@ const ControlPanel = ({
               />
             )}
           </Flex>
+
+          {authUser && (
+            <Flex w='100%' h={8} align='center' justify='space-between'>
+              <Flex gap={1}>
+                <FaUserAstronaut />
+                <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>
+                  {authUser.email}
+                </Text>
+              </Flex>
+              <IconButton
+                size='xs'
+                aria-label='Sign out of account'
+                onClick={handleLogout}
+                color='black'
+                loading={isLoggingOut}
+                disabled={isLoggingOut}
+              >
+                <FaArrowRightFromBracket color='black' />
+              </IconButton>
+            </Flex>
+          )}
         </VStack>
 
         {/* Dialog for creating a new comp */}

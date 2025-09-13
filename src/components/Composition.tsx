@@ -52,7 +52,7 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
-  const [isRendering, setIsRendering] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const storage = getStorage();
 
   const canvas = canvasRef.current;
@@ -241,7 +241,7 @@ const Composition = ({
   //     console.error('Error uploading frames:', error);
   //   }
 
-  //   setIsRendering(false);
+  //   setIsUploading(false);
   // };
   const uploadFrames = async () => {
     if (!canvas) {
@@ -283,28 +283,27 @@ const Composition = ({
       uploadPromises.push(uploadPromise);
     }
 
+    setIsUploading(true);
+
     try {
       await Promise.all(uploadPromises);
     } catch (error) {
       console.error('Error uploading frames:', error);
+    } finally {
+      setIsUploading(false);
     }
-
-    setIsRendering(false);
   };
 
-  const { processVideo, videoIsProcessing, videoCreateError, videoUrl } =
+  const { processVideo, isRendering, videoCreateError, videoUrl } =
     useProcessVideo();
 
-  const renderVideo = async () => {
-    setIsRendering(true);
+  const exportToVideo = async () => {
+    console.log('Begin uploading frames…');
     await uploadFrames();
-    console.log('Frames uploaded. Ready to render video.');
+
+    console.log('Frames uploaded. Begin rendering video…');
     await processVideo();
   };
-
-  const percentUploaded = Math.round(
-    (100 * (manualFrame - 1)) / (DURATION_FRAMES - 1),
-  );
 
   return geomChecked ? (
     <>
@@ -374,12 +373,12 @@ const Composition = ({
           )}
         </Flex>
         <VideoGen
+          isUploading={isUploading}
           isRendering={isRendering}
-          renderVideo={renderVideo}
-          percentUploaded={percentUploaded}
+          exportToVideo={exportToVideo}
           videoUrl={videoUrl}
         />
-        {videoIsProcessing && (
+        {isRendering && (
           <Box color='green.500'>Video is being processed...</Box>
         )}
         {videoCreateError && (

@@ -97,7 +97,7 @@ export const useProcessVideo = () => {
 
   return {
     processVideo,
-    videoIsProcessing: loading,
+    isRendering: loading,
     videoCreateError: error,
     videoUrl,
   };

@@ -1,38 +1,33 @@
-import { Button, Flex, IconButton, Link, Text } from '@chakra-ui/react';
+import { Flex, IconButton, Link, Spinner, Text } from '@chakra-ui/react';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FaFilm } from 'react-icons/fa6';
 
 import { auth } from '../firebase';
-import { useLogout } from '../hooks/useLogout';
 import AuthDialog from './AuthDialog';
-import { toaster } from './Toastier';
 
 const pad = 4;
 const gap = 8;
 
 interface VideoGenProps {
+  exportToVideo: () => void;
   isRendering: boolean;
-  renderVideo: () => void;
-  percentUploaded: number;
+  isUploading: boolean;
   videoUrl: string;
 }
 
-const onErrorCallback = (errMsg: string) => {
-  toaster.create({
-    description: errMsg,
-    type: 'error',
-  });
-};
-
 const VideoGen = ({
+  exportToVideo,
   isRendering,
-  renderVideo,
-  percentUploaded,
+  isUploading,
   videoUrl,
 }: VideoGenProps) => {
   const [authUser] = useAuthState(auth);
-  const { handleLogout, isLoggingOut } = useLogout(onErrorCallback);
+
+  const isUploadingOrRendering = isRendering || isUploading;
+  const videoProcessStatus = isUploading
+    ? 'Uploading frames...'
+    : 'Rendering video...';
 
   return (
     <Flex
@@ -51,24 +46,19 @@ const VideoGen = ({
             aria-label=''
             size='xs'
             variant='outline'
-            onClick={renderVideo}
-            disabled={isRendering}
+            onClick={exportToVideo}
+            disabled={isUploadingOrRendering}
           >
             <FaFilm />
           </IconButton>
-          {isRendering && (
-            <Text textStyle='sm' color='white'>
-              Uploading {`${percentUploaded}%`}
-            </Text>
+          {isUploadingOrRendering && (
+            <Flex gap={2} align='center'>
+              <Text textStyle='sm' color='white'>
+                {videoProcessStatus}
+              </Text>
+              <Spinner color='white' />
+            </Flex>
           )}
-          <Button
-            size='xs'
-            variant='outline'
-            loading={isLoggingOut}
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
           {videoUrl && <Link href={videoUrl}>link to your video</Link>}
         </>
       ) : (

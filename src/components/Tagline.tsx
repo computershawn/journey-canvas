@@ -1,15 +1,17 @@
 import { HStack, Link, Text } from '@chakra-ui/react';
 import { FaHandSparkles } from 'react-icons/fa6';
 
+const MY_LINK = 'https://www.linkedin.com/in/shawnjdesign';
+
 const Tagline = () => (
-  <HStack w='100%' bg='#e6e6e6' px={4} py={3}>
+  <HStack w='100%' bg='#88ffeb' px={4} py={3} gap={1}>
     <FaHandSparkles color='black' />
     <Text textStyle='sm'>
       <Link
         _hover={{ opacity: 0.8, color: '#000' }}
         _focus={{ outlineWidth: 1, outlineColor: 'rgb(255,255,255,0.25)' }}
         variant='plain'
-        href='https://www.linkedin.com/in/shawnjdesign'
+        href={MY_LINK}
         opacity={0.625}
         target='_blank'
         color='#000'
