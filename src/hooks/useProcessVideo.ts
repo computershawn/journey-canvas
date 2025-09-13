@@ -1,31 +1,35 @@
 import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useHttpsCallable } from 'react-firebase-hooks/functions';
+// import { useHttpsCallable } from 'react-firebase-hooks/functions';
 
-import { auth, fireFunctions } from '../firebase';
+import { auth } from '../firebase';
 
-const FIREBASE_FUNCTION_NAME = 'videoGen';
-const CLOUD_RUN_SERVICE_URL =
-  'https://video-processor-service-ohvvwjkf6q-uc.a.run.app';
+// const FIREBASE_FUNCTION_NAME = 'videoGen';
+// const CLOUD_RUN_SERVICE_URL = 'https://video-processor-service-ohvvwjkf6q-uc.a.run.app';
+// const FUNCTION_URL =
+//   'https://us-central1-sequence-to-video.cloudfunctions.net/doAllOfTheThings'
+// const FUNCTION_URL =
+//   'http://localhost:5001/sequence-to-video/us-central1/doAllOfTheThings';
+const FUNCTION_URL = 'https://doallofthethings-ohvvwjkf6q-uc.a.run.app';
 
-export const useProcessVideoORIG = () => {
-  const [executeCallable, executing, error] = useHttpsCallable(
-    fireFunctions,
-    FIREBASE_FUNCTION_NAME,
-  );
+// export const useProcessVideoORIG = () => {
+//   const [executeCallable, executing, error] = useHttpsCallable(
+//     fireFunctions,
+//     FIREBASE_FUNCTION_NAME,
+//   );
 
-  return {
-    processVideo: () =>
-      executeCallable({
-        imagePrefix: 'frames/frame-',
-        imageCount: 24,
-        frameRate: 24,
-        outputFilename: 'output-video.mp4',
-      }),
-    videoIsProcessing: executing,
-    videoCreateError: error,
-  };
-};
+//   return {
+//     processVideo: () =>
+//       executeCallable({
+//         imagePrefix: 'frames/frame-',
+//         imageCount: 24,
+//         frameRate: 24,
+//         outputFilename: 'output-video.mp4',
+//       }),
+//     videoIsProcessing: executing,
+//     videoCreateError: error,
+//   };
+// };
 
 export const useProcessVideo = () => {
   const [videoUrl, setVideoUrl] = useState('');
@@ -59,43 +63,36 @@ export const useProcessVideo = () => {
       return;
     }
 
-    try {
-      // Get the ID token from the authenticated user
-      // const idToken = await user?.getIdToken();
+    await fetch(FUNCTION_URL, {
+      method: 'GET', // or 'POST' if your function expects POST
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': `Bearer ${idToken}`, // Send the ID token for authentication
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.downloadUrl) {
+          setVideoUrl(data.downloadUrl);
+        }
 
-      const response = await fetch(CLOUD_RUN_SERVICE_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${idToken}`, // Send the ID token for authentication
-        },
-        body: JSON.stringify({
-          imagePrefix: 'frames/frame-',
-          imageCount: 24,
-          frameRate: 24,
-          outputFilename: 'output-video.mp4',
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `HTTP error! Status: ${response.status}. Message: ${errorText}`,
-        );
-      }
-
-      const data = await response.json();
-      setVideoUrl(data.videoUrl);
-    } catch (err) {
-      console.error('Error generating video:', err);
-      if (err instanceof Error) {
-        setError(`Failed to generate video: ${err.message}`);
-      } else {
+        if (data.message) {
+          console.log(data.message);
+        }
+      })
+      .catch(() => {
         setError('Failed to generate video');
-      }
-    } finally {
-      setLoading(false);
-    }
+        // if (error instanceof Error) {
+        //   setError(`Failed to generate video: ${error.message}`);
+        // } else {
+        //   setError('Failed to generate video');
+        // }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return {

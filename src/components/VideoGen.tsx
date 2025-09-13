@@ -1,4 +1,4 @@
-import { Button, Flex, IconButton, Text } from '@chakra-ui/react';
+import { Button, Flex, IconButton, Link, Text } from '@chakra-ui/react';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FaFilm } from 'react-icons/fa6';
@@ -15,6 +15,7 @@ interface VideoGenProps {
   isRendering: boolean;
   renderVideo: () => void;
   percentUploaded: number;
+  videoUrl: string;
 }
 
 const onErrorCallback = (errMsg: string) => {
@@ -28,6 +29,7 @@ const VideoGen = ({
   isRendering,
   renderVideo,
   percentUploaded,
+  videoUrl,
 }: VideoGenProps) => {
   const [authUser] = useAuthState(auth);
   const { handleLogout, isLoggingOut } = useLogout(onErrorCallback);
@@ -67,6 +69,7 @@ const VideoGen = ({
           >
             Logout
           </Button>
+          {videoUrl && <Link href={videoUrl}>link to your video</Link>}
         </>
       ) : (
         <AuthDialog />

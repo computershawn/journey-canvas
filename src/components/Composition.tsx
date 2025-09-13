@@ -250,7 +250,7 @@ const Composition = ({
     }
 
     const startFrame = 0;
-    const limit = 24;
+    const limit = 96;
     const uploadPromises: Promise<void>[] = [];
 
     for (let i = startFrame; i < startFrame + limit; i++) {
@@ -292,15 +292,14 @@ const Composition = ({
     setIsRendering(false);
   };
 
-  const { processVideo, videoIsProcessing, videoCreateError } =
+  const { processVideo, videoIsProcessing, videoCreateError, videoUrl } =
     useProcessVideo();
 
   const renderVideo = async () => {
     setIsRendering(true);
     await uploadFrames();
     console.log('Frames uploaded. Ready to render video.');
-    const blep = await processVideo();
-    console.log('Done.', blep);
+    await processVideo();
   };
 
   const percentUploaded = Math.round(
@@ -378,6 +377,7 @@ const Composition = ({
           isRendering={isRendering}
           renderVideo={renderVideo}
           percentUploaded={percentUploaded}
+          videoUrl={videoUrl}
         />
         {videoIsProcessing && (
           <Box color='green.500'>Video is being processed...</Box>
