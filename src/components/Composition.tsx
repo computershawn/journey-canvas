@@ -1,4 +1,3 @@
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { useMemo, useRef, useState } from 'react';
 import { FaPause, FaPlay } from 'react-icons/fa6';
 
@@ -20,6 +19,7 @@ import { mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
+import { useUploadFrames } from '../hooks/useUploadFrames';
 
 const scale = 1;
 const NUM_COLORS = 5;
@@ -52,13 +52,11 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
-  const [isUploading, setIsUploading] = useState(false);
-  const storage = getStorage();
 
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
 
-  const nullElements = useMemo(() => {
+  const nullElements: NullElement[] = useMemo(() => {
     const temp = [];
     if (bezierSplinePoints?.length) {
       for (let j = 0; j < bezierSplinePoints.length; j++) {
@@ -94,14 +92,7 @@ const Composition = ({
     useTimeLoop(15000);
   const cycleFrame = 1 + Math.round(value * (DURATION_FRAMES - 1));
 
-  const updateForRender = (frame: number) => {
-    // Update all positions of our references
-    const difference = mapTo(diff, 0, 100, 1, 8);
-
-    nullElements.forEach((nE) => {
-      nE.update(frame, balance / 100, difference);
-    });
-
+  const updateFanBlades = () => {
     for (let j = 0; j < nullElements.length - 1; j++) {
       const thisRef = nullElements[j];
       const nextRef = nullElements[j + 1];
@@ -133,29 +124,10 @@ const Composition = ({
       nE.update(frame, balance / 100, difference);
     });
 
-    for (let j = 0; j < nullElements.length - 1; j++) {
-      const thisRef = nullElements[j];
-      const nextRef = nullElements[j + 1];
-
-      const px0 = thisRef.point0.x + thisRef.x;
-      const py0 = thisRef.point0.y + thisRef.y;
-      const px1 = thisRef.point1.x + thisRef.x;
-      const py1 = thisRef.point1.y + thisRef.y;
-      const px2 = nextRef.point1.x + nextRef.x;
-      const py2 = nextRef.point1.y + nextRef.y;
-      const px3 = nextRef.point0.x + nextRef.x;
-      const py3 = nextRef.point0.y + nextRef.y;
-
-      const pv0 = { x: scale * px0, y: scale * py0 };
-      const pv1 = { x: scale * px1, y: scale * py1 };
-      const pv2 = { x: scale * px2, y: scale * py2 };
-      const pv3 = { x: scale * px3, y: scale * py3 };
-
-      fanBlades[j].update(pv0, pv1, pv2, pv3);
-    }
+    updateFanBlades();
   };
 
-  const draw = () => {
+  const draw = (): void => {
     if (canvas && ctx) {
       // Get the size of the canvas in CSS pixels.
       const rect = canvas.getBoundingClientRect();
@@ -206,93 +178,12 @@ const Composition = ({
     setManualFrame(cycleFrame);
   };
 
-  // Render each frame and upload it to Firebase Storage
-  // TODO: It might be possible to use Promise.all and upload N number of frames in parallel
-  // const uploadFrames = async () => {
-  //   if (!canvas) {
-  //     console.error('No HTML canvas present');
-  //     return;
-  //   }
-
-  //   const startFrame = 0;
-  //   const limit = 24;
-
-  //   try {
-  //     for (let i = startFrame; i < startFrame + limit; i++) {
-  //       updateForRender(i);
-  //       draw();
-  //       const paddedIndex = String(i + 1).padStart(4, '0');
-  //       const imagePath = `frames/frame-${paddedIndex}.jpg`;
-  //       const storageRef = ref(storage, imagePath);
-
-  //       // Get a Blob of the current canvas state
-  //       canvas.toBlob(
-  //         async (blob) => {
-  //           if (blob) {
-  //             // Upload the blob to Firebase
-  //             await uploadBytes(storageRef, blob);
-  //           }
-  //         },
-  //         'image/jpeg', // Use JPEG for smaller file sizes
-  //         0.8,
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error('Error uploading frames:', error);
-  //   }
-
-  //   setIsUploading(false);
-  // };
-  const uploadFrames = async () => {
-    if (!canvas) {
-      console.error('No HTML canvas present');
-      return;
-    }
-
-    const startFrame = 0;
-    const limit = 96;
-    const uploadPromises: Promise<void>[] = [];
-
-    for (let i = startFrame; i < startFrame + limit; i++) {
-      updateForRender(i);
-      draw();
-      const paddedIndex = String(i + 1).padStart(4, '0');
-      const imagePath = `frames/frame-${paddedIndex}.jpg`;
-      const storageRef = ref(storage, imagePath);
-
-      // Wrap toBlob in a Promise so you can await it
-      const uploadPromise = new Promise<void>((resolve, reject) => {
-        canvas.toBlob(
-          async (blob) => {
-            if (blob) {
-              try {
-                await uploadBytes(storageRef, blob);
-                resolve();
-              } catch (err) {
-                reject(err);
-              }
-            } else {
-              reject(new Error('Failed to create blob'));
-            }
-          },
-          'image/jpeg',
-          0.8,
-        );
-      });
-
-      uploadPromises.push(uploadPromise);
-    }
-
-    setIsUploading(true);
-
-    try {
-      await Promise.all(uploadPromises);
-    } catch (error) {
-      console.error('Error uploading frames:', error);
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  const { isUploading, uploadFrames } = useUploadFrames({
+    canvas,
+    draw,
+    nullElements,
+    updateFanBlades,
+  });
 
   const { processVideo, isRendering, videoCreateError, videoUrl } =
     useProcessVideo();
