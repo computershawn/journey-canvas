@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
 import { useControls } from '../hooks/useControls';
-import { mapTo } from '../utils/helpers';
+import { loggy, mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
 
 export const useUploadFrames = ({
@@ -33,7 +33,7 @@ export const useUploadFrames = ({
 
   const uploadFrames = async () => {
     if (!canvas) {
-      console.error('No HTML canvas present');
+      loggy.error('No HTML canvas present');
       return;
     }
 
@@ -76,7 +76,7 @@ export const useUploadFrames = ({
     try {
       await Promise.all(uploadPromises);
     } catch (error) {
-      console.error('Error uploading frames:', error);
+      loggy.error('Error uploading frames:', error);
     } finally {
       setIsUploading(false);
     }

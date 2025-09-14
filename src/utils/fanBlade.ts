@@ -211,7 +211,6 @@ class FanBlade {
         // context.lineTo(pt3.x, pt3.y);
         // context.closePath();
         context.stroke();
-        // console.log(pt3.x);
 
         // line(
         //   pt0.x + b * value * (pt1.x - pt0.x),

@@ -6,6 +6,7 @@ import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth, firestore } from '../firebase';
 import useAuthStore from '../store/authStore';
 import { saveToLocalStorage } from '../utils/storageOps';
+import { loggy } from '../utils/helpers';
 
 export const useLogin = () => {
   const [signInWithEmailAndPassword, loading, error] =
@@ -16,7 +17,7 @@ export const useLogin = () => {
   // @ts-expect-error Parameter 'inputs' implicitly has an 'any' type
   const login = async (inputs, onErrorCallback) => {
     if (!inputs.email || !inputs.password) {
-      console.log('Please fill all fields');
+      loggy.error('Please fill all fields');
     }
 
     try {
@@ -27,7 +28,7 @@ export const useLogin = () => {
       if (userCred) {
         const docRef = doc(firestore, 'users', userCred.user.uid);
         const docSnap = await getDoc(docRef);
-        saveToLocalStorage('antsigarm_user', docSnap.data());
+        saveToLocalStorage('journey_user', docSnap.data());
         loginUser(docSnap.data());
       }
     } catch (error) {

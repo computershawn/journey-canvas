@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { getFromLocalStorage } from '../utils/storageOps';
 
 const useAuthStore = create((set) => ({
-  user: getFromLocalStorage('antsigarm_user'),
+  user: getFromLocalStorage('journey_user'),
   // @ts-expect-error Parameter 'user' implicitly has 'any' type
   login: (user) => set({ user }),
   logout: () => set({ user: null }),

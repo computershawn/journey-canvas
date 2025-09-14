@@ -14,7 +14,7 @@ export const useLogout = (onErrorCallback: (s: string) => void) => {
   const handleLogout = async () => {
     try {
       await signOut();
-      removeFromLocalStorage('antsigarm_user');
+      removeFromLocalStorage('journey_user');
       logoutUser();
     } catch (error) {
       // @ts-expect-error 'error' is of type 'unknown'

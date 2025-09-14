@@ -78,9 +78,9 @@ export const useProcessVideo = () => {
           setVideoUrl(data.downloadUrl);
         }
 
-        if (data.message) {
-          console.log(data.message);
-        }
+        // if (data.message) {
+        //   loggy.info(data.message);
+        // }
       })
       .catch(() => {
         setError('Failed to generate video');

@@ -12,14 +12,14 @@ import {
 } from 'firebase/firestore';
 import useAuthStore from '../store/authStore';
 import { saveToLocalStorage } from '../utils/storageOps';
+import { loggy } from '../utils/helpers';
 
 export const useSignupWithEmailAndPassword = () => {
   const [createUserWithEmailAndPassword, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
   // @ts-expect-error 'state' is of type 'unknown'
   const loginUser = useAuthStore((state) => state.login);
-  
-  
+
   // @ts-expect-error 'inputs' implicitly has 'any' type
   const signUp = async (inputs, onErrorCallback) => {
     if (
@@ -28,7 +28,7 @@ export const useSignupWithEmailAndPassword = () => {
       !inputs.username ||
       !inputs.fullName
     ) {
-      console.log('Please fill all fields');
+      loggy.error('Please fill all fields');
     }
 
     const usersRef = collection(firestore, 'users');
@@ -42,7 +42,7 @@ export const useSignupWithEmailAndPassword = () => {
     try {
       const newUser = await createUserWithEmailAndPassword(
         inputs.email,
-        inputs.password
+        inputs.password,
       );
       if (!newUser && error) {
         // @ts-expect-error Property 'message' does not exist on 'true'
@@ -65,7 +65,7 @@ export const useSignupWithEmailAndPassword = () => {
         };
 
         await setDoc(doc(firestore, 'users', newUser.user.uid), newUserDoc);
-        saveToLocalStorage('antsigarm_user', newUserDoc);
+        saveToLocalStorage('journey_user', newUserDoc);
         loginUser(newUserDoc);
       }
     } catch (error) {

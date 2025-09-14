@@ -1,6 +1,7 @@
 // Canvas Capture with Web Worker
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { useRef, useState, useEffect } from 'react';
+import { loggy } from '../utils/helpers';
 
 const workerScript = `
 let offscreenCanvas;
@@ -72,7 +73,7 @@ const CanvasCaptureWithWorker = () => {
       if (status === 'complete') {
         setMessage('Capture complete! Frames are ready for upload.');
         setIsCapturing(false);
-        console.log('Received frames from worker:', payload);
+        loggy.info('Received frames from worker:', payload);
       } else if (status === 'progress') {
         setMessage(
           `Capturing frame ${payload.currentFrame} of ${payload.totalFrames}...`
