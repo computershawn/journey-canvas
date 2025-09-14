@@ -10,6 +10,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  Button,
   Flex,
   Heading,
   HStack,
@@ -36,6 +37,10 @@ import Tagline from './Tagline';
 import { toaster } from './Toastier';
 import { Tooltip } from './ui/tooltip';
 import logoTypeUrl from '/journey-logotype.svg';
+import VideoPreviewModal from './VideoPreviewModal';
+
+const videoUrl =
+  'https://storage.googleapis.com/sequence-to-video.firebasestorage.app/videos/output_1757884476837.mp4?GoogleAccessId=708383750456-compute%40developer.gserviceaccount.com&Expires=1757888077&Signature=PRsC2kSwybUfrYiavAK%2BnbHWWteJw8zCHZ8FWY9DmaPHPEpdpoba7p8AKlKRt1evX%2FuHfgN2dlEB3bW2JdWrfmJ7PAXkHT4C8mwnnGPAIagGcC3BuM2h28oChS2FYtovT5mVkpbh6l9yzRKuCaMazBmps7CD1wae6FF%2BVvWv9a9s5eNFzB9wTl3kJoDzPgMvBdfGSf0AkK%2BKwsQVLqKkQPUviCgQuyze%2FhtCK7V6oOC%2BGhg9aD4KRLZxPbfLmSArbaMyfhC7P2q7vMXOSfXO%2FTguWQnPXnkAM%2B3DqV9jYp%2FG8O7yRUUwlTKycebDIorskLUhwbtK2AH1oa3gpUmRvA%3D%3D';
 
 const onErrorCallback = (errMsg: string) => {
   toaster.create({
@@ -75,6 +80,7 @@ const ControlPanel = ({
   const [compId, setCompId] = useState<string[]>(['-']);
   const [isCreateCompOpen, setIsCreateCompOpen] = useState(false);
   const [isEditCompsOpen, setIsEditCompsOpen] = useState(false);
+  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
   const [authUser] = useAuthState(auth);
   const { handleLogout, isLoggingOut } = useLogout(onErrorCallback);
 
@@ -202,15 +208,6 @@ const ControlPanel = ({
     onChangeComp(i);
   };
 
-  const openCreateComp = () => {
-    setIsCreateCompOpen(true);
-    setIsEditCompsOpen(false);
-  };
-  const openEditComps = () => {
-    setIsCreateCompOpen(false);
-    setIsEditCompsOpen(true);
-  };
-
   const panelWidth = isWide ? 300 : 216;
 
   return (
@@ -221,11 +218,38 @@ const ControlPanel = ({
             <img src={logoTypeUrl} alt='Journey Logo' width='80' />
             <OptionsMenu
               onUpdateExistingComp={handleClickUpdate}
-              onCreateComp={openCreateComp}
-              onEditComps={openEditComps}
+              onCreateComp={() => setIsCreateCompOpen(true)}
+              onEditComps={() => setIsEditCompsOpen(true)}
             />
           </Flex>
         </Heading>
+
+        {authUser && (
+          <Flex w='100%' h={8} align='center' justify='space-between'>
+            <Flex gap={1}>
+              <FaUserAstronaut />
+              <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>
+                {authUser.email}
+              </Text>
+            </Flex>
+            <Tooltip
+              content='Sign out of account'
+              openDelay={500}
+              closeDelay={200}
+            >
+              <IconButton
+                size='xs'
+                aria-label='Sign out of account'
+                onClick={handleLogout}
+                color='black'
+                loading={isLoggingOut}
+                disabled={isLoggingOut}
+              >
+                <FaArrowRightFromBracket color='black' />
+              </IconButton>
+            </Tooltip>
+          </Flex>
+        )}
 
         <CompSelector
           numComps={comps.length}
@@ -313,7 +337,7 @@ const ControlPanel = ({
             </Switch>
             {colorChecked && palette.length > 0 && (
               <HStack>
-                <Chips wide={isWide} palette={palette} />
+                <Chips palette={palette} />
                 <IconButton
                   size='xs'
                   aria-label='Pick random palette'
@@ -345,32 +369,16 @@ const ControlPanel = ({
             )}
           </Flex>
 
-          {authUser && (
-            <Flex w='100%' h={8} align='center' justify='space-between'>
-              <Flex gap={1}>
-                <FaUserAstronaut />
-                <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>
-                  {authUser.email}
-                </Text>
-              </Flex>
-              <Tooltip
-                content='Sign out of account'
-                openDelay={500}
-                closeDelay={200}
-              >
-                <IconButton
-                  size='xs'
-                  aria-label='Sign out of account'
-                  onClick={handleLogout}
-                  color='black'
-                  loading={isLoggingOut}
-                  disabled={isLoggingOut}
-                >
-                  <FaArrowRightFromBracket color='black' />
-                </IconButton>
-              </Tooltip>
-            </Flex>
-          )}
+          <Flex w='100%' h={8} align='center' justify='space-between'>
+            <Button
+              w='full'
+              variant='outline'
+              aria-label='wassup'
+              onClick={() => setIsVideoPreviewOpen(true)}
+            >
+              wassup
+            </Button>
+          </Flex>
         </VStack>
 
         {/* Dialog for creating a new comp */}
@@ -382,6 +390,13 @@ const ControlPanel = ({
 
         {/* Dialog for editing existing comps */}
         <EditComps open={isEditCompsOpen} setOpen={setIsEditCompsOpen} />
+
+        {/* Dialog for previewing video */}
+        <VideoPreviewModal
+          open={isVideoPreviewOpen}
+          setOpen={setIsVideoPreviewOpen}
+          videoUrl={videoUrl}
+        />
       </VStack>
       <Tagline />
     </VStack>

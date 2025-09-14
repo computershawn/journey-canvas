@@ -62,7 +62,7 @@ const CreateComp = ({
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root open={open} onOpenChange={onOpenChange} placement='center'>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
