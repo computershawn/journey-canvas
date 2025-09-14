@@ -15,7 +15,7 @@ import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
 import { ColorArray, Point } from '../types';
 import FanBlade from '../utils/fanBlade';
-import { mapTo } from '../utils/helpers';
+import { loggy, mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
@@ -189,10 +189,10 @@ const Composition = ({
     useProcessVideo();
 
   const exportToVideo = async () => {
-    console.log('Begin uploading frames…');
+    loggy.info('Begin uploading frames…');
     await uploadFrames();
 
-    console.log('Frames uploaded. Begin rendering video…');
+    loggy.info('Frames uploaded. Begin rendering video…');
     await processVideo();
   };
 

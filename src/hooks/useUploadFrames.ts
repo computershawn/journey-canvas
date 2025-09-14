@@ -38,7 +38,7 @@ export const useUploadFrames = ({
     }
 
     const startFrame = 0;
-    const limit = 12;
+    const limit = 120;
     const uploadPromises: Promise<void>[] = [];
 
     for (let i = startFrame; i < startFrame + limit; i++) {
