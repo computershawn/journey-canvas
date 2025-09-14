@@ -23,6 +23,7 @@ import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
+import { useLogout } from '../hooks/useLogout';
 import BgColorSelect from './BgColorSelect';
 import Chips from './Chips';
 import CompSelector from './CompSelector';
@@ -33,8 +34,8 @@ import OptionsMenu from './OptionsMenu';
 import EditComps from './ManageComps';
 import Tagline from './Tagline';
 import { toaster } from './Toastier';
+import { Tooltip } from './ui/tooltip';
 import logoTypeUrl from '/journey-logotype.svg';
-import { useLogout } from '../hooks/useLogout';
 
 const onErrorCallback = (errMsg: string) => {
   toaster.create({
@@ -352,16 +353,22 @@ const ControlPanel = ({
                   {authUser.email}
                 </Text>
               </Flex>
-              <IconButton
-                size='xs'
-                aria-label='Sign out of account'
-                onClick={handleLogout}
-                color='black'
-                loading={isLoggingOut}
-                disabled={isLoggingOut}
+              <Tooltip
+                content='Sign out of account'
+                openDelay={500}
+                closeDelay={200}
               >
-                <FaArrowRightFromBracket color='black' />
-              </IconButton>
+                <IconButton
+                  size='xs'
+                  aria-label='Sign out of account'
+                  onClick={handleLogout}
+                  color='black'
+                  loading={isLoggingOut}
+                  disabled={isLoggingOut}
+                >
+                  <FaArrowRightFromBracket color='black' />
+                </IconButton>
+              </Tooltip>
             </Flex>
           )}
         </VStack>

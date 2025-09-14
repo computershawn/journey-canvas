@@ -1,5 +1,5 @@
 import { Dialog, Portal, CloseButton, IconButton } from '@chakra-ui/react';
-import { FaFilm } from 'react-icons/fa6';
+import { FaVideo } from 'react-icons/fa6';
 import AuthForm from './AuthForm';
 
 const AuthDialog = () => {
@@ -11,7 +11,7 @@ const AuthDialog = () => {
           size='xs'
           variant='outline'
         >
-          <FaFilm />
+          <FaVideo />
         </IconButton>
       </Dialog.Trigger>
       <Portal>

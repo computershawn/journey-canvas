@@ -1,10 +1,11 @@
 import { Flex, IconButton, Link, Spinner, Text } from '@chakra-ui/react';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { FaFilm } from 'react-icons/fa6';
+import { FaVideo } from 'react-icons/fa6';
 
 import { auth } from '../firebase';
 import AuthDialog from './AuthDialog';
+import { Tooltip } from './ui/tooltip';
 
 const pad = 4;
 const gap = 8;
@@ -42,15 +43,17 @@ const VideoGen = ({
     >
       {authUser ? (
         <>
-          <IconButton
-            aria-label=''
-            size='xs'
-            variant='outline'
-            onClick={exportToVideo}
-            disabled={isUploadingOrRendering}
-          >
-            <FaFilm />
-          </IconButton>
+          <Tooltip content="Create video file" openDelay={500} closeDelay={200}>
+            <IconButton
+              aria-label='Create video file'
+              size='xs'
+              variant='outline'
+              onClick={exportToVideo}
+              disabled={isUploadingOrRendering}
+            >
+              <FaVideo />
+            </IconButton>
+          </Tooltip>
           {isUploadingOrRendering && (
             <Flex gap={2} align='center'>
               <Text textStyle='sm' color='white'>
