@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import {
-  FaArrowRightFromBracket,
-  FaArrowRotateRight,
-  FaEye,
-  FaEyeSlash,
-  FaUserAstronaut,
-} from 'react-icons/fa6';
+import { FaArrowRotateRight, FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -24,7 +18,6 @@ import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
-import { useLogout } from '../hooks/useLogout';
 import BgColorSelect from './BgColorSelect';
 import Chips from './Chips';
 import CompSelector from './CompSelector';
@@ -34,20 +27,12 @@ import NewComp from './CreateComp';
 import OptionsMenu from './OptionsMenu';
 import EditComps from './ManageComps';
 import Tagline from './Tagline';
-import { toaster } from './Toastier';
-import { Tooltip } from './ui/tooltip';
 import logoTypeUrl from '/journey-logotype.svg';
 import VideoPreviewModal from './VideoPreviewModal';
+import UserInfo from './UserInfo';
 
 const videoUrl =
   'https://storage.googleapis.com/sequence-to-video.firebasestorage.app/videos/output_1757884476837.mp4?GoogleAccessId=708383750456-compute%40developer.gserviceaccount.com&Expires=1757888077&Signature=PRsC2kSwybUfrYiavAK%2BnbHWWteJw8zCHZ8FWY9DmaPHPEpdpoba7p8AKlKRt1evX%2FuHfgN2dlEB3bW2JdWrfmJ7PAXkHT4C8mwnnGPAIagGcC3BuM2h28oChS2FYtovT5mVkpbh6l9yzRKuCaMazBmps7CD1wae6FF%2BVvWv9a9s5eNFzB9wTl3kJoDzPgMvBdfGSf0AkK%2BKwsQVLqKkQPUviCgQuyze%2FhtCK7V6oOC%2BGhg9aD4KRLZxPbfLmSArbaMyfhC7P2q7vMXOSfXO%2FTguWQnPXnkAM%2B3DqV9jYp%2FG8O7yRUUwlTKycebDIorskLUhwbtK2AH1oa3gpUmRvA%3D%3D';
-
-const onErrorCallback = (errMsg: string) => {
-  toaster.create({
-    description: errMsg,
-    type: 'error',
-  });
-};
 
 const ControlPanel = ({
   allColors,
@@ -82,7 +67,6 @@ const ControlPanel = ({
   const [isEditCompsOpen, setIsEditCompsOpen] = useState(false);
   const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
   const [authUser] = useAuthState(auth);
-  const { handleLogout, isLoggingOut } = useLogout(onErrorCallback);
 
   const {
     balance,
@@ -213,43 +197,21 @@ const ControlPanel = ({
   return (
     <VStack h='100vh' gap={0}>
       <VStack w={panelWidth} bg='#eee' p={4} gap={6} flex={1}>
-        <Heading size='lg' mb={4} w='full'>
-          <Flex justify='space-between'>
-            <img src={logoTypeUrl} alt='Journey Logo' width='80' />
-            <OptionsMenu
-              onUpdateExistingComp={handleClickUpdate}
-              onCreateComp={() => setIsCreateCompOpen(true)}
-              onEditComps={() => setIsEditCompsOpen(true)}
-            />
-          </Flex>
-        </Heading>
-
-        {authUser && (
-          <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Flex gap={1}>
-              <FaUserAstronaut />
-              <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>
-                {authUser.email}
-              </Text>
+        <Flex direction='column' w='100%'>
+          <Heading size='lg' mb={2} w='full'>
+            <Flex justify='space-between'>
+              <img src={logoTypeUrl} alt='Journey Logo' width='80' />
+              <OptionsMenu
+                onUpdateExistingComp={handleClickUpdate}
+                onCreateComp={() => setIsCreateCompOpen(true)}
+                onEditComps={() => setIsEditCompsOpen(true)}
+              />
             </Flex>
-            <Tooltip
-              content='Sign out of account'
-              openDelay={500}
-              closeDelay={200}
-            >
-              <IconButton
-                size='xs'
-                aria-label='Sign out of account'
-                onClick={handleLogout}
-                color='black'
-                loading={isLoggingOut}
-                disabled={isLoggingOut}
-              >
-                <FaArrowRightFromBracket color='black' />
-              </IconButton>
-            </Tooltip>
-          </Flex>
-        )}
+          </Heading>
+          {authUser && (
+            <UserInfo userEmail={authUser.email || '[no email address]'} />
+          )}
+        </Flex>
 
         <CompSelector
           numComps={comps.length}
