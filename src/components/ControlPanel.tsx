@@ -335,10 +335,10 @@ const ControlPanel = ({
             <Button
               w='full'
               variant='outline'
-              aria-label='wassup'
+              aria-label='show video preview modal'
               onClick={() => setIsVideoPreviewOpen(true)}
             >
-              wassup
+              video preview modal
             </Button>
           </Flex>
         </VStack>
