@@ -1,10 +1,13 @@
 import {
-  Box,
+  Center,
   CloseButton,
   Dialog,
   DialogOpenChangeDetails,
   Portal,
+  Text,
 } from '@chakra-ui/react';
+import { useState } from 'react';
+import { loggy } from '../utils/helpers';
 
 const VideoPreviewModal = ({
   open,
@@ -17,6 +20,12 @@ const VideoPreviewModal = ({
 }) => {
   const onOpenChange = (details: DialogOpenChangeDetails) => {
     setOpen(details.open);
+  };
+
+  const [hasVideoLoadError, setHasVideoLoadError] = useState(false);
+  const handleVideoError = () => {
+    loggy.error('Video failed to load or play.');
+    setHasVideoLoadError(true);
   };
 
   return (
@@ -34,13 +43,17 @@ const VideoPreviewModal = ({
               <Dialog.Title>Video Preview</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
-              {videoUrl ? (
-                <video width='100%' controls>
+              {hasVideoLoadError ? (
+                <Center background='black' h='351px'>
+                  <Text color='white'>
+                    Oopsies… This video is not available
+                  </Text>
+                </Center>
+              ) : (
+                <video width='100%' onError={handleVideoError} controls>
                   <source src={videoUrl} type='video/mp4' />
                   Your browser does not support the video tag.
                 </video>
-              ) : (
-                <Box>No video URL available.</Box>
               )}
             </Dialog.Body>
             <Dialog.CloseTrigger asChild>
