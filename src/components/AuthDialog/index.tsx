@@ -2,7 +2,6 @@ import {
   Dialog,
   Portal,
   CloseButton,
-  IconButton,
   Flex,
   Text,
   Box,
@@ -10,30 +9,35 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FaCircleInfo, FaVideo } from 'react-icons/fa6';
+import { FaCircleInfo } from 'react-icons/fa6';
 import Login from './Login';
 import Signup from './Signup';
 
-const AuthDialog = () => {
+const AuthDialog = ({
+  isOpen,
+  dismiss,
+}: {
+  isOpen: boolean;
+  dismiss: () => void;
+}) => {
   const [isLogin, setIsLogin] = useState(true);
+  const title = isLogin
+    ? 'Sign in to render video'
+    : 'Create an account to render video';
 
   return (
-    <Dialog.Root placement='center' size='sm'>
-      <Dialog.Trigger asChild>
-        <IconButton
-          aria-label='Export animation to video'
-          size='xs'
-          variant='outline'
-        >
-          <FaVideo />
-        </IconButton>
-      </Dialog.Trigger>
+    <Dialog.Root
+      placement='center'
+      size='sm'
+      open={isOpen}
+      // onOpenChange={onOpenChange}
+    >
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>Sign in to render video</Dialog.Title>
+              <Dialog.Title>{title}</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
               <Flex align='center' gap='0.25rem' mb={2}>
@@ -44,10 +48,9 @@ const AuthDialog = () => {
                 </Text>
               </Flex>
               <Box>
-                <VStack gap={4}>{isLogin ? <Login /> : <Signup />}</VStack>
+                <VStack gap={4}>{isLogin ? <Login dismiss={dismiss} /> : <Signup dismiss={dismiss} />}</VStack>
               </Box>
               <Flex mt={2} align='center'>
-                {/* <Center> */}
                 <Text fontSize='sm'>
                   {isLogin
                     ? "Don't have an account?"
@@ -64,7 +67,6 @@ const AuthDialog = () => {
                 >
                   {isLogin ? 'Sign up' : 'Sign in'}
                 </Button>
-                {/* </Center> */}
               </Flex>
             </Dialog.Body>
             <Dialog.CloseTrigger asChild>

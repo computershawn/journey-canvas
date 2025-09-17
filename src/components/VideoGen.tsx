@@ -1,10 +1,9 @@
 import { Flex, IconButton, Link, Spinner, Text } from '@chakra-ui/react';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { FaVideo } from 'react-icons/fa6';
+import { FaClapperboard } from 'react-icons/fa6';
 
 import { auth } from '../firebase';
-import AuthDialog from './AuthDialog';
 import { Tooltip } from './ui/tooltip';
 
 const pad = 4;
@@ -14,6 +13,7 @@ interface VideoGenProps {
   exportToVideo: () => void;
   isRendering: boolean;
   isUploading: boolean;
+  openAuthDialog: () => void;
   videoUrl: string;
 }
 
@@ -21,6 +21,7 @@ const VideoGen = ({
   exportToVideo,
   isRendering,
   isUploading,
+  openAuthDialog,
   videoUrl,
 }: VideoGenProps) => {
   const [authUser] = useAuthState(auth);
@@ -29,6 +30,15 @@ const VideoGen = ({
   const videoProcessStatus = isUploading
     ? 'Uploading frames...'
     : 'Rendering video...';
+
+  const handleClickRenderButton = () => {
+    if (authUser) {
+      exportToVideo();
+    } else {
+      openAuthDialog();
+      return;
+    }
+  };
 
   return (
     <Flex
@@ -41,32 +51,26 @@ const VideoGen = ({
       borderRadius='sm'
       position='relative'
     >
-      {authUser ? (
-        <>
-          <Tooltip content="Create video file" openDelay={500} closeDelay={200}>
-            <IconButton
-              aria-label='Create video file'
-              size='xs'
-              variant='outline'
-              onClick={exportToVideo}
-              disabled={isUploadingOrRendering}
-            >
-              <FaVideo />
-            </IconButton>
-          </Tooltip>
-          {isUploadingOrRendering && (
-            <Flex gap={2} align='center'>
-              <Text textStyle='sm' color='white'>
-                {videoProcessStatus}
-              </Text>
-              <Spinner color='white' />
-            </Flex>
-          )}
-          {videoUrl && <Link href={videoUrl}>link to your video</Link>}
-        </>
-      ) : (
-        <AuthDialog />
+      <Tooltip content='Create video file' openDelay={500} closeDelay={200}>
+        <IconButton
+          aria-label='Create video file'
+          size='xs'
+          variant='outline'
+          onClick={handleClickRenderButton}
+          disabled={isUploadingOrRendering}
+        >
+          <FaClapperboard />
+        </IconButton>
+      </Tooltip>
+      {isUploadingOrRendering && (
+        <Flex gap={2} align='center'>
+          <Text textStyle='sm' color='white'>
+            {videoProcessStatus}
+          </Text>
+          <Spinner color='white' />
+        </Flex>
       )}
+      {videoUrl && <Link href={videoUrl}>link to your video</Link>}
     </Flex>
   );
 };

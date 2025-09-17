@@ -11,13 +11,25 @@ const onErrorCallback = (errMsg: string) => {
   });
 };
 
-const Login = () => {
+const Login = ({ dismiss }: { dismiss: () => void }) => {
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
   });
 
-  const { error, login } = useLogin();
+  const { loading, error, login } = useLogin();
+  const doLogin = async () => {
+    await login(inputs);
+
+    if (!error) {
+      dismiss();
+    } else {
+      onErrorCallback('Something went wrong. Please try again.');
+    }
+  };
+
+  // TODO: Getting this warning: Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+  //       Maybe the input elements should be wrapped in a form element
 
   return (
     <>
@@ -47,7 +59,13 @@ const Login = () => {
         </Alert.Root>
       )}
 
-      <Button w='full' size='sm' onClick={() => login(inputs, onErrorCallback)} variant="outline">
+      <Button
+        w='full'
+        size='sm'
+        loading={loading}
+        onClick={doLogin}
+        variant='outline'
+      >
         Log in
       </Button>
     </>

@@ -13,13 +13,14 @@ import { CANV_HT, CANV_WD, DURATION_FRAMES, MINTY } from '../constants';
 import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
+import { useUploadFrames } from '../hooks/useUploadFrames';
 import { ColorArray, Point } from '../types';
 import FanBlade from '../utils/fanBlade';
 import { loggy, mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
+import AuthDialog from './AuthDialog';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
-import { useUploadFrames } from '../hooks/useUploadFrames';
 
 const scale = 1;
 const NUM_COLORS = 5;
@@ -52,6 +53,7 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
 
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
@@ -267,6 +269,7 @@ const Composition = ({
           isUploading={isUploading}
           isRendering={isRendering}
           exportToVideo={exportToVideo}
+          openAuthDialog={() => setIsAuthDialogOpen(true)}
           videoUrl={videoUrl}
         />
         {isRendering && (
@@ -279,6 +282,12 @@ const Composition = ({
           </Box>
         )}
       </VStack>
+      <AuthDialog
+        isOpen={isAuthDialogOpen}
+        dismiss={() => {
+          setIsAuthDialogOpen(false);
+        }}
+      />
     </>
   ) : (
     <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />

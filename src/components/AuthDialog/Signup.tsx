@@ -13,7 +13,7 @@ const onErrorCallback = (errMsg) => {
   });
 };
 
-const Signup = () => {
+const Signup = ({ dismiss }: { dismiss: () => void }) => {
   const [inputs, setInputs] = useState({
     fullName: '',
     username: '',
@@ -22,6 +22,15 @@ const Signup = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const { loading, error, signUp } = useSignupWithEmailAndPassword();
+
+  const doSignUp = async () => {
+    await signUp(inputs);
+    if (!error) {
+      dismiss();
+    } else {
+      onErrorCallback("Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -81,7 +90,7 @@ const Signup = () => {
         w='full'
         size='sm'
         loading={loading}
-        onClick={() => signUp(inputs, onErrorCallback)}
+        onClick={doSignUp}
         variant="outline"
       >
         Sign up

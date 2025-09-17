@@ -15,13 +15,14 @@ import { saveToLocalStorage } from '../utils/storageOps';
 import { loggy } from '../utils/helpers';
 
 export const useSignupWithEmailAndPassword = () => {
-  const [createUserWithEmailAndPassword, loading, error] =
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [createUserWithEmailAndPassword, registeredUser, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
   // @ts-expect-error 'state' is of type 'unknown'
   const loginUser = useAuthStore((state) => state.login);
 
   // @ts-expect-error 'inputs' implicitly has 'any' type
-  const signUp = async (inputs, onErrorCallback) => {
+  const signUp = async (inputs) => {
     if (
       !inputs.email ||
       !inputs.password ||
@@ -35,7 +36,7 @@ export const useSignupWithEmailAndPassword = () => {
     const q = query(usersRef, where('username', '==', inputs.username));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
-      onErrorCallback('Username already exists');
+      loggy.error('Username already exists');
       return;
     }
 
@@ -45,9 +46,7 @@ export const useSignupWithEmailAndPassword = () => {
         inputs.password,
       );
       if (!newUser && error) {
-        // @ts-expect-error Property 'message' does not exist on 'true'
-        onErrorCallback(error.message);
-
+        loggy.error('Signup failed');
         return;
       }
       if (newUser) {
@@ -75,7 +74,7 @@ export const useSignupWithEmailAndPassword = () => {
   };
 
   return {
-    loading: Boolean(loading),
+    loading,
     error,
     signUp,
   };
