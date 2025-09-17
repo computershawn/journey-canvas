@@ -2,7 +2,7 @@ import { Input, Button, InputGroup, Box, Alert } from '@chakra-ui/react';
 import { LuEye, LuEyeOff } from 'react-icons/lu';
 import { useState } from 'react';
 
-import { useSignupWithEmailAndPassword } from '../../hooks/useSignupWithEmailAndPassword';
+import { useSignup } from '../../hooks/useSignup';
 import { toaster } from '../Toastier';
 
 // @ts-expect-error Parameter 'errMsg' implicitly has an 'any' type
@@ -21,7 +21,7 @@ const Signup = ({ dismiss }: { dismiss: () => void }) => {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const { loading, error, signUp } = useSignupWithEmailAndPassword();
+  const { loading, error, signUp } = useSignup();
 
   const doSignUp = async () => {
     await signUp(inputs);

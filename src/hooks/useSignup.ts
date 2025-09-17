@@ -14,7 +14,7 @@ import useAuthStore from '../store/authStore';
 import { saveToLocalStorage } from '../utils/storageOps';
 import { loggy } from '../utils/helpers';
 
-export const useSignupWithEmailAndPassword = () => {
+export const useSignup = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [createUserWithEmailAndPassword, registeredUser, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
