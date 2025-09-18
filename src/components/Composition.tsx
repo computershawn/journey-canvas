@@ -224,8 +224,9 @@ const Composition = ({
               }
             }}
             w={`${btnWidth}px`}
+            bg={MINTY}
           >
-            {isPlaying ? <FaPause color='black' /> : <FaPlay color='#2bb79b' />}
+            {isPlaying ? <FaPause color='black' /> : <FaPlay color="black" />}
           </IconButton>
           {isPlaying ? (
             <Flex w='full' h='100%' onClick={handleClickTimeline}>

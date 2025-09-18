@@ -54,10 +54,11 @@ const VideoGen = ({
       <Tooltip content='Create video file' openDelay={500} closeDelay={200}>
         <IconButton
           aria-label='Create video file'
+          color="#6008cdff"
+          disabled={isUploadingOrRendering}
+          onClick={handleClickRenderButton}
           size='xs'
           variant='outline'
-          onClick={handleClickRenderButton}
-          disabled={isUploadingOrRendering}
         >
           <FaClapperboard />
         </IconButton>

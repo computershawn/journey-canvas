@@ -1,10 +1,12 @@
 import { HStack, Link, Text } from '@chakra-ui/react';
 import { FaHandSparkles } from 'react-icons/fa6';
 
+import { MINTY } from '../constants';
+
 const MY_LINK = 'https://www.linkedin.com/in/shawnjdesign';
 
 const Tagline = () => (
-  <HStack w='100%' bg='#88ffeb' px={4} py={3} gap={1}>
+  <HStack w='100%' bg={MINTY} px={4} py={3} gap={1}>
     <FaHandSparkles color='black' />
     <Text textStyle='sm'>
       <Link
