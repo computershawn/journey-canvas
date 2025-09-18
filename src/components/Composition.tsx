@@ -4,6 +4,7 @@ import { FaPause, FaPlay } from 'react-icons/fa6';
 import {
   Box,
   Flex,
+  HStack,
   IconButton,
   SliderValueChangeDetails,
   VStack,
@@ -22,8 +23,19 @@ import AuthDialog from './AuthDialog';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
 
-const scale = 1;
+const SCALE = 1;
 const NUM_COLORS = 5;
+const RENDER_BTN_OFFSET = 48;
+const PAD = 4;
+const EXTRA_PADDING = 8;
+const GAP = 8;
+const PLAY_BTN_WD = 48;
+const PROGRESS_WD =
+  CANV_WD - PLAY_BTN_WD - 2 * PAD - GAP - EXTRA_PADDING - RENDER_BTN_OFFSET;
+const TRACK_HT = 6;
+const BAR_HT = 2.5;
+const TOP = `${(BAR_HT * 16) / 2 - 3}px`;
+const LEFT = `${PAD + PLAY_BTN_WD + GAP}px`;
 
 // Get the device pixel ratio, falling back to 1.
 const dpr = window.devicePixelRatio || 1;
@@ -108,10 +120,10 @@ const Composition = ({
       const px3 = nextRef.point0.x + nextRef.x;
       const py3 = nextRef.point0.y + nextRef.y;
 
-      const pv0 = { x: scale * px0, y: scale * py0 };
-      const pv1 = { x: scale * px1, y: scale * py1 };
-      const pv2 = { x: scale * px2, y: scale * py2 };
-      const pv3 = { x: scale * px3, y: scale * py3 };
+      const pv0 = { x: SCALE * px0, y: SCALE * py0 };
+      const pv1 = { x: SCALE * px1, y: SCALE * py1 };
+      const pv2 = { x: SCALE * px2, y: SCALE * py2 };
+      const pv3 = { x: SCALE * px3, y: SCALE * py3 };
 
       fanBlades[j].update(pv0, pv1, pv2, pv3);
     }
@@ -153,16 +165,6 @@ const Composition = ({
     draw();
   }
 
-  const pad = 4;
-  const extraPadding = 8;
-  const gap = 8;
-  const btnWidth = 48;
-  const progressWidth = CANV_WD - btnWidth - pad - pad - gap - extraPadding;
-  const trackHt = 6;
-  const barHt = 2.5;
-  const top = `${(barHt * 16) / 2 - 3}px`;
-  const left = `${pad + btnWidth + gap}px`;
-
   const updateFrame = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
     setManualFrame(value);
@@ -198,90 +200,94 @@ const Composition = ({
     await processVideo();
   };
 
+  if (videoCreateError) {
+    loggy.error(videoCreateError);
+  }
+
   return geomChecked ? (
     <>
       <VStack align='flex-start'>
         <canvas ref={canvasRef} style={canvasStyle} />
-        <Flex
-          w={CANV_WD}
-          h='2.5rem'
-          bg='#292929'
-          outline='1px solid #404040'
-          p={`${pad}px`}
-          alignItems='center'
-          gap={`${gap}px`}
-          borderRadius='sm'
-          position='relative'
-        >
-          <IconButton
-            size='xs'
-            aria-label='Play or pause animation'
-            onClick={() => {
-              if (isPlaying) {
-                handleClickTimeline();
-              } else {
-                play();
-              }
-            }}
-            w={`${btnWidth}px`}
-            bg={MINTY}
+        <HStack>
+          <VideoGen
+            isUploading={isUploading}
+            isRendering={isRendering}
+            exportToVideo={exportToVideo}
+            openAuthDialog={() => setIsAuthDialogOpen(true)}
+            videoUrl={videoUrl}
+          />
+          <Flex
+            w={CANV_WD - RENDER_BTN_OFFSET}
+            h='2.5rem'
+            bg='#292929'
+            outline='1px solid #404040'
+            p={`${PAD}px`}
+            alignItems='center'
+            gap={`${GAP}px`}
+            borderRadius='sm'
+            position='relative'
           >
-            {isPlaying ? <FaPause color='black' /> : <FaPlay color="black" />}
-          </IconButton>
-          {isPlaying ? (
-            <Flex w='full' h='100%' onClick={handleClickTimeline}>
-              <Box
-                h={`${trackHt}px`}
-                w={progressWidth}
-                bg='#111'
-                borderRadius='full'
-                position='absolute'
-                top={top}
-                left={left}
-              />
-              <Box
-                h={`${trackHt}px`}
-                style={{ width: `${value * progressWidth}px` }}
-                bg={MINTY}
-                borderRadius='full'
-                position='absolute'
-                top={top}
-                left={left}
-                zIndex={1}
-              />
-            </Flex>
-          ) : (
-            <Flex w='full' h='100%' align='center'>
-              <Slider
-                defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
-                isAnimProgressBar
-                max={DURATION_FRAMES}
-                min={1}
-                onValueChange={updateFrame}
-                onValueChangeEnd={handleValueChangeEnd}
-                showValueText={false}
-                size='sm'
-                value={manualFrame}
-              />
-            </Flex>
-          )}
-        </Flex>
-        <VideoGen
-          isUploading={isUploading}
-          isRendering={isRendering}
-          exportToVideo={exportToVideo}
-          openAuthDialog={() => setIsAuthDialogOpen(true)}
-          videoUrl={videoUrl}
-        />
-        {isRendering && (
-          <Box color='green.500'>Video is being processed...</Box>
-        )}
-        {videoCreateError && (
+            <IconButton
+              size='xs'
+              aria-label='Play or pause animation'
+              onClick={() => {
+                if (isPlaying) {
+                  handleClickTimeline();
+                } else {
+                  play();
+                }
+              }}
+              w={`${PLAY_BTN_WD}px`}
+              bg={MINTY}
+            >
+              {isPlaying ? <FaPause color='black' /> : <FaPlay color='black' />}
+            </IconButton>
+            {isPlaying ? (
+              <Flex w='full' h='100%' onClick={handleClickTimeline}>
+                <Box
+                  h={`${TRACK_HT}px`}
+                  w={PROGRESS_WD}
+                  bg='#111'
+                  borderRadius='full'
+                  position='absolute'
+                  top={TOP}
+                  left={LEFT}
+                />
+                <Box
+                  h={`${TRACK_HT}px`}
+                  style={{ width: `${value * PROGRESS_WD}px` }}
+                  bg={MINTY}
+                  borderRadius='full'
+                  position='absolute'
+                  top={TOP}
+                  left={LEFT}
+                  zIndex={1}
+                />
+              </Flex>
+            ) : (
+              <Flex w='full' h='100%' align='center'>
+                <Slider
+                  defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
+                  isAnimProgressBar
+                  max={DURATION_FRAMES}
+                  min={1}
+                  onValueChange={updateFrame}
+                  onValueChangeEnd={handleValueChangeEnd}
+                  showValueText={false}
+                  size='sm'
+                  value={manualFrame}
+                />
+              </Flex>
+            )}
+          </Flex>
+        </HStack>
+
+        {/* {videoCreateError && (
           <Box color='red.500'>
             {videoCreateError ||
               'An error occurred while processing the video.'}
           </Box>
-        )}
+        )} */}
       </VStack>
       <AuthDialog
         isOpen={isAuthDialogOpen}

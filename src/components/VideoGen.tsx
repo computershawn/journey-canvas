@@ -43,8 +43,9 @@ const VideoGen = ({
   return (
     <Flex
       h='2.5rem'
+      w='2.5rem'
       bg='#292929'
-      outline='1px solid transparent'
+      outline='1px solid #404040'
       p={`${pad}px`}
       alignItems='center'
       gap={`${gap}px`}
@@ -54,7 +55,8 @@ const VideoGen = ({
       <Tooltip content='Create video file' openDelay={500} closeDelay={200}>
         <IconButton
           aria-label='Create video file'
-          color="#6008cdff"
+          color='#4a4a4a'
+          _hover={{ color: '#ff008cff', transition: 'color .3s ease' }}
           disabled={isUploadingOrRendering}
           onClick={handleClickRenderButton}
           size='xs'

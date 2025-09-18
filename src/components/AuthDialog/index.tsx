@@ -22,7 +22,7 @@ const AuthDialog = ({
 }) => {
   const [isLogin, setIsLogin] = useState(true);
   const title = isLogin
-    ? 'Sign in to render video'
+    ? 'Log in to render video'
     : 'Create an account to render video';
 
   return (
@@ -43,12 +43,17 @@ const AuthDialog = ({
               <Flex align='center' gap='0.25rem' mb={2}>
                 <FaCircleInfo />
                 <Text fontSize='sm'>
-                  You&apos;ll need to sign in to render your animation as a
-                  video
+                  You&apos;ll need to log in to render your animation as a video
                 </Text>
               </Flex>
               <Box>
-                <VStack gap={4}>{isLogin ? <Login dismiss={dismiss} /> : <Signup dismiss={dismiss} />}</VStack>
+                <VStack gap={4}>
+                  {isLogin ? (
+                    <Login dismiss={dismiss} />
+                  ) : (
+                    <Signup dismiss={dismiss} />
+                  )}
+                </VStack>
               </Box>
               <Flex mt={2} align='center'>
                 <Text fontSize='sm'>

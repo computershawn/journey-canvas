@@ -31,7 +31,7 @@ const OptionsMenu = ({
             </Menu.Item>
             <Menu.Item value={'update'} onClick={onUpdateExistingComp}>
               <FaFloppyDisk />
-              <Box flex='1'>Update Current</Box>
+              <Box flex='1'>Update Comp</Box>
             </Menu.Item>
             <Menu.Item value={'edit'} onClick={onEditComps}>
               <FaPen />
