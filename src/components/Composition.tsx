@@ -25,6 +25,7 @@ import NullElement from '../utils/nullElement';
 import AuthDialog from './AuthDialog';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
+import Coverlay from './Coverlay';
 // import { Tooltip } from './ui/tooltip';
 // import RenderButton from './RenderButton';
 
@@ -210,9 +211,14 @@ const Composition = ({
     loggy.error(videoCreateError);
   }
 
+  const isUploadingOrRendering = isUploading || isRendering;
+
   return geomChecked ? (
     <>
       <VStack align='flex-start'>
+        {isUploadingOrRendering && (
+          <Coverlay isUploading={isUploading} isRendering={isRendering} />
+        )}
         <canvas ref={canvasRef} style={canvasStyle} />
         <HStack>
           {authUser ? (

@@ -29,9 +29,9 @@ const VideoGen = ({
   // const [authUser] = useAuthState(auth);
 
   const isUploadingOrRendering = isRendering || isUploading;
-  const videoProcessStatus = isUploading
-    ? 'Uploading frames...'
-    : 'Rendering video...';
+  // const videoProcessStatus = isUploading
+  //   ? 'Uploading frames...'
+  //   : 'Rendering video...';
 
   // const handleClickRenderButton = () => {
   //   if (authUser) {
@@ -61,21 +61,22 @@ const VideoGen = ({
         color='#4a4a4a'
         _hover={{ color: '#ff008cff', transition: 'color .3s ease' }}
         disabled={isUploadingOrRendering}
-        onClick={exportToVideo}
+        // onClick={exportToVideo}
+        onClick={() => console.log('initiate video export')}
         size='xs'
         variant='outline'
       >
         <FaClapperboard />
       </IconButton>
       {/* </Tooltip> */}
-      {isUploadingOrRendering && (
+      {/* {isUploadingOrRendering && (
         <Flex gap={2} align='center'>
           <Text textStyle='sm' color='white'>
             {videoProcessStatus}
           </Text>
           <Spinner color='white' />
         </Flex>
-      )}
+      )} */}
       {videoUrl && <Link href={videoUrl}>link to your video</Link>}
     </Flex>
   );
