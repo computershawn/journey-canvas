@@ -11,7 +11,7 @@ const onErrorCallback = (errMsg: string) => {
   });
 };
 
-const Login = ({ dismiss }: { dismiss: () => void }) => {
+const Login = () => {
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
@@ -21,9 +21,7 @@ const Login = ({ dismiss }: { dismiss: () => void }) => {
   const doLogin = async () => {
     await login(inputs);
 
-    if (!error) {
-      dismiss();
-    } else {
+    if (error) {
       onErrorCallback('Something went wrong. Please try again.');
     }
   };

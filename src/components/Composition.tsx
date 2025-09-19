@@ -1,5 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
+
 import { FaPause, FaPlay } from 'react-icons/fa6';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import {
   Box,
@@ -11,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 
 import { CANV_HT, CANV_WD, DURATION_FRAMES, MINTY } from '../constants';
+import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
@@ -22,6 +25,8 @@ import NullElement from '../utils/nullElement';
 import AuthDialog from './AuthDialog';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
+// import { Tooltip } from './ui/tooltip';
+// import RenderButton from './RenderButton';
 
 const SCALE = 1;
 const NUM_COLORS = 5;
@@ -65,7 +70,8 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
-  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  // const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [authUser] = useAuthState(auth);
 
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
@@ -209,13 +215,29 @@ const Composition = ({
       <VStack align='flex-start'>
         <canvas ref={canvasRef} style={canvasStyle} />
         <HStack>
-          <VideoGen
-            isUploading={isUploading}
-            isRendering={isRendering}
-            exportToVideo={exportToVideo}
-            openAuthDialog={() => setIsAuthDialogOpen(true)}
-            videoUrl={videoUrl}
-          />
+          {authUser ? (
+            <VideoGen
+              isUploading={isUploading}
+              isRendering={isRendering}
+              exportToVideo={exportToVideo}
+              // openAuthDialog={() => setIsAuthDialogOpen(true)}
+              videoUrl={videoUrl}
+            />
+          ) : (
+            // <AuthDialog
+            //   isOpen={isAuthDialogOpen}
+            //   dismiss={() => {
+            //     setIsAuthDialogOpen(false);
+            //   }}
+            // />
+            <AuthDialog />
+            // <RenderButton
+            //   disabled={false}
+            //   onClick={() => setIsAuthDialogOpen(true)}
+            // />
+          )}
+
+          {/* TODO: Can this animation progress bar be made into a separate component? */}
           <Flex
             w={CANV_WD - RENDER_BTN_OFFSET}
             h='2.5rem'
@@ -289,12 +311,6 @@ const Composition = ({
           </Box>
         )} */}
       </VStack>
-      <AuthDialog
-        isOpen={isAuthDialogOpen}
-        dismiss={() => {
-          setIsAuthDialogOpen(false);
-        }}
-      />
     </>
   ) : (
     <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />

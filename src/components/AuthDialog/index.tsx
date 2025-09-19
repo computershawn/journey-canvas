@@ -7,31 +7,34 @@ import {
   Box,
   VStack,
   Button,
+  IconButton,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FaCircleInfo } from 'react-icons/fa6';
+import { FaCircleInfo, FaClapperboard } from 'react-icons/fa6';
 import Login from './Login';
 import Signup from './Signup';
 
-const AuthDialog = ({
-  isOpen,
-  dismiss,
-}: {
-  isOpen: boolean;
-  dismiss: () => void;
-}) => {
+const AuthDialog = () => {
   const [isLogin, setIsLogin] = useState(true);
   const title = isLogin
     ? 'Log in to render video'
     : 'Create an account to render video';
 
   return (
-    <Dialog.Root
-      placement='center'
-      size='sm'
-      open={isOpen}
-      // onOpenChange={onOpenChange}
-    >
+    <Dialog.Root placement='center' size='sm'>
+      <Dialog.Trigger asChild>
+        {/* <Tooltip content='Create video file' openDelay={500} closeDelay={200}> */}
+        <IconButton
+          aria-label='Create video file'
+          color='#4a4a4a'
+          _hover={{ color: '#ff008cff', transition: 'color .3s ease' }}
+          size='xs'
+          variant='outline'
+        >
+          <FaClapperboard />
+        </IconButton>
+        {/*</Tooltip> */}
+      </Dialog.Trigger>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
@@ -47,13 +50,7 @@ const AuthDialog = ({
                 </Text>
               </Flex>
               <Box>
-                <VStack gap={4}>
-                  {isLogin ? (
-                    <Login dismiss={dismiss} />
-                  ) : (
-                    <Signup dismiss={dismiss} />
-                  )}
-                </VStack>
+                <VStack gap={4}>{isLogin ? <Login /> : <Signup />}</VStack>
               </Box>
               <Flex mt={2} align='center'>
                 <Text fontSize='sm'>

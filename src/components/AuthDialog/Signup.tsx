@@ -13,7 +13,7 @@ const onErrorCallback = (errMsg) => {
   });
 };
 
-const Signup = ({ dismiss }: { dismiss: () => void }) => {
+const Signup = () => {
   const [inputs, setInputs] = useState({
     fullName: '',
     username: '',
@@ -25,10 +25,8 @@ const Signup = ({ dismiss }: { dismiss: () => void }) => {
 
   const doSignUp = async () => {
     await signUp(inputs);
-    if (!error) {
-      dismiss();
-    } else {
-      onErrorCallback("Something went wrong. Please try again.");
+    if (error) {
+      onErrorCallback('Something went wrong. Please try again.');
     }
   };
 
@@ -91,7 +89,7 @@ const Signup = ({ dismiss }: { dismiss: () => void }) => {
         size='sm'
         loading={loading}
         onClick={doSignUp}
-        variant="outline"
+        variant='outline'
       >
         Sign up
       </Button>
