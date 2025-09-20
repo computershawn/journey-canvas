@@ -24,15 +24,23 @@ const AuthDialog = () => {
     <Dialog.Root placement='center' size='sm'>
       <Dialog.Trigger asChild>
         {/* <Tooltip content='Create video file' openDelay={500} closeDelay={200}> */}
-        <IconButton
-          aria-label='Create video file'
-          color='#4a4a4a'
-          _hover={{ color: '#ff008cff', transition: 'color .3s ease' }}
-          size='xs'
-          variant='outline'
+        <Flex
+          h='2.5rem'
+          w='2.5rem'
+          outline='1px solid #404040'
+          p={1}
+          borderRadius='sm'
         >
-          <FaClapperboard />
-        </IconButton>
+          <IconButton
+            aria-label='Create video file'
+            color='#4a4a4a'
+            _hover={{ color: '#252525', transition: 'color .3s ease' }}
+            size='xs'
+            variant='outline'
+          >
+            <FaClapperboard />
+          </IconButton>
+        </Flex>
         {/*</Tooltip> */}
       </Dialog.Trigger>
       <Portal>

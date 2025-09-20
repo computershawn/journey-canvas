@@ -7,9 +7,6 @@ import { FaClapperboard } from 'react-icons/fa6';
 // import { Tooltip } from './ui/tooltip';
 // import RenderButton from './RenderButton';
 
-const pad = 4;
-const gap = 8;
-
 interface VideoGenProps {
   // exportToVideo: () => void;
   exportToVideo: () => Promise<void>;
@@ -23,9 +20,9 @@ const VideoGen = ({
   exportToVideo,
   isRendering,
   isUploading,
-  // openAuthDialog,
-  // videoUrl,
-}: VideoGenProps) => {
+}: // openAuthDialog,
+// videoUrl,
+VideoGenProps) => {
   // const [authUser] = useAuthState(auth);
 
   const isUploadingOrRendering = isRendering || isUploading;
@@ -46,20 +43,16 @@ const VideoGen = ({
     <Flex
       h='2.5rem'
       w='2.5rem'
-      bg='#292929'
       outline='1px solid #404040'
-      p={`${pad}px`}
-      alignItems='center'
-      gap={`${gap}px`}
+      p={1}
       borderRadius='sm'
-      position='relative'
     >
       {/* <RenderButton disabled={isUploadingOrRendering} onClick={exportToVideo} /> */}
       {/* <Tooltip content='Create video file' openDelay={500} closeDelay={200}> */}
       <IconButton
         aria-label='Create video file'
         color='#4a4a4a'
-        _hover={{ color: '#ff008cff', transition: 'color .3s ease' }}
+        _hover={{ color: '#ff008c', transition: 'color .3s ease' }}
         disabled={isUploadingOrRendering}
         onClick={exportToVideo}
         // onClick={() => console.log('initiate video export')}
