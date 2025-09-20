@@ -81,12 +81,24 @@ export const useProcessVideo = () => {
 
     // TODO: We need to send the user's ID (authUser.uid) to the backend so the cloud function
     //       knows which folder to download frames from, and which folder to save the video to.
+    // await fetch(CLOUD_FUNCTION_URL, {
+    //   method: 'GET', // or 'POST' if your function expects POST
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     // 'Authorization': `Bearer ${idToken}`, // Send the ID token for authentication
+    //   },
+    // })
+    
+    const token = await authUser.getIdToken();
     await fetch(CLOUD_FUNCTION_URL, {
-      method: 'GET', // or 'POST' if your function expects POST
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${idToken}`, // Send the ID token for authentication
+        'Authorization': `Bearer ${token}`,
       },
+      body: JSON.stringify({
+        uid: authUser.uid, // Add the UID here
+      }),
     })
       .then((response) => {
         return response.json();
@@ -101,6 +113,7 @@ export const useProcessVideo = () => {
         // }
       })
       .catch(() => {
+        loggy.error('Failed to generate video');
         setError('Failed to generate video');
         // if (error instanceof Error) {
         //   setError(`Failed to generate video: ${error.message}`);

@@ -207,6 +207,7 @@ const Composition = ({
     loggy.info('Frames uploaded. Begin rendering video…');
     await processVideo();
 
+    loggy.info('Video rendered. Showing preview…');
     setIsVideoPreviewOpen(true);
   };
 
