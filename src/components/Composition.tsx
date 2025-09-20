@@ -227,7 +227,7 @@ const Composition = ({
               isRendering={isRendering}
               exportToVideo={exportToVideo}
               // openAuthDialog={() => setIsAuthDialogOpen(true)}
-              videoUrl={videoUrl}
+              // videoUrl={videoUrl}
             />
           ) : (
             // <AuthDialog

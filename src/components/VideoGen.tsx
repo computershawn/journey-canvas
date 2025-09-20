@@ -1,4 +1,4 @@
-import { Flex, IconButton, Link, Spinner, Text } from '@chakra-ui/react';
+import { Flex, IconButton } from '@chakra-ui/react';
 
 // import { useAuthState } from 'react-firebase-hooks/auth';
 import { FaClapperboard } from 'react-icons/fa6';
@@ -16,7 +16,7 @@ interface VideoGenProps {
   isRendering: boolean;
   isUploading: boolean;
   // openAuthDialog: () => void;
-  videoUrl: string;
+  // videoUrl: string;
 }
 
 const VideoGen = ({
@@ -24,14 +24,14 @@ const VideoGen = ({
   isRendering,
   isUploading,
   // openAuthDialog,
-  videoUrl,
+  // videoUrl,
 }: VideoGenProps) => {
   // const [authUser] = useAuthState(auth);
 
   const isUploadingOrRendering = isRendering || isUploading;
   // const videoProcessStatus = isUploading
   //   ? 'Uploading frames...'
-  //   : 'Rendering video...';
+  //   : 'Rendering your video...';
 
   // const handleClickRenderButton = () => {
   //   if (authUser) {
@@ -61,8 +61,8 @@ const VideoGen = ({
         color='#4a4a4a'
         _hover={{ color: '#ff008cff', transition: 'color .3s ease' }}
         disabled={isUploadingOrRendering}
-        // onClick={exportToVideo}
-        onClick={() => console.log('initiate video export')}
+        onClick={exportToVideo}
+        // onClick={() => console.log('initiate video export')}
         size='xs'
         variant='outline'
       >
@@ -77,7 +77,7 @@ const VideoGen = ({
           <Spinner color='white' />
         </Flex>
       )} */}
-      {videoUrl && <Link href={videoUrl}>link to your video</Link>}
+      {/* {videoUrl && <Link href={videoUrl}>link to your video</Link>} */}
     </Flex>
   );
 };

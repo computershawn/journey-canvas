@@ -6,11 +6,11 @@ import { auth } from '../firebase';
 
 // const FIREBASE_FUNCTION_NAME = 'videoGen';
 // const CLOUD_RUN_SERVICE_URL = 'https://video-processor-service-ohvvwjkf6q-uc.a.run.app';
-// const FUNCTION_URL =
+// const CLOUD_FUNCTION_URL =
 //   'https://us-central1-sequence-to-video.cloudfunctions.net/doAllOfTheThings'
-// const FUNCTION_URL =
+// const CLOUD_FUNCTION_URL =
 //   'http://localhost:5001/sequence-to-video/us-central1/doAllOfTheThings';
-const FUNCTION_URL = 'https://doallofthethings-ohvvwjkf6q-uc.a.run.app';
+const CLOUD_FUNCTION_URL = 'https://doallofthethings-ohvvwjkf6q-uc.a.run.app';
 
 // export const useProcessVideoORIG = () => {
 //   const [executeCallable, executing, error] = useHttpsCallable(
@@ -63,7 +63,7 @@ export const useProcessVideo = () => {
       return;
     }
 
-    await fetch(FUNCTION_URL, {
+    await fetch(CLOUD_FUNCTION_URL, {
       method: 'GET', // or 'POST' if your function expects POST
       headers: {
         'Content-Type': 'application/json',
