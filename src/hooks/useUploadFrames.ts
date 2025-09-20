@@ -4,7 +4,9 @@ import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { useControls } from '../hooks/useControls';
 import { loggy, mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
-import { DURATION_FRAMES } from '../constants';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../firebase';
+// import { DURATION_FRAMES } from '../constants';
 
 export const useUploadFrames = ({
   canvas,
@@ -19,6 +21,9 @@ export const useUploadFrames = ({
 }) => {
   const { balance, diff } = useControls();
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [authUser, authLoading, authError] = useAuthState(auth);
+
   const storage = getStorage();
 
   const updateForRender = (frame: number) => {
@@ -33,20 +38,59 @@ export const useUploadFrames = ({
   };
 
   const uploadFrames = async () => {
+    setIsUploading(true);
+    setUploadError('');
+
     if (!canvas) {
-      loggy.error('No HTML canvas present');
+      loggy.error("Can't upload frames: No HTML canvas present");
+      setUploadError("Can't upload frames: No HTML canvas present");
+      setIsUploading(false);
+      return;
+    }
+
+    // Check if user is loaded and authenticated
+    if (authLoading) {
+      loggy.error(
+        "Can't upload frames: Authentication state is still loading. Please wait.",
+      );
+      setUploadError(
+        "Can't upload frames: Authentication state is still loading. Please wait.",
+      );
+      setIsUploading(false);
+      return;
+    }
+
+    if (authError) {
+      loggy.error(
+        `Can't upload frames upload frames: Authentication error: ${authError.message}`,
+      );
+      setUploadError(
+        `Can't upload frames upload frames: Authentication error: ${authError.message}`,
+      );
+      setIsUploading(false);
+      return;
+    }
+
+    if (!authUser) {
+      loggy.error(
+        "Can't upload frames: You must be logged in to generate a video.",
+      );
+      setUploadError(
+        "Can't upload frames: You must be logged in to generate a video.",
+      );
+      setIsUploading(false);
       return;
     }
 
     const startFrame = 0;
-    const limit = DURATION_FRAMES;
+    const limit = 24; // DURATION_FRAMES;
     const uploadPromises: Promise<void>[] = [];
 
     for (let i = startFrame; i < startFrame + limit; i++) {
       updateForRender(i);
       draw();
       const paddedIndex = String(i + 1).padStart(4, '0');
-      const imagePath = `frames/frame-${paddedIndex}.jpg`;
+      const imagePath = `users/${authUser.uid}/frames/frame-${paddedIndex}.jpg`;
       const storageRef = ref(storage, imagePath);
 
       // Wrap toBlob in a Promise so you can await it
@@ -72,8 +116,6 @@ export const useUploadFrames = ({
       uploadPromises.push(uploadPromise);
     }
 
-    setIsUploading(true);
-
     try {
       await Promise.all(uploadPromises);
     } catch (error) {
@@ -83,5 +125,5 @@ export const useUploadFrames = ({
     }
   };
 
-  return { uploadFrames, isUploading };
+  return { uploadFrames, isUploading, uploadError };
 };

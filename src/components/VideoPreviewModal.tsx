@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import {
   Center,
   CloseButton,
@@ -6,7 +8,8 @@ import {
   Portal,
   Text,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+
+import { PREVIEW_VIDEO_DIMS } from '../constants';
 import { loggy } from '../utils/helpers';
 
 const VideoPreviewModal = ({
@@ -44,13 +47,18 @@ const VideoPreviewModal = ({
             </Dialog.Header>
             <Dialog.Body>
               {hasVideoLoadError ? (
-                <Center background='black' h='351px'>
+                <Center background='black' h={`${PREVIEW_VIDEO_DIMS.HT}px`}>
                   <Text color='white'>
                     Oopsies… This video is not available
                   </Text>
                 </Center>
               ) : (
-                <video width='100%' onError={handleVideoError} controls>
+                <video
+                  width={`${PREVIEW_VIDEO_DIMS.WD}px`}
+                  height={`${PREVIEW_VIDEO_DIMS.HT}px`}
+                  onError={handleVideoError}
+                  controls
+                >
                   <source src={videoUrl} type='video/mp4' />
                   Your browser does not support the video tag.
                 </video>

@@ -3,6 +3,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 // import { useHttpsCallable } from 'react-firebase-hooks/functions';
 
 import { auth } from '../firebase';
+import { loggy } from '../utils/helpers';
 
 // const FIREBASE_FUNCTION_NAME = 'videoGen';
 // const CLOUD_RUN_SERVICE_URL = 'https://video-processor-service-ohvvwjkf6q-uc.a.run.app';
@@ -37,7 +38,7 @@ export const useProcessVideo = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Use the useAuthState hook to get the current user and auth state
-  const [user, authLoading, authError] = useAuthState(auth);
+  const [authUser, authLoading, authError] = useAuthState(auth);
 
   const processVideo = async () => {
     setLoading(true);
@@ -46,23 +47,40 @@ export const useProcessVideo = () => {
 
     // Check if user is loaded and authenticated
     if (authLoading) {
-      setError('Authentication state is still loading. Please wait.');
+      loggy.error(
+        "Can't process video: Authentication state is still loading. Please wait.",
+      );
+      setError(
+        "Can't process video: Authentication state is still loading. Please wait.",
+      );
       setLoading(false);
       return;
     }
 
     if (authError) {
-      setError(`Authentication error: ${authError.message}`);
+      loggy.error(
+        `Can't process video: Authentication error: ${authError.message}`,
+      );
+      setError(
+        `Can't process video: Authentication error: ${authError.message}`,
+      );
       setLoading(false);
       return;
     }
 
-    if (!user) {
-      setError('You must be logged in to generate a video.');
+    if (!authUser) {
+      loggy.error(
+        "Can't process video: You must be logged in to generate a video.",
+      );
+      setError(
+        "Can't process video: You must be logged in to generate a video.",
+      );
       setLoading(false);
       return;
     }
 
+    // TODO: We need to send the user's ID (authUser.uid) to the backend so the cloud function
+    //       knows which folder to download frames from, and which folder to save the video to.
     await fetch(CLOUD_FUNCTION_URL, {
       method: 'GET', // or 'POST' if your function expects POST
       headers: {
