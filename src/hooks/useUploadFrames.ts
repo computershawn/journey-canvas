@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { useControls } from '../hooks/useControls';
 import { loggy, mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { DURATION_FRAMES } from '../constants';
 import { auth } from '../firebase';
-// import { DURATION_FRAMES } from '../constants';
 
 export const useUploadFrames = ({
   canvas,
@@ -83,7 +83,7 @@ export const useUploadFrames = ({
     }
 
     const startFrame = 0;
-    const limit = 24; // DURATION_FRAMES;
+    const limit = DURATION_FRAMES;
     const uploadPromises: Promise<void>[] = [];
 
     for (let i = startFrame; i < startFrame + limit; i++) {

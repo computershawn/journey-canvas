@@ -111,7 +111,7 @@ const Composition = ({
   }, [nullElements.length]);
 
   const { isPlaying, pause, play, resetLastValue, setValue, value } =
-    useTimeLoop(15000);
+    useTimeLoop(12800);
   const cycleFrame = 1 + Math.round(value * (DURATION_FRAMES - 1));
 
   const updateFanBlades = () => {

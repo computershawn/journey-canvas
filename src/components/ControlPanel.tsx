@@ -231,7 +231,7 @@ const ControlPanel = ({
 
         <VStack w='full' gap={2} align='flex-start'>
           <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Text textStyle='sm' opacity={pathsChecked ? 1 : '0.625'}>
+            <Text textStyle='sm'>
               Guide Paths
             </Text>
             <IconButton
@@ -248,7 +248,7 @@ const ControlPanel = ({
           </Flex>
 
           <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Text textStyle='sm' opacity={geomChecked ? 1 : '0.625'}>
+            <Text textStyle='sm'>
               Geometry
             </Text>
             <IconButton
@@ -287,7 +287,6 @@ const ControlPanel = ({
               checked={colorsLoaded && colorChecked}
               onCheckedChange={(e) => setColorChecked(e.checked)}
               disabled={!colorsLoaded}
-              opacity={colorChecked ? 1 : '0.625'}
             >
               Colors
             </Switch>
@@ -312,7 +311,6 @@ const ControlPanel = ({
               checked={colorsLoaded && bgChecked}
               onCheckedChange={(e) => setBgChecked(e.checked)}
               disabled={!colorsLoaded || !colorChecked}
-              opacity={colorChecked && !bgChecked ? '0.625' : '1'}
             >
               Background
             </Switch>
