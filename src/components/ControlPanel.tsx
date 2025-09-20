@@ -4,7 +4,6 @@ import { FaArrowRotateRight, FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  Button,
   Flex,
   Heading,
   HStack,
@@ -28,11 +27,7 @@ import OptionsMenu from './OptionsMenu';
 import EditComps from './ManageComps';
 import Tagline from './Tagline';
 import logoTypeUrl from '/journey-logotype.svg';
-import VideoPreviewModal from './VideoPreviewModal';
 import UserInfo from './UserInfo';
-
-const videoUrl =
-  'https://storage.googleapis.com/sequence-to-video.firebasestorage.app/videos/output_1757884476837.mp4?GoogleAccessId=708383750456-compute%40developer.gserviceaccount.com&Expires=1757888077&Signature=PRsC2kSwybUfrYiavAK%2BnbHWWteJw8zCHZ8FWY9DmaPHPEpdpoba7p8AKlKRt1evX%2FuHfgN2dlEB3bW2JdWrfmJ7PAXkHT4C8mwnnGPAIagGcC3BuM2h28oChS2FYtovT5mVkpbh6l9yzRKuCaMazBmps7CD1wae6FF%2BVvWv9a9s5eNFzB9wTl3kJoDzPgMvBdfGSf0AkK%2BKwsQVLqKkQPUviCgQuyze%2FhtCK7V6oOC%2BGhg9aD4KRLZxPbfLmSArbaMyfhC7P2q7vMXOSfXO%2FTguWQnPXnkAM%2B3DqV9jYp%2FG8O7yRUUwlTKycebDIorskLUhwbtK2AH1oa3gpUmRvA%3D%3D';
 
 const ControlPanel = ({
   allColors,
@@ -65,7 +60,6 @@ const ControlPanel = ({
   const [compId, setCompId] = useState<string[]>(['-']);
   const [isCreateCompOpen, setIsCreateCompOpen] = useState(false);
   const [isEditCompsOpen, setIsEditCompsOpen] = useState(false);
-  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
   const [authUser] = useAuthState(auth);
 
   const {
@@ -330,17 +324,6 @@ const ControlPanel = ({
               />
             )}
           </Flex>
-
-          <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Button
-              w='full'
-              variant='outline'
-              aria-label='show video preview modal'
-              onClick={() => setIsVideoPreviewOpen(true)}
-            >
-              video preview modal
-            </Button>
-          </Flex>
         </VStack>
 
         {/* Dialog for creating a new comp */}
@@ -352,13 +335,6 @@ const ControlPanel = ({
 
         {/* Dialog for editing existing comps */}
         <EditComps open={isEditCompsOpen} setOpen={setIsEditCompsOpen} />
-
-        {/* Dialog for previewing video */}
-        <VideoPreviewModal
-          open={isVideoPreviewOpen}
-          setOpen={setIsVideoPreviewOpen}
-          videoUrl={videoUrl}
-        />
       </VStack>
       <Tagline />
     </VStack>

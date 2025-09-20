@@ -4,6 +4,7 @@ import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { useControls } from '../hooks/useControls';
 import { loggy, mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
+import { DURATION_FRAMES } from '../constants';
 
 export const useUploadFrames = ({
   canvas,
@@ -38,7 +39,7 @@ export const useUploadFrames = ({
     }
 
     const startFrame = 0;
-    const limit = 120;
+    const limit = DURATION_FRAMES;
     const uploadPromises: Promise<void>[] = [];
 
     for (let i = startFrame; i < startFrame + limit; i++) {

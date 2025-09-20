@@ -26,6 +26,7 @@ import AuthDialog from './AuthDialog';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
 import Coverlay from './Coverlay';
+import VideoPreviewModal from './VideoPreviewModal';
 // import { Tooltip } from './ui/tooltip';
 // import RenderButton from './RenderButton';
 
@@ -71,7 +72,7 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
-  // const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
   const [authUser] = useAuthState(auth);
 
   const canvas = canvasRef.current;
@@ -205,6 +206,8 @@ const Composition = ({
 
     loggy.info('Frames uploaded. Begin rendering video…');
     await processVideo();
+
+    setIsVideoPreviewOpen(true);
   };
 
   if (videoCreateError) {
@@ -213,114 +216,238 @@ const Composition = ({
 
   const isUploadingOrRendering = isUploading || isRendering;
 
-  return geomChecked ? (
+  return (
     <>
-      <VStack align='flex-start'>
-        {isUploadingOrRendering && (
-          <Coverlay isUploading={isUploading} isRendering={isRendering} />
-        )}
-        <canvas ref={canvasRef} style={canvasStyle} />
-        <HStack>
-          {authUser ? (
-            <VideoGen
-              isUploading={isUploading}
-              isRendering={isRendering}
-              exportToVideo={exportToVideo}
-              // openAuthDialog={() => setIsAuthDialogOpen(true)}
-              // videoUrl={videoUrl}
-            />
-          ) : (
-            // <AuthDialog
-            //   isOpen={isAuthDialogOpen}
-            //   dismiss={() => {
-            //     setIsAuthDialogOpen(false);
-            //   }}
-            // />
-            <AuthDialog />
-            // <RenderButton
-            //   disabled={false}
-            //   onClick={() => setIsAuthDialogOpen(true)}
-            // />
-          )}
-
-          {/* TODO: Can this animation progress bar be made into a separate component? */}
-          <Flex
-            w={CANV_WD - RENDER_BTN_OFFSET}
-            h='2.5rem'
-            bg='#292929'
-            outline='1px solid #404040'
-            p={`${PAD}px`}
-            alignItems='center'
-            gap={`${GAP}px`}
-            borderRadius='sm'
-            position='relative'
-          >
-            <IconButton
-              size='xs'
-              aria-label='Play or pause animation'
-              onClick={() => {
-                if (isPlaying) {
-                  handleClickTimeline();
-                } else {
-                  play();
-                }
-              }}
-              w={`${PLAY_BTN_WD}px`}
-              bg={MINTY}
-            >
-              {isPlaying ? <FaPause color='black' /> : <FaPlay color='black' />}
-            </IconButton>
-            {isPlaying ? (
-              <Flex w='full' h='100%' onClick={handleClickTimeline}>
-                <Box
-                  h={`${TRACK_HT}px`}
-                  w={PROGRESS_WD}
-                  bg='#111'
-                  borderRadius='full'
-                  position='absolute'
-                  top={TOP}
-                  left={LEFT}
-                />
-                <Box
-                  h={`${TRACK_HT}px`}
-                  style={{ width: `${value * PROGRESS_WD}px` }}
-                  bg={MINTY}
-                  borderRadius='full'
-                  position='absolute'
-                  top={TOP}
-                  left={LEFT}
-                  zIndex={1}
-                />
-              </Flex>
-            ) : (
-              <Flex w='full' h='100%' align='center'>
-                <Slider
-                  defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
-                  isAnimProgressBar
-                  max={DURATION_FRAMES}
-                  min={1}
-                  onValueChange={updateFrame}
-                  onValueChangeEnd={handleValueChangeEnd}
-                  showValueText={false}
-                  size='sm'
-                  value={manualFrame}
-                />
-              </Flex>
+      {geomChecked ? (
+        <>
+          <VStack align='flex-start'>
+            {isUploadingOrRendering && (
+              <Coverlay isUploading={isUploading} isRendering={isRendering} />
             )}
-          </Flex>
-        </HStack>
+            <canvas ref={canvasRef} style={canvasStyle} />
+            <HStack>
+              {authUser ? (
+                <VideoGen
+                  isUploading={isUploading}
+                  isRendering={isRendering}
+                  exportToVideo={exportToVideo}
+                  // openAuthDialog={() => setIsAuthDialogOpen(true)}
+                  // videoUrl={videoUrl}
+                />
+              ) : (
+                // <AuthDialog
+                //   isOpen={isAuthDialogOpen}
+                //   dismiss={() => {
+                //     setIsAuthDialogOpen(false);
+                //   }}
+                // />
+                <AuthDialog />
+                // <RenderButton
+                //   disabled={false}
+                //   onClick={() => setIsAuthDialogOpen(true)}
+                // />
+              )}
 
-        {/* {videoCreateError && (
+              {/* TODO: Can this animation progress bar be made into a separate component? */}
+              <Flex
+                w={CANV_WD - RENDER_BTN_OFFSET}
+                h='2.5rem'
+                bg='#292929'
+                outline='1px solid #404040'
+                p={`${PAD}px`}
+                alignItems='center'
+                gap={`${GAP}px`}
+                borderRadius='sm'
+                position='relative'
+              >
+                <IconButton
+                  size='xs'
+                  aria-label='Play or pause animation'
+                  onClick={() => {
+                    if (isPlaying) {
+                      handleClickTimeline();
+                    } else {
+                      play();
+                    }
+                  }}
+                  w={`${PLAY_BTN_WD}px`}
+                  bg={MINTY}
+                >
+                  {isPlaying ? (
+                    <FaPause color='black' />
+                  ) : (
+                    <FaPlay color='black' />
+                  )}
+                </IconButton>
+                {isPlaying ? (
+                  <Flex w='full' h='100%' onClick={handleClickTimeline}>
+                    <Box
+                      h={`${TRACK_HT}px`}
+                      w={PROGRESS_WD}
+                      bg='#111'
+                      borderRadius='full'
+                      position='absolute'
+                      top={TOP}
+                      left={LEFT}
+                    />
+                    <Box
+                      h={`${TRACK_HT}px`}
+                      style={{ width: `${value * PROGRESS_WD}px` }}
+                      bg={MINTY}
+                      borderRadius='full'
+                      position='absolute'
+                      top={TOP}
+                      left={LEFT}
+                      zIndex={1}
+                    />
+                  </Flex>
+                ) : (
+                  <Flex w='full' h='100%' align='center'>
+                    <Slider
+                      defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
+                      isAnimProgressBar
+                      max={DURATION_FRAMES}
+                      min={1}
+                      onValueChange={updateFrame}
+                      onValueChangeEnd={handleValueChangeEnd}
+                      showValueText={false}
+                      size='sm'
+                      value={manualFrame}
+                    />
+                  </Flex>
+                )}
+              </Flex>
+            </HStack>
+
+            {/* {videoCreateError && (
           <Box color='red.500'>
             {videoCreateError ||
               'An error occurred while processing the video.'}
           </Box>
         )} */}
-      </VStack>
+          </VStack>
+        </>
+      ) : (
+        <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
+      )}
+
+      {/* Dialog for previewing video */}
+      <VideoPreviewModal
+        open={isVideoPreviewOpen}
+        setOpen={setIsVideoPreviewOpen}
+        videoUrl={videoUrl}
+      />
     </>
-  ) : (
-    <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
   );
+
+  // return geomChecked ? (
+  //   <>
+  //     <VStack align='flex-start'>
+  //       {isUploadingOrRendering && (
+  //         <Coverlay isUploading={isUploading} isRendering={isRendering} />
+  //       )}
+  //       <canvas ref={canvasRef} style={canvasStyle} />
+  //       <HStack>
+  //         {authUser ? (
+  //           <VideoGen
+  //             isUploading={isUploading}
+  //             isRendering={isRendering}
+  //             exportToVideo={exportToVideo}
+  //             // openAuthDialog={() => setIsAuthDialogOpen(true)}
+  //             // videoUrl={videoUrl}
+  //           />
+  //         ) : (
+  //           // <AuthDialog
+  //           //   isOpen={isAuthDialogOpen}
+  //           //   dismiss={() => {
+  //           //     setIsAuthDialogOpen(false);
+  //           //   }}
+  //           // />
+  //           <AuthDialog />
+  //           // <RenderButton
+  //           //   disabled={false}
+  //           //   onClick={() => setIsAuthDialogOpen(true)}
+  //           // />
+  //         )}
+
+  //         {/* TODO: Can this animation progress bar be made into a separate component? */}
+  //         <Flex
+  //           w={CANV_WD - RENDER_BTN_OFFSET}
+  //           h='2.5rem'
+  //           bg='#292929'
+  //           outline='1px solid #404040'
+  //           p={`${PAD}px`}
+  //           alignItems='center'
+  //           gap={`${GAP}px`}
+  //           borderRadius='sm'
+  //           position='relative'
+  //         >
+  //           <IconButton
+  //             size='xs'
+  //             aria-label='Play or pause animation'
+  //             onClick={() => {
+  //               if (isPlaying) {
+  //                 handleClickTimeline();
+  //               } else {
+  //                 play();
+  //               }
+  //             }}
+  //             w={`${PLAY_BTN_WD}px`}
+  //             bg={MINTY}
+  //           >
+  //             {isPlaying ? <FaPause color='black' /> : <FaPlay color='black' />}
+  //           </IconButton>
+  //           {isPlaying ? (
+  //             <Flex w='full' h='100%' onClick={handleClickTimeline}>
+  //               <Box
+  //                 h={`${TRACK_HT}px`}
+  //                 w={PROGRESS_WD}
+  //                 bg='#111'
+  //                 borderRadius='full'
+  //                 position='absolute'
+  //                 top={TOP}
+  //                 left={LEFT}
+  //               />
+  //               <Box
+  //                 h={`${TRACK_HT}px`}
+  //                 style={{ width: `${value * PROGRESS_WD}px` }}
+  //                 bg={MINTY}
+  //                 borderRadius='full'
+  //                 position='absolute'
+  //                 top={TOP}
+  //                 left={LEFT}
+  //                 zIndex={1}
+  //               />
+  //             </Flex>
+  //           ) : (
+  //             <Flex w='full' h='100%' align='center'>
+  //               <Slider
+  //                 defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
+  //                 isAnimProgressBar
+  //                 max={DURATION_FRAMES}
+  //                 min={1}
+  //                 onValueChange={updateFrame}
+  //                 onValueChangeEnd={handleValueChangeEnd}
+  //                 showValueText={false}
+  //                 size='sm'
+  //                 value={manualFrame}
+  //               />
+  //             </Flex>
+  //           )}
+  //         </Flex>
+  //       </HStack>
+
+  //       {/* {videoCreateError && (
+  //         <Box color='red.500'>
+  //           {videoCreateError ||
+  //             'An error occurred while processing the video.'}
+  //         </Box>
+  //       )} */}
+  //     </VStack>
+  //   </>
+  // ) : (
+  //   <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
+  // );
 };
 
 export default Composition;
