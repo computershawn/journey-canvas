@@ -24,7 +24,7 @@ const OptionsMenu = ({
       </Menu.Trigger>
       <Portal>
         <Menu.Positioner>
-          <Menu.Content width={180}>
+          <Menu.Content>
             <Menu.Item value={'newComp'} onClick={onCreateComp}>
               <FaFileCirclePlus />
               <Box flex='1'>New Comp…</Box>

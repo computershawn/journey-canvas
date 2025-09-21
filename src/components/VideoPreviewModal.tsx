@@ -39,7 +39,7 @@ const VideoPreviewModal = ({
       size='lg'
     >
       <Portal>
-        <Dialog.Backdrop bg="blackAlpha.800" />
+        <Dialog.Backdrop bg='blackAlpha.900' />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>

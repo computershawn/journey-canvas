@@ -18,3 +18,5 @@ export const PREVIEW_VIDEO_DIMS = {
   WD: 624,
   HT: 351,
 };
+
+export const MAGENTA = '#ff008c';

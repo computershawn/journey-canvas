@@ -44,7 +44,7 @@ const AuthDialog = () => {
         {/*</Tooltip> */}
       </Dialog.Trigger>
       <Portal>
-        <Dialog.Backdrop />
+        <Dialog.Backdrop bg='blackAlpha.700' />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
