@@ -14,7 +14,7 @@ const OptionsMenu = ({
     <Menu.Root>
       <Menu.Trigger asChild>
         <IconButton
-          aria-label='Delete comps'
+          aria-label='options'
           rounded='full'
           variant='outline'
           size='xs'
