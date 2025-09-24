@@ -14,7 +14,7 @@ const OptionsMenu = ({
     <Menu.Root>
       <Menu.Trigger asChild>
         <IconButton
-          aria-label='Delete comps'
+          aria-label='options'
           rounded='full'
           variant='outline'
           size='xs'
@@ -24,14 +24,14 @@ const OptionsMenu = ({
       </Menu.Trigger>
       <Portal>
         <Menu.Positioner>
-          <Menu.Content width={180}>
+          <Menu.Content>
             <Menu.Item value={'newComp'} onClick={onCreateComp}>
               <FaFileCirclePlus />
               <Box flex='1'>New Comp…</Box>
             </Menu.Item>
             <Menu.Item value={'update'} onClick={onUpdateExistingComp}>
               <FaFloppyDisk />
-              <Box flex='1'>Update Current</Box>
+              <Box flex='1'>Update Comp</Box>
             </Menu.Item>
             <Menu.Item value={'edit'} onClick={onEditComps}>
               <FaPen />

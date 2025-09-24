@@ -1,25 +1,46 @@
 import { useMemo, useRef, useState } from 'react';
+
 import { FaPause, FaPlay } from 'react-icons/fa6';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import {
   Box,
   Flex,
+  HStack,
   IconButton,
   SliderValueChangeDetails,
   VStack,
 } from '@chakra-ui/react';
 
 import { CANV_HT, CANV_WD, DURATION_FRAMES, MINTY } from '../constants';
+import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
+import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
+import { useUploadFrames } from '../hooks/useUploadFrames';
 import { ColorArray, Point } from '../types';
 import FanBlade from '../utils/fanBlade';
-import { mapTo } from '../utils/helpers';
+import { loggy, mapTo } from '../utils/helpers';
 import NullElement from '../utils/nullElement';
+import AuthDialog from './AuthDialog';
 import Slider from './ui/slider';
+import VideoGen from './VideoGen';
+import Coverlay from './Coverlay';
+import VideoPreviewModal from './VideoPreviewModal';
 
-const scale = 1;
+const SCALE = 1;
 const NUM_COLORS = 5;
+const RENDER_BTN_OFFSET = 48;
+const PAD = 4;
+const EXTRA_PADDING = 8;
+const GAP = 8;
+const PLAY_BTN_WD = 48;
+const PROGRESS_WD =
+  CANV_WD - PLAY_BTN_WD - 2 * PAD - GAP - EXTRA_PADDING - RENDER_BTN_OFFSET;
+const TRACK_HT = 6;
+const BAR_HT = 2.5;
+const TOP = `${(BAR_HT * 16) / 2 - 3}px`;
+const LEFT = `${PAD + PLAY_BTN_WD + GAP}px`;
 
 // Get the device pixel ratio, falling back to 1.
 const dpr = window.devicePixelRatio || 1;
@@ -49,11 +70,13 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
+  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
+  const [authUser] = useAuthState(auth);
 
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
 
-  const nullElements = useMemo(() => {
+  const nullElements: NullElement[] = useMemo(() => {
     const temp = [];
     if (bezierSplinePoints?.length) {
       for (let j = 0; j < bezierSplinePoints.length; j++) {
@@ -86,18 +109,10 @@ const Composition = ({
   }, [nullElements.length]);
 
   const { isPlaying, pause, play, resetLastValue, setValue, value } =
-    useTimeLoop(15000);
+    useTimeLoop(12800);
   const cycleFrame = 1 + Math.round(value * (DURATION_FRAMES - 1));
 
-  const update = () => {
-    // Update all positions of our references
-    const difference = mapTo(diff, 0, 100, 1, 8);
-
-    nullElements.forEach((nE) => {
-      const frame = isPlaying ? cycleFrame : manualFrame;
-      nE.update(frame, balance / 100, difference);
-    });
-
+  const updateFanBlades = () => {
     for (let j = 0; j < nullElements.length - 1; j++) {
       const thisRef = nullElements[j];
       const nextRef = nullElements[j + 1];
@@ -111,16 +126,28 @@ const Composition = ({
       const px3 = nextRef.point0.x + nextRef.x;
       const py3 = nextRef.point0.y + nextRef.y;
 
-      const pv0 = { x: scale * px0, y: scale * py0 };
-      const pv1 = { x: scale * px1, y: scale * py1 };
-      const pv2 = { x: scale * px2, y: scale * py2 };
-      const pv3 = { x: scale * px3, y: scale * py3 };
+      const pv0 = { x: SCALE * px0, y: SCALE * py0 };
+      const pv1 = { x: SCALE * px1, y: SCALE * py1 };
+      const pv2 = { x: SCALE * px2, y: SCALE * py2 };
+      const pv3 = { x: SCALE * px3, y: SCALE * py3 };
 
       fanBlades[j].update(pv0, pv1, pv2, pv3);
     }
   };
 
-  const draw = () => {
+  const update = () => {
+    // Update all positions of our references
+    const difference = mapTo(diff, 0, 100, 1, 8);
+
+    nullElements.forEach((nE) => {
+      const frame = isPlaying ? cycleFrame : manualFrame;
+      nE.update(frame, balance / 100, difference);
+    });
+
+    updateFanBlades();
+  };
+
+  const draw = (): void => {
     if (canvas && ctx) {
       // Get the size of the canvas in CSS pixels.
       const rect = canvas.getBoundingClientRect();
@@ -144,16 +171,6 @@ const Composition = ({
     draw();
   }
 
-  const pad = 4;
-  const extraPadding = 8;
-  const gap = 8;
-  const btnWidth = 48;
-  const progressWidth = CANV_WD - btnWidth - pad - pad - gap - extraPadding;
-  const trackHt = 6;
-  const barHt = 2.5;
-  const top = `${(barHt * 16) / 2 - 3}px`;
-  const left = `${pad + btnWidth + gap}px`;
-
   const updateFrame = (details: SliderValueChangeDetails) => {
     const value = details.value[0];
     setManualFrame(value);
@@ -171,79 +188,139 @@ const Composition = ({
     setManualFrame(cycleFrame);
   };
 
-  return geomChecked ? (
+  const { isUploading, uploadFrames } = useUploadFrames({
+    canvas,
+    draw,
+    nullElements,
+    updateFanBlades,
+  });
+
+  const { processVideo, isRendering, videoCreateError, videoUrl } =
+    useProcessVideo();
+
+  const exportToVideo = async () => {
+    loggy.info('Begin uploading frames…');
+    await uploadFrames();
+
+    loggy.info('Frames uploaded. Begin rendering video…');
+    await processVideo();
+
+    loggy.info('Video rendered. Showing preview…');
+    setIsVideoPreviewOpen(true);
+  };
+
+  if (videoCreateError) {
+    loggy.error(videoCreateError);
+  }
+
+  const isUploadingOrRendering = isUploading || isRendering;
+
+  return (
     <>
-      <VStack align='flex-start'>
-        <canvas ref={canvasRef} style={canvasStyle} />
-        <Flex
-          w={1280}
-          h='2.5rem'
-          bg='#292929'
-          outline='1px solid #404040'
-          p={`${pad}px`}
-          alignItems='center'
-          gap={`${gap}px`}
-          borderRadius='sm'
-          position='relative'
-        >
-          <IconButton
-            size='xs'
-            aria-label='Play or pause animation'
-            onClick={() => {
-              if (isPlaying) {
-                handleClickTimeline();
-              } else {
-                play();
-              }
-            }}
-            w={`${btnWidth}px`}
-          >
-            {isPlaying ? <FaPause color='black' /> : <FaPlay color='#2bb79b' />}
-          </IconButton>
-          {isPlaying ? (
-            <Flex w='full' h='100%' onClick={handleClickTimeline}>
-              <Box
-                h={`${trackHt}px`}
-                w={progressWidth}
-                bg='#111'
-                borderRadius='full'
-                position='absolute'
-                top={top}
-                left={left}
-              />
-              <Box
-                h={`${trackHt}px`}
-                style={{ width: `${value * progressWidth}px` }}
-                bg={MINTY}
-                borderRadius='full'
-                position='absolute'
-                top={top}
-                left={left}
-                zIndex={1}
-              />
-            </Flex>
-          ) : (
-            <Flex w='full' h='100%' align='center'>
-              <Slider
-                defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
-                isAnimProgressBar
-                max={DURATION_FRAMES}
-                min={1}
-                onValueChange={updateFrame}
-                onValueChangeEnd={handleValueChangeEnd}
-                showValueText={false}
-                size='sm'
-                value={manualFrame}
-              />
-            </Flex>
-          )}
-        </Flex>
-      </VStack>
+      {geomChecked ? (
+        <>
+          <VStack align='flex-start'>
+            {isUploadingOrRendering && (
+              <Coverlay isUploading={isUploading} isRendering={isRendering} />
+            )}
+            <canvas ref={canvasRef} style={canvasStyle} />
+            <HStack>
+              {authUser ? (
+                <VideoGen
+                  exportToVideo={exportToVideo}
+                  openPreviewModal={() => setIsVideoPreviewOpen(true)}
+                  isUploading={isUploading}
+                  isRendering={isRendering}
+                  videoUrl={videoUrl}
+                />
+              ) : (
+                <AuthDialog />
+              )}
+
+              {/* TODO: Can this animation progress bar be made into a separate component? */}
+              <Flex
+                w={CANV_WD - RENDER_BTN_OFFSET}
+                h='2.5rem'
+                bg='#292929'
+                outline='1px solid #404040'
+                p={`${PAD}px`}
+                alignItems='center'
+                gap={`${GAP}px`}
+                borderRadius='sm'
+                position='relative'
+              >
+                <IconButton
+                  size='xs'
+                  aria-label='Play or pause animation'
+                  onClick={() => {
+                    if (isPlaying) {
+                      handleClickTimeline();
+                    } else {
+                      play();
+                    }
+                  }}
+                  w={`${PLAY_BTN_WD}px`}
+                  bg={MINTY}
+                >
+                  {isPlaying ? (
+                    <FaPause color='black' />
+                  ) : (
+                    <FaPlay color='black' />
+                  )}
+                </IconButton>
+                {isPlaying ? (
+                  <Flex w='full' h='100%' onClick={handleClickTimeline}>
+                    <Box
+                      h={`${TRACK_HT}px`}
+                      w={PROGRESS_WD}
+                      bg='#111'
+                      borderRadius='full'
+                      position='absolute'
+                      top={TOP}
+                      left={LEFT}
+                    />
+                    <Box
+                      h={`${TRACK_HT}px`}
+                      style={{ width: `${value * PROGRESS_WD}px` }}
+                      bg={MINTY}
+                      borderRadius='full'
+                      position='absolute'
+                      top={TOP}
+                      left={LEFT}
+                      zIndex={1}
+                    />
+                  </Flex>
+                ) : (
+                  <Flex w='full' h='100%' align='center'>
+                    <Slider
+                      defaultValue={mapTo(value, 0, 1, 1, DURATION_FRAMES)}
+                      isAnimProgressBar
+                      max={DURATION_FRAMES}
+                      min={1}
+                      onValueChange={updateFrame}
+                      onValueChangeEnd={handleValueChangeEnd}
+                      showValueText={false}
+                      size='sm'
+                      value={manualFrame}
+                    />
+                  </Flex>
+                )}
+              </Flex>
+            </HStack>
+          </VStack>
+        </>
+      ) : (
+        <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
+      )}
+
+      {/* Dialog for previewing video */}
+      <VideoPreviewModal
+        open={isVideoPreviewOpen}
+        setOpen={setIsVideoPreviewOpen}
+        videoUrl={videoUrl}
+      />
     </>
-  ) : (
-    <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
   );
 };
 
 export default Composition;
-

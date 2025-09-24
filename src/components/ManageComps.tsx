@@ -52,9 +52,9 @@ const ManageComps = ({
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root open={open} onOpenChange={onOpenChange} placement='center'>
       <Portal>
-        <Dialog.Backdrop />
+        <Dialog.Backdrop bg='blackAlpha.700' />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>

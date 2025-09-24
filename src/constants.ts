@@ -13,3 +13,10 @@ export const NUM_POINTS = 325;
 export const DURATION_FRAMES = 384;
 
 export const MINTY = '#a2ffec';
+
+export const PREVIEW_VIDEO_DIMS = {
+  WD: 624,
+  HT: 351,
+};
+
+export const MAGENTA = '#ff008c';

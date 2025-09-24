@@ -5,12 +5,16 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "isolatedModules": true,
     "module": "ESNext",
+    "esModuleInterop": true,
     "moduleResolution": "Bundler",
     "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"]
     },
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "jsx": "preserve",
+    "useDefineForClassFields": true,
   }
 }

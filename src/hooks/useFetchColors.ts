@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { ColorArray } from '../types';
+import { loggy } from '../utils/helpers';
 
 export const useFetchColors = () => {
   const [allColors, setAllColors] = useState<ColorArray[]>([]);
@@ -16,7 +17,7 @@ export const useFetchColors = () => {
         );
         setAllColors(data);
       } catch (error) {
-        console.error('Error fetching colors:', error);
+        loggy.error('Error fetching colors:', error);
       }
     };
 

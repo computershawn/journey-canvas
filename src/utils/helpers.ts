@@ -1,4 +1,6 @@
-// EASING FUNCTIONS
+import { Logger } from '../types';
+
+// Easing functions
 export const easeInCubic = (t: number) => {
   return t * t * t;
 };
@@ -6,7 +8,7 @@ export const easeInQuad = (t: number) => {
   return t * t;
 };
 
-// TAKE A VALUE AND OUTPUT A RANDOM NEW VALUE WITHIN +/- RANGE
+// Take a value and output a random new value within +/- range
 export const wobble = (val: number, range: number) => {
   const dir = Math.random() > 0.5 ? 1 : -1;
   const variance = 1.0 + dir * Math.random() * range;
@@ -18,20 +20,54 @@ export const wobble = (val: number, range: number) => {
   return wob;
 };
 
-// GET RANDOM INDEX OF ITEM IN ARRAY
+// Get random index of item in array
 export const getRandomIndex = (len: number) => {
   return Math.floor(Math.random() * len);
 };
 
-// MAP A NUMBER FROM ONE RANGE TO A DIFFERENT RANGE
+// Map a number from one range to a different range
 export const mapTo = (
   value: number,
   fromMin: number,
   fromMax: number,
   toMin: number,
-  toMax: number
+  toMax: number,
 ): number => {
   const amount = value / (fromMax - fromMin);
 
   return toMin + amount * (toMax - toMin);
 };
+
+// Log information to console, but only in development mode
+export const loggy: Logger = {
+  info: (...args: unknown[]) => {
+    // Explicitly check for 'development' and 'test' to be safe…
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test'
+    ) {
+      console.info(...args);
+    }
+  },
+  log: (...args: unknown[]) => {
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test'
+    ) {
+      console.log(...args);
+    }
+  },
+  warn: (...args: unknown[]) => {
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test'
+    ) {
+      console.warn(...args);
+    }
+  },
+  error: (...args: unknown[]) => {
+    // Errors are often crucial, so they're always logged regardless of the environment.
+    console.error(...args);
+  },
+};
+
