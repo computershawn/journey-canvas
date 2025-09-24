@@ -11,8 +11,7 @@ import { loggy } from '../utils/helpers';
 // user data in a 'users' Firestore collection. If it turns out that we need
 // to store additional user data, that project can be used as a reference.
 export const useLogin = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [signInWithEmailAndPassword, loggedInUser, loading, error] =
+  const [signInWithEmailAndPassword, /*loggedInUser*/, loading, error] =
     useSignInWithEmailAndPassword(auth);
 
   // @ts-expect-error Parameter 'inputs' implicitly has an 'any' type

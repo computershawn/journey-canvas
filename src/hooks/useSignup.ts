@@ -14,9 +14,13 @@ import useAuthStore from '../store/authStore';
 import { saveToLocalStorage } from '../utils/storageOps';
 import { loggy } from '../utils/helpers';
 
+// This useLogin custom hook is a simplified version of useSignup from
+// https://github.com/computershawn/antsigarm/blob/main/src/hooks/useSignup.ts
+// In that project, we save information to local storage and store additional
+// user data in a 'users' Firestore collection. If it turns out that we need
+// to store additional user data, that project can be used as a reference.
 export const useSignup = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [createUserWithEmailAndPassword, registeredUser, loading, error] =
+  const [createUserWithEmailAndPassword, , loading, error] =
     useCreateUserWithEmailAndPassword(auth);
   // @ts-expect-error 'state' is of type 'unknown'
   const loginUser = useAuthStore((state) => state.login);
