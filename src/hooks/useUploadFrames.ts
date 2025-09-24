@@ -38,88 +38,81 @@ export const useUploadFrames = ({
   };
 
   const uploadFrames = async () => {
-    setIsUploading(true);
-    setUploadError('');
-
     if (!canvas) {
       loggy.error("Can't upload frames: No HTML canvas present");
       setUploadError("Can't upload frames: No HTML canvas present");
-      setIsUploading(false);
       return;
     }
 
     // Check if user is loaded and authenticated
     if (authLoading) {
-      loggy.error(
-        "Can't upload frames: Authentication state is still loading. Please wait.",
-      );
       setUploadError(
         "Can't upload frames: Authentication state is still loading. Please wait.",
       );
-      setIsUploading(false);
       return;
     }
 
     if (authError) {
-      loggy.error(
-        `Can't upload frames upload frames: Authentication error: ${authError.message}`,
-      );
       setUploadError(
         `Can't upload frames upload frames: Authentication error: ${authError.message}`,
       );
-      setIsUploading(false);
       return;
     }
 
     if (!authUser) {
-      loggy.error(
-        "Can't upload frames: You must be logged in to generate a video.",
-      );
       setUploadError(
         "Can't upload frames: You must be logged in to generate a video.",
       );
-      setIsUploading(false);
       return;
     }
 
+    setIsUploading(true);
+    setUploadError('');
     const startFrame = 0;
-    const limit = DURATION_FRAMES;
-    const uploadPromises: Promise<void>[] = [];
-
-    for (let i = startFrame; i < startFrame + limit; i++) {
-      updateForRender(i);
-      draw();
-      const paddedIndex = String(i + 1).padStart(4, '0');
-      const imagePath = `users/${authUser.uid}/frames/frame-${paddedIndex}.jpg`;
-      const storageRef = ref(storage, imagePath);
-
-      // Wrap toBlob in a Promise so you can await it
-      const uploadPromise = new Promise<void>((resolve, reject) => {
-        canvas.toBlob(
-          async (blob) => {
-            if (blob) {
-              try {
-                await uploadBytes(storageRef, blob);
-                resolve();
-              } catch (err) {
-                reject(err);
-              }
-            } else {
-              reject(new Error('Failed to create blob'));
-            }
-          },
-          'image/jpeg',
-          0.8,
-        );
-      });
-
-      uploadPromises.push(uploadPromise);
-    }
+    const limit = 60;
+    const batchSize = 20; // Process 20 frames at a time
 
     try {
-      await Promise.all(uploadPromises);
+      // Process frames in batches
+      for (let i = startFrame; i < startFrame + limit; i += batchSize) {
+        const batchPromises: Promise<void>[] = [];
+
+        // Create a batch of promises
+        for (let j = i; j < Math.min(i + batchSize, startFrame + limit); j++) {
+          updateForRender(j);
+          draw();
+          const paddedIndex = String(j + 1).padStart(4, '0');
+          const imagePath = `users/${authUser.uid}/frames/frame-${paddedIndex}.jpg`;
+          const storageRef = ref(storage, imagePath);
+
+          const uploadPromise = new Promise<void>((resolve, reject) => {
+            canvas.toBlob(
+              async (blob) => {
+                if (blob) {
+                  try {
+                    await uploadBytes(storageRef, blob);
+                    resolve();
+                  } catch (err) {
+                    reject(err);
+                  }
+                } else {
+                  reject(new Error('Failed to create blob'));
+                }
+              },
+              'image/jpeg',
+              0.8,
+            );
+          });
+
+          batchPromises.push(uploadPromise);
+        }
+
+        // Wait for the current batch to complete before moving to the next
+        await Promise.all(batchPromises);
+      }
     } catch (error) {
       loggy.error('Error uploading frames:', error);
+      setUploadError('Error uploading frames: ' + (error as Error).message);
     } finally {
       setIsUploading(false);
     }
