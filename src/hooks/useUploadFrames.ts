@@ -70,7 +70,7 @@ export const useUploadFrames = ({
     setUploadError('');
     const startFrame = 0;
     const limit = DURATION_FRAMES;
-    const batchSize = 20; // Process 20 frames at a time
+    const batchSize = 12; // Process 12 frames at a time
 
     try {
       // Process frames in batches

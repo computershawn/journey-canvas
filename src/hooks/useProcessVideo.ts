@@ -1,36 +1,10 @@
 import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-// import { useHttpsCallable } from 'react-firebase-hooks/functions';
 
 import { auth } from '../firebase';
 import { loggy } from '../utils/helpers';
 
-// const FIREBASE_FUNCTION_NAME = 'videoGen';
-// const CLOUD_RUN_SERVICE_URL = 'https://video-processor-service-ohvvwjkf6q-uc.a.run.app';
-// const CLOUD_FUNCTION_URL =
-//   'https://us-central1-sequence-to-video.cloudfunctions.net/doAllOfTheThings'
-// const CLOUD_FUNCTION_URL =
-//   'http://localhost:5001/sequence-to-video/us-central1/doAllOfTheThings';
-const CLOUD_FUNCTION_URL = 'https://doallofthethings-ohvvwjkf6q-uc.a.run.app';
-
-// export const useProcessVideoORIG = () => {
-//   const [executeCallable, executing, error] = useHttpsCallable(
-//     fireFunctions,
-//     FIREBASE_FUNCTION_NAME,
-//   );
-
-//   return {
-//     processVideo: () =>
-//       executeCallable({
-//         imagePrefix: 'frames/frame-',
-//         imageCount: 24,
-//         frameRate: 24,
-//         outputFilename: 'output-video.mp4',
-//       }),
-//     videoIsProcessing: executing,
-//     videoCreateError: error,
-//   };
-// };
+const cloudFunctionUrl = import.meta.env.VITE_PUBLIC_CLOUD_FUNCTION_URL;
 
 export const useProcessVideo = () => {
   const [videoUrl, setVideoUrl] = useState('');
@@ -79,18 +53,8 @@ export const useProcessVideo = () => {
       return;
     }
 
-    // TODO: We need to send the user's ID (authUser.uid) to the backend so the cloud function
-    //       knows which folder to download frames from, and which folder to save the video to.
-    // await fetch(CLOUD_FUNCTION_URL, {
-    //   method: 'GET', // or 'POST' if your function expects POST
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     // 'Authorization': `Bearer ${idToken}`, // Send the ID token for authentication
-    //   },
-    // })
-    
     const token = await authUser.getIdToken();
-    await fetch(CLOUD_FUNCTION_URL, {
+    await fetch(cloudFunctionUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
