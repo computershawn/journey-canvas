@@ -28,9 +28,11 @@ import VideoGen from './VideoGen';
 import Coverlay from './Coverlay';
 import VideoPreviewModal from './VideoPreviewModal';
 
+const displayRenderButton = false;
+
 const SCALE = 1;
 const NUM_COLORS = 5;
-const RENDER_BTN_OFFSET = 48;
+const RENDER_BTN_OFFSET = displayRenderButton ? 48 : 0;
 const PAD = 4;
 const EXTRA_PADDING = 8;
 const GAP = 8;
@@ -225,7 +227,7 @@ const Composition = ({
             )}
             <canvas ref={canvasRef} style={canvasStyle} />
             <HStack>
-              {authUser ? (
+              {displayRenderButton && authUser ? (
                 <VideoGen
                   exportToVideo={exportToVideo}
                   openPreviewModal={() => setIsVideoPreviewOpen(true)}
@@ -234,7 +236,7 @@ const Composition = ({
                   videoUrl={videoUrl}
                 />
               ) : (
-                <AuthDialog />
+                displayRenderButton && <AuthDialog />
               )}
 
               {/* TODO: Can this animation progress bar be made into a separate component? */}
