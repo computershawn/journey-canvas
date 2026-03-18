@@ -4,7 +4,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { useControls } from '../hooks/useControls';
 import { loggy, mapTo } from '../utils/helpers';
-import NullElement from '../utils/nullElement';
+import NullElement from '../classes/nullElement';
 import { DURATION_FRAMES } from '../constants';
 import { auth } from '../firebase';
 

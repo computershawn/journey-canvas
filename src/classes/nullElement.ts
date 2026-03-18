@@ -1,6 +1,6 @@
 import { DURATION_FRAMES } from '../constants';
 import { Pt } from '../types';
-import { mapTo } from './helpers';
+import { mapTo } from '../utils/helpers';
 
 const radius = 80; // TODO: Consider making this variable
 class NullElement {

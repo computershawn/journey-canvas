@@ -5,6 +5,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import {
   Box,
+  Button,
   Flex,
   HStack,
   IconButton,
@@ -18,10 +19,10 @@ import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
 import { useUploadFrames } from '../hooks/useUploadFrames';
-import { ColorArray, Point } from '../types';
-import FanBlade from '../utils/fanBlade';
+import { ColorArray, FrameCompsData, Point } from '../types';
+import FanBlade from '../classes/fanBlade';
 import { loggy, mapTo } from '../utils/helpers';
-import NullElement from '../utils/nullElement';
+import NullElement from '../classes/nullElement';
 import AuthDialog from './AuthDialog';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
@@ -168,6 +169,43 @@ const Composition = ({
     }
   };
 
+  const sendToFirebase = (data: FrameCompsData) => {
+    // const sizeInBytes = new TextEncoder().encode(JSON.stringify(data)).length;
+    // const sizeInMegabytes = sizeInBytes / (1024 * 1024);
+    // console.log(`Size: ${sizeInMegabytes.toFixed(2)} MB`);
+    console.log('data', data);
+  };
+
+  const gather = () => {
+    const polygons = [];
+    for (let i = 0; i < DURATION_FRAMES; i++) {
+      const difference = mapTo(diff, 0, 100, 1, 8);
+
+      nullElements.forEach((nE) => {
+        nE.update(i, balance / 100, difference);
+      });
+
+      updateFanBlades();
+      const tang = fanBlades.map((fb) => fb.details);
+      // tang.length = 30; // TODO: Remove this limit
+      polygons.push(tang);
+    }
+    const polygonColors = fanBlades.map((fb) =>
+      fb.getColor(palette, renderColors),
+    );
+    // polygonColors.length = 30; // TODO: Remove this limit
+
+    const backgroundColor =
+      (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
+    const data = {
+      backgroundColor,
+      polygons,
+      polygonColors,
+    };
+
+    sendToFirebase(data);
+  };
+
   if (geomChecked) {
     update();
     draw();
@@ -309,6 +347,7 @@ const Composition = ({
                 )}
               </Flex>
             </HStack>
+            <Button onClick={gather}>hello</Button>
           </VStack>
         </>
       ) : (
