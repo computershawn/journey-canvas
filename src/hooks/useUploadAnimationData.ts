@@ -7,7 +7,6 @@ import { loggy } from '../utils/helpers';
 import { auth } from '../firebase';
 
 import type { StorageReference } from 'firebase/storage';
-import { generateId } from '../utils/generateId';
 
 export const useUploadAnimationData = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -20,6 +19,7 @@ export const useUploadAnimationData = () => {
     backgroundColor: string,
     polygons: number[][][],
     polygonColors: string[],
+    jobId: string,
   ) => {
     // Check if user is loaded and authenticated
     if (authLoading) {
@@ -67,8 +67,8 @@ export const useUploadAnimationData = () => {
       const metaBlob = new Blob([JSON.stringify(meta)], {
         type: 'application/json',
       });
-      const id = generateId();
-      const metaRef = ref(storage, `${animationFolder}/meta-${id}.json`);
+
+      const metaRef = ref(storage, `${animationFolder}/meta-${jobId}.json`);
 
       // Prepare polygons.json
       const polygonsBlob = new Blob([JSON.stringify(polygons)], {
@@ -76,7 +76,7 @@ export const useUploadAnimationData = () => {
       });
       const polygonsRef = ref(
         storage,
-        `${animationFolder}/polygons-${id}.json`,
+        `${animationFolder}/polygons-${jobId}.json`,
       );
 
       // Helper to upload a blob and return a promise

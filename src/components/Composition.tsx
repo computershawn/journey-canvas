@@ -13,22 +13,23 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import FanBlade from '../classes/fanBlade';
+import NullElement from '../classes/nullElement';
 import { CANV_HT, CANV_WD, DURATION_FRAMES, MINTY } from '../constants';
 import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
+import { useUploadAnimationData } from '../hooks/useUploadAnimationData';
 import { useUploadFrames } from '../hooks/useUploadFrames';
 import { ColorArray, Point } from '../types';
-import FanBlade from '../classes/fanBlade';
+import { generateId } from '../utils/generateId';
 import { loggy, mapTo } from '../utils/helpers';
-import NullElement from '../classes/nullElement';
 import AuthDialog from './AuthDialog';
+import Coverlay from './Coverlay';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
-import Coverlay from './Coverlay';
 import VideoPreviewModal from './VideoPreviewModal';
-import { useUploadAnimationData } from '../hooks/useUploadAnimationData';
 
 const SCALE = 1;
 const NUM_COLORS = 5;
@@ -196,7 +197,9 @@ const Composition = ({
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Cloud function failed with status ${response.status}: ${errorText}`);
+        throw new Error(
+          `Cloud function failed with status ${response.status}: ${errorText}`,
+        );
       }
 
       const data = await response.json();
@@ -207,7 +210,15 @@ const Composition = ({
   };
 
   const exportToVideoAlt = async () => {
+    if (!authUser) {
+      loggy.error(
+        "Can't process video: You must be logged in to generate a video.",
+      );
+      return;
+    }
+
     loggy.info('Begin uploading frames…');
+
     const polygons = [];
     for (let i = 0; i < DURATION_FRAMES; i++) {
       const difference = mapTo(diff, 0, 100, 1, 8);
@@ -226,57 +237,20 @@ const Composition = ({
 
     const backgroundColor =
       (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
-    // const data = {
-    //   backgroundColor,
-    //   polygons,
-    //   polygonColors,
-    // };
 
-    // const sizeInBytes = new TextEncoder().encode(JSON.stringify(data)).length;
-    // const sizeInMegabytes = sizeInBytes / (1024 * 1024);
-    // console.log(`Size: ${sizeInMegabytes.toFixed(2)} MB`);
+    const jobId = generateId();
 
     // Upload collection of geometry for every frame
-    await uploadAnimationData(backgroundColor, polygons, polygonColors);
+    await uploadAnimationData(backgroundColor, polygons, polygonColors, jobId);
 
     // Wait for backend to generate the video
     loggy.info('Frames uploaded. Begin rendering video…');
-    await processVideo();
+    await processVideo(jobId);
 
     // Display the newly generated video
-    // loggy.info('Video rendered. Showing preview…');
-    // setIsVideoPreviewOpen(true);
+    loggy.info('Video rendered. Showing preview…');
+    setIsVideoPreviewOpen(true);
   };
-
-  // const gather = () => {
-  //   const polygons = [];
-  //   for (let i = 0; i < DURATION_FRAMES; i++) {
-  //     const difference = mapTo(diff, 0, 100, 1, 8);
-
-  //     nullElements.forEach((nE) => {
-  //       nE.update(i, balance / 100, difference);
-  //     });
-
-  //     updateFanBlades();
-  //     const ting = fanBlades.map((fb) => fb.details);
-  //     // ting.length = 30; // TODO: Remove this limit
-  //     polygons.push(ting);
-  //   }
-  //   const polygonColors = fanBlades.map((fb) =>
-  //     fb.getColor(palette, renderColors),
-  //   );
-  //   // polygonColors.length = 30; // TODO: Remove this limit
-
-  //   const backgroundColor =
-  //     (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
-  //   const data = {
-  //     backgroundColor,
-  //     polygons,
-  //     polygonColors,
-  //   };
-
-  //   sendToFirebase(data);
-  // };
 
   if (geomChecked) {
     update();
@@ -320,7 +294,7 @@ const Composition = ({
     await uploadFrames();
 
     loggy.info('Frames uploaded. Begin rendering video…');
-    await processVideo();
+    await processVideo('abcd1234');
 
     loggy.info('Video rendered. Showing preview…');
     setIsVideoPreviewOpen(true);
