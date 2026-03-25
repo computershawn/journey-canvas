@@ -19,7 +19,7 @@ import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
 import { useUploadFrames } from '../hooks/useUploadFrames';
-import { ColorArray, FrameCompsData, Point } from '../types';
+import { ColorArray, Point } from '../types';
 import FanBlade from '../classes/fanBlade';
 import { loggy, mapTo } from '../utils/helpers';
 import NullElement from '../classes/nullElement';
@@ -28,12 +28,11 @@ import Slider from './ui/slider';
 import VideoGen from './VideoGen';
 import Coverlay from './Coverlay';
 import VideoPreviewModal from './VideoPreviewModal';
-
-const displayRenderButton = false;
+import { useUploadAnimationData } from '../hooks/useUploadAnimationData';
 
 const SCALE = 1;
 const NUM_COLORS = 5;
-const RENDER_BTN_OFFSET = displayRenderButton ? 48 : 0;
+const RENDER_BTN_OFFSET = 48;
 const PAD = 4;
 const EXTRA_PADDING = 8;
 const GAP = 8;
@@ -169,14 +168,46 @@ const Composition = ({
     }
   };
 
-  const sendToFirebase = (data: FrameCompsData) => {
-    // const sizeInBytes = new TextEncoder().encode(JSON.stringify(data)).length;
-    // const sizeInMegabytes = sizeInBytes / (1024 * 1024);
-    // console.log(`Size: ${sizeInMegabytes.toFixed(2)} MB`);
-    console.log('data', data);
+  const testVideoRender = async () => {
+    if (!authUser) {
+      loggy.error(
+        "Can't process video: You must be logged in to generate a video.",
+      );
+      return;
+    }
+
+    const token = await authUser.getIdToken();
+    try {
+      // 1. Get the auth token from the currently signed-in user
+      // const token = await firebase.auth().currentUser.getIdToken();
+
+      // 2. Call your deployed function
+      const cloudFunctionUrl = import.meta.env.VITE_PUBLIC_CLOUD_FUNCTION_URL;
+      const response = await fetch(cloudFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          jobId: 'b3d7QETQ', // Replace with a real test ID if needed
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Cloud function failed with status ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Function Response:', data);
+    } catch (error) {
+      console.error('Error calling function:', error);
+    }
   };
 
-  const gather = () => {
+  const exportToVideoAlt = async () => {
+    loggy.info('Begin uploading frames…');
     const polygons = [];
     for (let i = 0; i < DURATION_FRAMES; i++) {
       const difference = mapTo(diff, 0, 100, 1, 8);
@@ -186,25 +217,66 @@ const Composition = ({
       });
 
       updateFanBlades();
-      const tang = fanBlades.map((fb) => fb.details);
-      // tang.length = 30; // TODO: Remove this limit
-      polygons.push(tang);
+      const ting = fanBlades.map((fb) => fb.details);
+      polygons.push(ting);
     }
     const polygonColors = fanBlades.map((fb) =>
       fb.getColor(palette, renderColors),
     );
-    // polygonColors.length = 30; // TODO: Remove this limit
 
     const backgroundColor =
       (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
-    const data = {
-      backgroundColor,
-      polygons,
-      polygonColors,
-    };
+    // const data = {
+    //   backgroundColor,
+    //   polygons,
+    //   polygonColors,
+    // };
 
-    sendToFirebase(data);
+    // const sizeInBytes = new TextEncoder().encode(JSON.stringify(data)).length;
+    // const sizeInMegabytes = sizeInBytes / (1024 * 1024);
+    // console.log(`Size: ${sizeInMegabytes.toFixed(2)} MB`);
+
+    // Upload collection of geometry for every frame
+    await uploadAnimationData(backgroundColor, polygons, polygonColors);
+
+    // Wait for backend to generate the video
+    loggy.info('Frames uploaded. Begin rendering video…');
+    await processVideo();
+
+    // Display the newly generated video
+    // loggy.info('Video rendered. Showing preview…');
+    // setIsVideoPreviewOpen(true);
   };
+
+  // const gather = () => {
+  //   const polygons = [];
+  //   for (let i = 0; i < DURATION_FRAMES; i++) {
+  //     const difference = mapTo(diff, 0, 100, 1, 8);
+
+  //     nullElements.forEach((nE) => {
+  //       nE.update(i, balance / 100, difference);
+  //     });
+
+  //     updateFanBlades();
+  //     const ting = fanBlades.map((fb) => fb.details);
+  //     // ting.length = 30; // TODO: Remove this limit
+  //     polygons.push(ting);
+  //   }
+  //   const polygonColors = fanBlades.map((fb) =>
+  //     fb.getColor(palette, renderColors),
+  //   );
+  //   // polygonColors.length = 30; // TODO: Remove this limit
+
+  //   const backgroundColor =
+  //     (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
+  //   const data = {
+  //     backgroundColor,
+  //     polygons,
+  //     polygonColors,
+  //   };
+
+  //   sendToFirebase(data);
+  // };
 
   if (geomChecked) {
     update();
@@ -235,10 +307,15 @@ const Composition = ({
     updateFanBlades,
   });
 
+  const { uploadAnimationData } = useUploadAnimationData();
+
   const { processVideo, isRendering, videoCreateError, videoUrl } =
     useProcessVideo();
 
   const exportToVideo = async () => {
+    console.info('this button is temporarily disabled');
+    return;
+
     loggy.info('Begin uploading frames…');
     await uploadFrames();
 
@@ -265,7 +342,7 @@ const Composition = ({
             )}
             <canvas ref={canvasRef} style={canvasStyle} />
             <HStack>
-              {displayRenderButton && authUser ? (
+              {authUser ? (
                 <VideoGen
                   exportToVideo={exportToVideo}
                   openPreviewModal={() => setIsVideoPreviewOpen(true)}
@@ -274,7 +351,7 @@ const Composition = ({
                   videoUrl={videoUrl}
                 />
               ) : (
-                displayRenderButton && <AuthDialog />
+                <AuthDialog />
               )}
 
               {/* TODO: Can this animation progress bar be made into a separate component? */}
@@ -347,7 +424,14 @@ const Composition = ({
                 )}
               </Flex>
             </HStack>
-            <Button onClick={gather}>hello</Button>
+            <HStack>
+              <Button onClick={exportToVideoAlt} bg='tomato'>
+                export json
+              </Button>
+              <Button onClick={testVideoRender} bg='tomato'>
+                process video
+              </Button>
+            </HStack>
           </VStack>
         </>
       ) : (

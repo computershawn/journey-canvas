@@ -60,8 +60,8 @@ export interface Logger {
   error: (...args: unknown[]) => void;
 }
 
-export interface FrameCompsData {
-  backgroundColor: string;
-  polygonColors: string[];
-  polygons: number[][][];
-}
+// export interface FrameCompsData {
+//   backgroundColor: string;
+//   polygonColors: string[];
+//   polygons: number[][][];
+// }

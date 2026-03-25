@@ -1,3 +1,6 @@
+// Batch upload JPEG images to the current user's folder in Firebase storage
+// Each image represents a frame of the user-created animation sequence
+
 import { useState } from 'react';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { useAuthState } from 'react-firebase-hooks/auth';
