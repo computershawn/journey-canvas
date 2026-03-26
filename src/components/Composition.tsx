@@ -5,7 +5,6 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import {
   Box,
-  Button,
   Flex,
   HStack,
   IconButton,
@@ -21,7 +20,6 @@ import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
 import { useUploadAnimationData } from '../hooks/useUploadAnimationData';
-import { useUploadFrames } from '../hooks/useUploadFrames';
 import { ColorArray, Point } from '../types';
 import { generateId } from '../utils/generateId';
 import { loggy, mapTo } from '../utils/helpers';
@@ -169,89 +167,6 @@ const Composition = ({
     }
   };
 
-  const testVideoRender = async () => {
-    if (!authUser) {
-      loggy.error(
-        "Can't process video: You must be logged in to generate a video.",
-      );
-      return;
-    }
-
-    const token = await authUser.getIdToken();
-    try {
-      // 1. Get the auth token from the currently signed-in user
-      // const token = await firebase.auth().currentUser.getIdToken();
-
-      // 2. Call your deployed function
-      const cloudFunctionUrl = import.meta.env.VITE_PUBLIC_CLOUD_FUNCTION_URL;
-      const response = await fetch(cloudFunctionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          jobId: 'b3d7QETQ', // Replace with a real test ID if needed
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Cloud function failed with status ${response.status}: ${errorText}`,
-        );
-      }
-
-      const data = await response.json();
-      console.log('Function Response:', data);
-    } catch (error) {
-      console.error('Error calling function:', error);
-    }
-  };
-
-  const exportToVideoAlt = async () => {
-    if (!authUser) {
-      loggy.error(
-        "Can't process video: You must be logged in to generate a video.",
-      );
-      return;
-    }
-
-    loggy.info('Begin uploading frames…');
-
-    const polygons = [];
-    for (let i = 0; i < DURATION_FRAMES; i++) {
-      const difference = mapTo(diff, 0, 100, 1, 8);
-
-      nullElements.forEach((nE) => {
-        nE.update(i, balance / 100, difference);
-      });
-
-      updateFanBlades();
-      const ting = fanBlades.map((fb) => fb.details);
-      polygons.push(ting);
-    }
-    const polygonColors = fanBlades.map((fb) =>
-      fb.getColor(palette, renderColors),
-    );
-
-    const backgroundColor =
-      (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
-
-    const jobId = generateId();
-
-    // Upload collection of geometry for every frame
-    await uploadAnimationData(backgroundColor, polygons, polygonColors, jobId);
-
-    // Wait for backend to generate the video
-    loggy.info('Frames uploaded. Begin rendering video…');
-    await processVideo(jobId);
-
-    // Display the newly generated video
-    loggy.info('Video rendered. Showing preview…');
-    setIsVideoPreviewOpen(true);
-  };
-
   if (geomChecked) {
     update();
     draw();
@@ -274,28 +189,44 @@ const Composition = ({
     setManualFrame(cycleFrame);
   };
 
-  const { isUploading, uploadFrames } = useUploadFrames({
-    canvas,
-    draw,
-    nullElements,
-    updateFanBlades,
-  });
-
-  const { uploadAnimationData } = useUploadAnimationData();
+  const { isUploading, uploadAnimationData } = useUploadAnimationData();
 
   const { processVideo, isRendering, videoCreateError, videoUrl } =
     useProcessVideo();
 
   const exportToVideo = async () => {
-    console.info('this button is temporarily disabled');
-    return;
-
     loggy.info('Begin uploading frames…');
-    await uploadFrames();
 
+    // 1. Gather data for all of the shapes for each frame of the animation
+    const polygons = [];
+    for (let i = 0; i < DURATION_FRAMES; i++) {
+      const difference = mapTo(diff, 0, 100, 1, 8);
+
+      nullElements.forEach((nE) => {
+        nE.update(i, balance / 100, difference);
+      });
+
+      updateFanBlades();
+      const ting = fanBlades.map((fb) => fb.details);
+      polygons.push(ting);
+    }
+    const polygonColors = fanBlades.map((fb) =>
+      fb.getColor(palette, renderColors),
+    );
+
+    const backgroundColor =
+      (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
+
+    const jobId = generateId();
+
+    // 2. Upload collection of geometry for every frame
+    await uploadAnimationData(backgroundColor, polygons, polygonColors, jobId);
+
+    // 3. Wait for backend to generate the video
     loggy.info('Frames uploaded. Begin rendering video…');
-    await processVideo('abcd1234');
+    await processVideo(jobId);
 
+    // 4. Display the newly generated video
     loggy.info('Video rendered. Showing preview…');
     setIsVideoPreviewOpen(true);
   };
@@ -397,14 +328,6 @@ const Composition = ({
                   </Flex>
                 )}
               </Flex>
-            </HStack>
-            <HStack>
-              <Button onClick={exportToVideoAlt} bg='tomato'>
-                export json
-              </Button>
-              <Button onClick={testVideoRender} bg='tomato'>
-                process video
-              </Button>
             </HStack>
           </VStack>
         </>
