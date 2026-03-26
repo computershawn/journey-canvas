@@ -42,9 +42,7 @@ const VideoPreviewModal = ({
         <Dialog.Backdrop bg='blackAlpha.900' />
         <Dialog.Positioner>
           <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>Video Preview</Dialog.Title>
-            </Dialog.Header>
+            <Dialog.Header />
             <Dialog.Body>
               {hasVideoLoadError ? (
                 <Center background='black' h={`${PREVIEW_VIDEO_DIMS.HT}px`}>

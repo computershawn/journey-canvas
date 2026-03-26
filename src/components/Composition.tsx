@@ -12,27 +12,26 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import FanBlade from '../classes/fanBlade';
+import NullElement from '../classes/nullElement';
 import { CANV_HT, CANV_WD, DURATION_FRAMES, MINTY } from '../constants';
 import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
-import { useUploadFrames } from '../hooks/useUploadFrames';
+import { useUploadAnimationData } from '../hooks/useUploadAnimationData';
 import { ColorArray, Point } from '../types';
-import FanBlade from '../utils/fanBlade';
+import { generateId } from '../utils/generateId';
 import { loggy, mapTo } from '../utils/helpers';
-import NullElement from '../utils/nullElement';
 import AuthDialog from './AuthDialog';
+import Coverlay from './Coverlay';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
-import Coverlay from './Coverlay';
 import VideoPreviewModal from './VideoPreviewModal';
-
-const displayRenderButton = false;
 
 const SCALE = 1;
 const NUM_COLORS = 5;
-const RENDER_BTN_OFFSET = displayRenderButton ? 48 : 0;
+const RENDER_BTN_OFFSET = 48;
 const PAD = 4;
 const EXTRA_PADDING = 8;
 const GAP = 8;
@@ -190,23 +189,44 @@ const Composition = ({
     setManualFrame(cycleFrame);
   };
 
-  const { isUploading, uploadFrames } = useUploadFrames({
-    canvas,
-    draw,
-    nullElements,
-    updateFanBlades,
-  });
+  const { isUploading, uploadAnimationData } = useUploadAnimationData();
 
   const { processVideo, isRendering, videoCreateError, videoUrl } =
     useProcessVideo();
 
   const exportToVideo = async () => {
     loggy.info('Begin uploading frames…');
-    await uploadFrames();
 
+    // 1. Gather data for all of the shapes for each frame of the animation
+    const polygons = [];
+    for (let i = 0; i < DURATION_FRAMES; i++) {
+      const difference = mapTo(diff, 0, 100, 1, 8);
+
+      nullElements.forEach((nE) => {
+        nE.update(i, balance / 100, difference);
+      });
+
+      updateFanBlades();
+      const ting = fanBlades.map((fb) => fb.details);
+      polygons.push(ting);
+    }
+    const polygonColors = fanBlades.map((fb) =>
+      fb.getColor(palette, renderColors),
+    );
+
+    const backgroundColor =
+      (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
+
+    const jobId = generateId();
+
+    // 2. Upload collection of geometry for every frame
+    await uploadAnimationData(backgroundColor, polygons, polygonColors, jobId);
+
+    // 3. Wait for backend to generate the video
     loggy.info('Frames uploaded. Begin rendering video…');
-    await processVideo();
+    await processVideo(jobId);
 
+    // 4. Display the newly generated video
     loggy.info('Video rendered. Showing preview…');
     setIsVideoPreviewOpen(true);
   };
@@ -227,7 +247,7 @@ const Composition = ({
             )}
             <canvas ref={canvasRef} style={canvasStyle} />
             <HStack>
-              {displayRenderButton && authUser ? (
+              {authUser ? (
                 <VideoGen
                   exportToVideo={exportToVideo}
                   openPreviewModal={() => setIsVideoPreviewOpen(true)}
@@ -236,7 +256,7 @@ const Composition = ({
                   videoUrl={videoUrl}
                 />
               ) : (
-                displayRenderButton && <AuthDialog />
+                <AuthDialog />
               )}
 
               {/* TODO: Can this animation progress bar be made into a separate component? */}

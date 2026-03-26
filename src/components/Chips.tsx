@@ -9,7 +9,7 @@ const Chips = ({ palette }: { palette: ColorArray; }) => {
   return (
     <HStack gap={0} outline='1px solid #aaa' outlineOffset={2}>
       {palette.map((co, j) => {
-        return <Box key={`${j}-${co}`} w={3} h={6} bg={co} />;
+        return <Box key={`${j}-${co}`} w={2.5} h={6} bg={co} />;
       })}
     </HStack>
   );

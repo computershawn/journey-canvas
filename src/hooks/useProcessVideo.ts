@@ -14,7 +14,9 @@ export const useProcessVideo = () => {
   // Use the useAuthState hook to get the current user and auth state
   const [authUser, authLoading, authError] = useAuthState(auth);
 
-  const processVideo = async () => {
+  const processVideo = async (jobId: string) => {
+    if (loading) return;
+    
     setLoading(true);
     setError('');
     setVideoUrl('');
@@ -53,41 +55,43 @@ export const useProcessVideo = () => {
       return;
     }
 
-    const token = await authUser.getIdToken();
-    await fetch(cloudFunctionUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        uid: authUser.uid, // Add the UID here
-      }),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.downloadUrl) {
-          setVideoUrl(data.downloadUrl);
-        }
-
-        // if (data.message) {
-        //   loggy.info(data.message);
-        // }
-      })
-      .catch(() => {
-        loggy.error('Failed to generate video');
-        setError('Failed to generate video');
-        // if (error instanceof Error) {
-        //   setError(`Failed to generate video: ${error.message}`);
-        // } else {
-        //   setError('Failed to generate video');
-        // }
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      const token = await authUser.getIdToken();
+      const response = await fetch(cloudFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          jobId,
+        }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Cloud function failed with status ${response.status}: ${errorText}`,
+        );
+      }
+
+      const data = await response.json();
+      if (data.downloadUrl) {
+        setVideoUrl(data.downloadUrl);
+      }
+      if (data.message) {
+        loggy.info(data.message);
+      }
+    } catch (err) {
+      loggy.error('Error calling function:', err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An unknown error occurred while processing the video',
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
