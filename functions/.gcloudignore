@@ -1,0 +1,7 @@
+.gcloudignore
+.git
+.gitignore
+node_modules/
+npm-debug.log
+pnpm-lock.yaml
+yarn.lock
