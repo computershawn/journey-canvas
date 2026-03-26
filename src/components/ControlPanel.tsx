@@ -4,10 +4,12 @@ import { FaArrowRotateRight, FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  CloseButton,
+  Drawer,
   Flex,
-  Heading,
   HStack,
   IconButton,
+  Portal,
   SliderValueChangeDetails,
   Text,
   VStack,
@@ -23,11 +25,10 @@ import CompSelector from './CompSelector';
 import Slider from './ui/slider';
 import Switch from './ui/switch';
 import NewComp from './CreateComp';
-import OptionsMenu from './OptionsMenu';
 import EditComps from './ManageComps';
 import Tagline from './Tagline';
-import logoTypeUrl from '/journey-logotype.svg';
 import UserInfo from './UserInfo';
+import { FaSlidersH } from 'react-icons/fa';
 
 const ControlPanel = ({
   allColors,
@@ -41,7 +42,6 @@ const ControlPanel = ({
   setBgChecked,
   setColorChecked,
   setPalette,
-  isWide,
 }: {
   allColors: ColorArray[];
   backgroundIndex: number;
@@ -54,7 +54,6 @@ const ControlPanel = ({
   setBgChecked: (checked: boolean) => void;
   setColorChecked: (checked: boolean) => void;
   setPalette: (palette: ColorArray) => void;
-  isWide: boolean;
 }) => {
   // const [parxChecked, setParxChecked] = useState(true);
   const [compId, setCompId] = useState<string[]>(['-']);
@@ -67,8 +66,8 @@ const ControlPanel = ({
     setBalance,
     diff,
     setDiff,
-    geomChecked,
-    setGeomChecked,
+    // geomChecked,
+    // setGeomChecked,
     pathsChecked,
     setPathsChecked,
     comps,
@@ -186,157 +185,322 @@ const ControlPanel = ({
     onChangeComp(i);
   };
 
-  const panelWidth = isWide ? 300 : 216;
+  // const panelWidth = 300;
 
   return (
-    <VStack h='100vh' gap={0}>
-      <VStack w={panelWidth} bg='#eee' p={4} gap={6} flex={1}>
-        <Flex direction='column' w='100%'>
-          <Heading size='lg' mb={2} w='full'>
-            <Flex justify='space-between'>
-              <img src={logoTypeUrl} alt='Journey Logo' width='80' />
-              <OptionsMenu
-                onUpdateExistingComp={handleClickUpdate}
-                onCreateComp={() => setIsCreateCompOpen(true)}
-                onEditComps={() => setIsEditCompsOpen(true)}
-              />
-            </Flex>
-          </Heading>
-          {authUser && (
-            <UserInfo userEmail={authUser.email || '[no email address]'} />
-          )}
-        </Flex>
+    <Drawer.Root placement='start'>
+      <Drawer.Trigger asChild>
+        <IconButton size='sm' color='black' m={2}>
+          <FaSlidersH />
+        </IconButton>
+      </Drawer.Trigger>
+      <Portal>
+        <Drawer.Backdrop />
+        <Drawer.Positioner>
+          <Drawer.Content bg='#eee'>
+            <Drawer.Header p={4} pb={2}>
+              <Drawer.Title>Controls</Drawer.Title>
+            </Drawer.Header>
+            <Drawer.Body p={0}>
+              <VStack w='full' p={4} pt={2} gap={6} flex={1}>
+                <Flex direction='column' w='100%'>
+                  {authUser && (
+                    <UserInfo
+                      userEmail={authUser.email || '[no email address]'}
+                    />
+                  )}
+                </Flex>
 
-        <CompSelector
-          numComps={comps.length}
-          onChangeComp={handleChangeComp}
-          compId={compId}
-          setCompId={setCompId}
-        />
+                <CompSelector
+                  numComps={comps.length}
+                  onChangeComp={handleChangeComp}
+                  compId={compId}
+                  setCompId={setCompId}
+                  openCreateModal={() => setIsCreateCompOpen(true)}
+                  openEditModal={() => setIsEditCompsOpen(true)}
+                  handleClickUpdate={handleClickUpdate}
+                />
 
-        <VStack w='full' gap={4} align='flex-start'>
-          <Slider
-            size='sm'
-            label='Balance'
-            value={balance}
-            onValueChange={updateBalance}
-          />
-          <Slider
-            size='sm'
-            label='Difference'
-            value={diff}
-            onValueChange={updateDiff}
-          />
-        </VStack>
+                <VStack w='full' gap={4} align='flex-start'>
+                  <Slider
+                    size='sm'
+                    label='Balance'
+                    value={balance}
+                    onValueChange={updateBalance}
+                  />
+                  <Slider
+                    size='sm'
+                    label='Difference'
+                    value={diff}
+                    onValueChange={updateDiff}
+                  />
+                </VStack>
 
-        <VStack w='full' gap={2} align='flex-start'>
-          <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Text textStyle='sm'>
-              Guide Paths
-            </Text>
-            <IconButton
-              size='xs'
-              aria-label='hide or show path'
-              onClick={() => setPathsChecked(!pathsChecked)}
-            >
-              {pathsChecked ? (
-                <FaEye color='black' />
-              ) : (
-                <FaEyeSlash color='black' />
-              )}
-            </IconButton>
-          </Flex>
+                <VStack w='full' gap={2} align='flex-start'>
+                  <Flex w='100%' h={8} align='center' justify='space-between'>
+                    <Text textStyle='sm'>Guide Paths</Text>
+                    <IconButton
+                      size='xs'
+                      aria-label='hide or show path'
+                      onClick={() => setPathsChecked(!pathsChecked)}
+                    >
+                      {pathsChecked ? (
+                        <FaEye color='black' />
+                      ) : (
+                        <FaEyeSlash color='black' />
+                      )}
+                    </IconButton>
+                  </Flex>
 
-          <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Text textStyle='sm'>
-              Geometry
-            </Text>
-            <IconButton
-              size='xs'
-              aria-label='hide or show shapes'
-              onClick={() => setGeomChecked(!geomChecked)}
-            >
-              {geomChecked ? (
-                <FaEye color='black' />
-              ) : (
-                <FaEyeSlash color='black' />
-              )}
-            </IconButton>
-          </Flex>
+                  {/* <Flex w='100%' h={8} align='center' justify='space-between'>
+                      <Text textStyle='sm'>Geometry</Text>
+                      <IconButton
+                        size='xs'
+                        aria-label='hide or show shapes'
+                        onClick={() => setGeomChecked(!geomChecked)}
+                      >
+                        {geomChecked ? (
+                          <FaEye color='black' />
+                        ) : (
+                          <FaEyeSlash color='black' />
+                        )}
+                      </IconButton>
+                    </Flex> */}
 
-          {/* <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
-              Particles
-            </Text>
-            <IconButton
-              size='xs'
-              aria-label='hide or show particles'
-              onClick={() => setParxChecked(!parxChecked)}
-            >
-              {parxChecked ? (
-                <FaEye color='black' />
-              ) : (
-                <FaEyeSlash color='black' />
-              )}
-            </IconButton>
-          </Flex> */}
+                  {/* <Flex w='100%' h={8} align='center' justify='space-between'>
+                    <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
+                      Particles
+                    </Text>
+                    <IconButton
+                      size='xs'
+                      aria-label='hide or show particles'
+                      onClick={() => setParxChecked(!parxChecked)}
+                    >
+                      {parxChecked ? (
+                        <FaEye color='black' />
+                      ) : (
+                        <FaEyeSlash color='black' />
+                      )}
+                    </IconButton>
+                  </Flex> */}
 
-          <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Switch
-              size='sm'
-              checked={colorsLoaded && colorChecked}
-              onCheckedChange={(e) => setColorChecked(e.checked)}
-              disabled={!colorsLoaded}
-            >
-              Colors
-            </Switch>
-            {colorChecked && palette.length > 0 && (
-              <HStack>
-                <Chips palette={palette} />
-                <IconButton
-                  size='xs'
-                  aria-label='Pick random palette'
-                  disabled={!colorChecked || !colorsLoaded}
-                  onClick={pickColors}
-                >
-                  <FaArrowRotateRight color='black' />
-                </IconButton>
-              </HStack>
-            )}
-          </Flex>
+                  <Flex w='100%' h={8} align='center' justify='space-between'>
+                    <Switch
+                      size='sm'
+                      checked={colorsLoaded && colorChecked}
+                      onCheckedChange={(e) => setColorChecked(e.checked)}
+                      disabled={!colorsLoaded}
+                    >
+                      Colors
+                    </Switch>
+                    {colorChecked && palette.length > 0 && (
+                      <HStack>
+                        <Chips palette={palette} />
+                        <IconButton
+                          size='xs'
+                          aria-label='Pick random palette'
+                          disabled={!colorChecked || !colorsLoaded}
+                          onClick={pickColors}
+                        >
+                          <FaArrowRotateRight color='black' />
+                        </IconButton>
+                      </HStack>
+                    )}
+                  </Flex>
 
-          <Flex w='100%' h={8} align='center' justify='space-between'>
-            <Switch
-              size='sm'
-              checked={colorsLoaded && bgChecked}
-              onCheckedChange={(e) => setBgChecked(e.checked)}
-              disabled={!colorsLoaded || !colorChecked}
-            >
-              Background
-            </Switch>
-            {colorChecked && bgChecked && palette.length > 0 && (
-              <BgColorSelect
-                palette={palette}
-                pickColor={setBackgroundIndex}
-                selectedIndex={backgroundIndex}
-              />
-            )}
-          </Flex>
-        </VStack>
+                  <Flex w='100%' h={8} align='center' justify='space-between'>
+                    <Switch
+                      size='sm'
+                      checked={colorsLoaded && bgChecked}
+                      onCheckedChange={(e) => setBgChecked(e.checked)}
+                      disabled={!colorsLoaded || !colorChecked}
+                    >
+                      Background
+                    </Switch>
+                    {colorChecked && bgChecked && palette.length > 0 && (
+                      <BgColorSelect
+                        palette={palette}
+                        pickColor={setBackgroundIndex}
+                        selectedIndex={backgroundIndex}
+                      />
+                    )}
+                  </Flex>
+                </VStack>
 
-        {/* Dialog for creating a new comp */}
-        <NewComp
-          onClickSave={handleClickSave}
-          open={isCreateCompOpen}
-          setOpen={setIsCreateCompOpen}
-        />
+                {/* Dialog for creating a new comp */}
+                <NewComp
+                  onClickSave={handleClickSave}
+                  open={isCreateCompOpen}
+                  setOpen={setIsCreateCompOpen}
+                />
 
-        {/* Dialog for editing existing comps */}
-        <EditComps open={isEditCompsOpen} setOpen={setIsEditCompsOpen} />
-      </VStack>
-      <Tagline />
-    </VStack>
+                {/* Dialog for editing existing comps */}
+                <EditComps
+                  open={isEditCompsOpen}
+                  setOpen={setIsEditCompsOpen}
+                />
+              </VStack>
+              {/* <Tagline /> */}
+            </Drawer.Body>
+            <Drawer.Footer p={0}>
+              <Tagline />
+              {/* <Button variant='outline'>Cancel</Button>
+              <Button>Save</Button> */}
+            </Drawer.Footer>
+            <Drawer.CloseTrigger asChild>
+              <CloseButton size='xs' bg='#eee' />
+            </Drawer.CloseTrigger>
+          </Drawer.Content>
+        </Drawer.Positioner>
+      </Portal>
+    </Drawer.Root>
   );
+
+  // return (
+  //   <VStack h='100vh' gap={0}>
+  //     <VStack w={panelWidth} bg='#eee' p={4} gap={6} flex={1}>
+  //       <Flex direction='column' w='100%'>
+  //         <Heading size='lg' mb={2} w='full'>
+  //           <Flex justify='space-between'>
+  //             <img src={logoTypeUrl} alt='Journey Logo' width='80' />
+  //             <OptionsMenu
+  //               onUpdateExistingComp={handleClickUpdate}
+  //               onCreateComp={() => setIsCreateCompOpen(true)}
+  //               onEditComps={() => setIsEditCompsOpen(true)}
+  //             />
+  //           </Flex>
+  //         </Heading>
+  //         {authUser && (
+  //           <UserInfo userEmail={authUser.email || '[no email address]'} />
+  //         )}
+  //       </Flex>
+
+  //       <CompSelector
+  //         numComps={comps.length}
+  //         onChangeComp={handleChangeComp}
+  //         compId={compId}
+  //         setCompId={setCompId}
+  //       />
+
+  //       <VStack w='full' gap={4} align='flex-start'>
+  //         <Slider
+  //           size='sm'
+  //           label='Balance'
+  //           value={balance}
+  //           onValueChange={updateBalance}
+  //         />
+  //         <Slider
+  //           size='sm'
+  //           label='Difference'
+  //           value={diff}
+  //           onValueChange={updateDiff}
+  //         />
+  //       </VStack>
+
+  //       <VStack w='full' gap={2} align='flex-start'>
+  //         <Flex w='100%' h={8} align='center' justify='space-between'>
+  //           <Text textStyle='sm'>Guide Paths</Text>
+  //           <IconButton
+  //             size='xs'
+  //             aria-label='hide or show path'
+  //             onClick={() => setPathsChecked(!pathsChecked)}
+  //           >
+  //             {pathsChecked ? (
+  //               <FaEye color='black' />
+  //             ) : (
+  //               <FaEyeSlash color='black' />
+  //             )}
+  //           </IconButton>
+  //         </Flex>
+
+  //         <Flex w='100%' h={8} align='center' justify='space-between'>
+  //           <Text textStyle='sm'>Geometry</Text>
+  //           <IconButton
+  //             size='xs'
+  //             aria-label='hide or show shapes'
+  //             onClick={() => setGeomChecked(!geomChecked)}
+  //           >
+  //             {geomChecked ? (
+  //               <FaEye color='black' />
+  //             ) : (
+  //               <FaEyeSlash color='black' />
+  //             )}
+  //           </IconButton>
+  //         </Flex>
+
+  //         {/* <Flex w='100%' h={8} align='center' justify='space-between'>
+  //           <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
+  //             Particles
+  //           </Text>
+  //           <IconButton
+  //             size='xs'
+  //             aria-label='hide or show particles'
+  //             onClick={() => setParxChecked(!parxChecked)}
+  //           >
+  //             {parxChecked ? (
+  //               <FaEye color='black' />
+  //             ) : (
+  //               <FaEyeSlash color='black' />
+  //             )}
+  //           </IconButton>
+  //         </Flex> */}
+
+  //         <Flex w='100%' h={8} align='center' justify='space-between'>
+  //           <Switch
+  //             size='sm'
+  //             checked={colorsLoaded && colorChecked}
+  //             onCheckedChange={(e) => setColorChecked(e.checked)}
+  //             disabled={!colorsLoaded}
+  //           >
+  //             Colors
+  //           </Switch>
+  //           {colorChecked && palette.length > 0 && (
+  //             <HStack>
+  //               <Chips palette={palette} />
+  //               <IconButton
+  //                 size='xs'
+  //                 aria-label='Pick random palette'
+  //                 disabled={!colorChecked || !colorsLoaded}
+  //                 onClick={pickColors}
+  //               >
+  //                 <FaArrowRotateRight color='black' />
+  //               </IconButton>
+  //             </HStack>
+  //           )}
+  //         </Flex>
+
+  //         <Flex w='100%' h={8} align='center' justify='space-between'>
+  //           <Switch
+  //             size='sm'
+  //             checked={colorsLoaded && bgChecked}
+  //             onCheckedChange={(e) => setBgChecked(e.checked)}
+  //             disabled={!colorsLoaded || !colorChecked}
+  //           >
+  //             Background
+  //           </Switch>
+  //           {colorChecked && bgChecked && palette.length > 0 && (
+  //             <BgColorSelect
+  //               palette={palette}
+  //               pickColor={setBackgroundIndex}
+  //               selectedIndex={backgroundIndex}
+  //             />
+  //           )}
+  //         </Flex>
+  //       </VStack>
+
+  //       {/* Dialog for creating a new comp */}
+  //       <NewComp
+  //         onClickSave={handleClickSave}
+  //         open={isCreateCompOpen}
+  //         setOpen={setIsCreateCompOpen}
+  //       />
+
+  //       {/* Dialog for editing existing comps */}
+  //       <EditComps open={isEditCompsOpen} setOpen={setIsEditCompsOpen} />
+  //     </VStack>
+  //     <Tagline />
+  //   </VStack>
+  // );
 };
 
 export default ControlPanel;
