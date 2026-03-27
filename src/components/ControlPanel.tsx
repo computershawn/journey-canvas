@@ -1,6 +1,7 @@
 /*
   TODO: 1. [DONE] FIX THE DROPDOWN-SELECT, IT'S NOT WORKING
-        2. ADD VIDEO THUMBNAILS SOMEWHERE IN THE UI
+        2. CREATE AND UPLOAD THUMBNAIL ON VIDEO CREATE
+           ADD VIDEO THUMBNAILS SOMEWHERE IN THE UI
         3. MAKE RENDER JOB NON-BLOCKING; USER CAN INTERACT
            WITH THE UI, THEY JUST CAN'T INITIATE A NEW RENDER
 */
@@ -40,6 +41,7 @@ import NewComp from './CreateComp';
 import EditComps from './ManageComps';
 import Tagline from './Tagline';
 import UserInfo from './UserInfo';
+import VideoList from './VideoList';
 
 const ControlPanel = ({
   allColors,
@@ -266,38 +268,6 @@ const ControlPanel = ({
                       </IconButton>
                     </Flex>
 
-                    {/* <Flex w='100%' h={8} align='center' justify='space-between'>
-                      <Text textStyle='sm'>Geometry</Text>
-                      <IconButton
-                        size='xs'
-                        aria-label='hide or show shapes'
-                        onClick={() => setGeomChecked(!geomChecked)}
-                      >
-                        {geomChecked ? (
-                          <FaEye color='black' />
-                        ) : (
-                          <FaEyeSlash color='black' />
-                        )}
-                      </IconButton>
-                    </Flex> */}
-
-                    {/* <Flex w='100%' h={8} align='center' justify='space-between'>
-                    <Text textStyle='sm' opacity={parxChecked ? 1 : '0.625'}>
-                      Particles
-                    </Text>
-                    <IconButton
-                      size='xs'
-                      aria-label='hide or show particles'
-                      onClick={() => setParxChecked(!parxChecked)}
-                    >
-                      {parxChecked ? (
-                        <FaEye color='black' />
-                      ) : (
-                        <FaEyeSlash color='black' />
-                      )}
-                    </IconButton>
-                  </Flex> */}
-
                     <Flex w='100%' h={8} align='center' justify='space-between'>
                       <Switch
                         size='sm'
@@ -340,6 +310,7 @@ const ControlPanel = ({
                       )}
                     </Flex>
                   </VStack>
+                  {authUser && <VideoList />}
                 </VStack>
               </Drawer.Body>
               <Drawer.Footer p={0}>
