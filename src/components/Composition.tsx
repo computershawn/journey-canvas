@@ -9,6 +9,8 @@ import {
   HStack,
   IconButton,
   SliderValueChangeDetails,
+  Spinner,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 
@@ -24,7 +26,7 @@ import { ColorArray, Point } from '../types';
 import { generateId } from '../utils/generateId';
 import { loggy, mapTo } from '../utils/helpers';
 import AuthDialog from './AuthDialog';
-import Coverlay from './Coverlay';
+// import Coverlay from './Coverlay';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
 import VideoPreviewModal from './VideoPreviewModal';
@@ -71,6 +73,7 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
+  const [jobId, setJobId] = useState<string | null>(null);
   const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
   const [authUser] = useAuthState(auth);
 
@@ -217,14 +220,20 @@ const Composition = ({
     const backgroundColor =
       (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
 
-    const jobId = generateId();
+    const newJobId = generateId();
+    setJobId(newJobId);
 
     // 2. Upload collection of geometry for every frame
-    await uploadAnimationData(backgroundColor, polygons, polygonColors, jobId);
+    await uploadAnimationData(
+      backgroundColor,
+      polygons,
+      polygonColors,
+      newJobId,
+    );
 
     // 3. Wait for backend to generate the video
     loggy.info('Frames uploaded. Begin rendering video…');
-    await processVideo(jobId);
+    await processVideo(newJobId);
 
     // 4. Display the newly generated video
     loggy.info('Video rendered. Showing preview…');
@@ -242,9 +251,9 @@ const Composition = ({
       {geomChecked ? (
         <>
           <VStack align='flex-start'>
-            {isUploadingOrRendering && (
+            {/* {isUploadingOrRendering && (
               <Coverlay isUploading={isUploading} isRendering={isRendering} />
-            )}
+            )} */}
             <canvas ref={canvasRef} style={canvasStyle} />
             <HStack>
               {authUser ? (
@@ -329,6 +338,14 @@ const Composition = ({
                 )}
               </Flex>
             </HStack>
+            {isUploadingOrRendering && (
+              <HStack>
+                <Text textStyle='sm' color='white'>
+                  Rendering video-{jobId}.mp4
+                </Text>
+                <Spinner color='white' size='xs' />
+              </HStack>
+            )}
           </VStack>
         </>
       ) : (

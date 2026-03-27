@@ -29,7 +29,7 @@ const Artboard = ({
       p1: CtrlPoint,
       p2: CtrlPoint,
       p3: CtrlPoint,
-      num: number
+      num: number,
     ) => {
       const temp = [];
       for (let i = 0; i <= num; i++) {

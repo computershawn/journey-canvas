@@ -88,8 +88,8 @@ const CompSelector = ({
           <Select.Indicator />
         </Select.IndicatorGroup>
       </Select.Control>
-      
-      <Select.Positioner zIndex={1500}>
+
+      <Select.Positioner>
         <Select.Content>
           {compList.items.map((item) => (
             <Select.Item item={item} key={item.id}>
