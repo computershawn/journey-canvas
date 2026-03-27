@@ -7,7 +7,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { FaDownload, FaPlay, FaTrash } from 'react-icons/fa6';
+import { FaCheck, FaDownload, FaPlay, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useEffect, useState } from 'react';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -16,9 +16,24 @@ import { useUserVideos } from '../hooks/useUserVideos';
 
 const placeholderThumbnail = './image-not-found.png';
 
-const VideoListItem = ({ videoId, uid }: { videoId: string; uid: string }) => {
+const VideoListItem = ({
+  videoId,
+  uid,
+  videoIdToDelete,
+  setVideoIdToDelete,
+}: {
+  videoId: string;
+  uid: string;
+  videoIdToDelete: string | null;
+  setVideoIdToDelete: (val: string | null) => void;
+}) => {
   const [thumbUrl, setThumbUrl] = useState<string>(placeholderThumbnail);
   const [videoUrl, setVideoUrl] = useState<string>('');
+
+  const deleteQueuedVideo = (id: string) => {
+    console.log('deleting video', id);
+    setVideoIdToDelete(null);
+  };
 
   useEffect(() => {
     const fetchUrls = async () => {
@@ -85,36 +100,69 @@ const VideoListItem = ({ videoId, uid }: { videoId: string; uid: string }) => {
         </Flex>
       </Box>
 
-      {/* Download and delete buttons */}
+      {/* Download button */}
       <HStack h='45px' gap={1} justify='center'>
-        <IconButton
-          size='xs'
-          aria-label='Download video'
-          color='black'
-          bg='#eee'
-          disabled={!videoUrl}
-          onClick={() => {
-            if (videoUrl) {
-              console.log('download video', videoUrl);
-            }
-          }}
-        >
-          <FaDownload />
-        </IconButton>
-        <IconButton
-          size='xs'
-          aria-label='Delete video'
-          color='black'
-          bg='#eee'
-          disabled={!videoUrl}
-          onClick={() => {
-            if (videoUrl) {
-              console.log('delete video', videoUrl);
-            }
-          }}
-        >
-          <FaTrash />
-        </IconButton>
+        {videoIdToDelete !== videoId && (
+          <IconButton
+            aria-label='Download video'
+            bg='#eee'
+            color='#222'
+            disabled={!videoUrl}
+            onClick={() => {
+              if (videoUrl) {
+                console.log('download video', videoUrl);
+              }
+            }}
+            rounded='full'
+            size='xs'
+          >
+            <FaDownload />
+          </IconButton>
+        )}
+
+        {/* Delete button */}
+        {videoIdToDelete === videoId ? (
+          <HStack gap={1}>
+            <Text color='red' mr={1}>Delete?</Text>
+            <IconButton
+              aria-label='Confirm'
+              bg='#222'
+              color='#eee'
+              onClick={() => deleteQueuedVideo(videoId)}
+              rounded='full'
+              size='xs'
+            >
+              <FaCheck />
+            </IconButton>
+            <IconButton
+              aria-label='Cancel'
+              bg='#222'
+              color='#eee'
+              onClick={() => setVideoIdToDelete(null)}
+              rounded='full'
+              size='xs'
+            >
+              <FaXmark />
+            </IconButton>
+          </HStack>
+        ) : (
+          <IconButton
+            aria-label='Delete video'
+            bg='#eee'
+            color='#222'
+            disabled={!videoUrl}
+            onClick={() => {
+              if (videoUrl) {
+                console.log('init delete video', videoUrl);
+                setVideoIdToDelete(videoId);
+              }
+            }}
+            rounded='full'
+            size='xs'
+          >
+            <FaTrash />
+          </IconButton>
+        )}
       </HStack>
     </HStack>
   );
@@ -123,6 +171,7 @@ const VideoListItem = ({ videoId, uid }: { videoId: string; uid: string }) => {
 const VideoList = () => {
   const { videoIds, loading } = useUserVideos();
   const [authUser] = useAuthState(auth);
+  const [videoIdToDelete, setVideoIdToDelete] = useState<string | null>(null);
 
   if (!authUser) return null;
 
@@ -134,7 +183,13 @@ const VideoList = () => {
         <Spinner size='sm' color='black' />
       ) : videoIds.length > 0 ? (
         videoIds.map((id) => (
-          <VideoListItem videoId={id} key={id} uid={authUser.uid} />
+          <VideoListItem
+            videoId={id}
+            key={id}
+            uid={authUser.uid}
+            videoIdToDelete={videoIdToDelete}
+            setVideoIdToDelete={setVideoIdToDelete}
+          />
         ))
       ) : (
         <Text fontSize='xs' color='gray.600'>
