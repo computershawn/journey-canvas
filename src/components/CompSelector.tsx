@@ -4,7 +4,6 @@ import {
   ButtonGroup,
   HStack,
   IconButton,
-  Portal,
   Select,
   createListCollection,
 } from '@chakra-ui/react';
@@ -89,18 +88,17 @@ const CompSelector = ({
           <Select.Indicator />
         </Select.IndicatorGroup>
       </Select.Control>
-      <Portal>
-        <Select.Positioner>
-          <Select.Content>
-            {compList.items.map((item) => (
-              <Select.Item item={item} key={item.id}>
-                {item.label}
-                <Select.ItemIndicator />
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Portal>
+      
+      <Select.Positioner zIndex={1500}>
+        <Select.Content>
+          {compList.items.map((item) => (
+            <Select.Item item={item} key={item.id}>
+              {item.label}
+              <Select.ItemIndicator />
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Positioner>
     </Select.Root>
   );
 };
