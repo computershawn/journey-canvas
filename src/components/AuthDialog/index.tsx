@@ -10,7 +10,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FaCircleInfo, FaClapperboard } from 'react-icons/fa6';
+import { FaCircleInfo, FaCircleUser, FaClapperboard } from 'react-icons/fa6';
 import Login from './Login';
 import Signup from './Signup';
 
@@ -24,7 +24,8 @@ const AuthDialog = ({ plainTextTrigger }: { plainTextTrigger?: boolean }) => {
     <Dialog.Root placement='center' size='sm'>
       <Dialog.Trigger asChild>
         {plainTextTrigger ? (
-          <Flex h='2.5rem' align='center'>
+          <Flex h='2.5rem' align='center' gap={1}>
+            <FaCircleUser color='#008caf' />
             <Text color='#008caf' fontWeight='medium' cursor='pointer'>
               Log in or Sign up
             </Text>

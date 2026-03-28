@@ -251,9 +251,6 @@ const Composition = ({
       {geomChecked ? (
         <>
           <VStack align='flex-start'>
-            {/* {isUploadingOrRendering && (
-              <Coverlay isUploading={isUploading} isRendering={isRendering} />
-            )} */}
             <canvas ref={canvasRef} style={canvasStyle} />
             <HStack>
               {authUser ? (
