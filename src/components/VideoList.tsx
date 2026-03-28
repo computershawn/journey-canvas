@@ -9,9 +9,10 @@ import {
 } from '@chakra-ui/react';
 import { FaCheck, FaDownload, FaPlay, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useEffect, useState } from 'react';
-import { getDownloadURL, ref } from 'firebase/storage';
+import { getDownloadURL, ref, deleteObject } from 'firebase/storage';
+import { doc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, storage } from '../firebase';
+import { auth, storage, firestore } from '../firebase';
 import { useUserVideos } from '../hooks/useUserVideos';
 
 const placeholderThumbnail = './image-not-found.png';
@@ -30,9 +31,29 @@ const VideoListItem = ({
   const [thumbUrl, setThumbUrl] = useState<string>(placeholderThumbnail);
   const [videoUrl, setVideoUrl] = useState<string>('');
 
-  const deleteQueuedVideo = (id: string) => {
-    console.log('deleting video', id);
-    setVideoIdToDelete(null);
+  const deleteQueuedVideo = async (id: string) => {
+    try {
+      // 1. Remove from Firestore array
+      const userDocRef = doc(firestore, 'users', uid);
+      await updateDoc(userDocRef, {
+        videoIDs: arrayRemove(id)
+      });
+
+      // 2. Delete the specific files from Storage
+      const thumbRef = ref(storage, `users/${uid}/thumbnails/th-${id}.png`);
+      const vRef = ref(storage, `users/${uid}/videos/video-${id}.mp4`);
+      
+      await Promise.all([
+        deleteObject(thumbRef).catch((e) => console.error("Thumbnail delete error:", e)),
+        deleteObject(vRef).catch((e) => console.error("Video delete error:", e))
+      ]);
+      
+      console.log('Successfully deleted video', id);
+    } catch (error) {
+      console.error('Error deleting video:', error);
+    } finally {
+      setVideoIdToDelete(null);
+    }
   };
 
   useEffect(() => {
@@ -123,7 +144,9 @@ const VideoListItem = ({
         {/* Delete button */}
         {videoIdToDelete === videoId ? (
           <HStack gap={1}>
-            <Text color='red' mr={1}>Delete?</Text>
+            <Text color='red' mr={1}>
+              Delete?
+            </Text>
             <IconButton
               aria-label='Confirm'
               bg='#222'
@@ -153,7 +176,6 @@ const VideoListItem = ({
             disabled={!videoUrl}
             onClick={() => {
               if (videoUrl) {
-                console.log('init delete video', videoUrl);
                 setVideoIdToDelete(videoId);
               }
             }}
@@ -169,7 +191,7 @@ const VideoListItem = ({
 };
 
 const VideoList = () => {
-  const { videoIds, loading } = useUserVideos();
+  const { videoIDs, loading } = useUserVideos();
   const [authUser] = useAuthState(auth);
   const [videoIdToDelete, setVideoIdToDelete] = useState<string | null>(null);
 
@@ -181,8 +203,8 @@ const VideoList = () => {
 
       {loading ? (
         <Spinner size='sm' color='black' />
-      ) : videoIds.length > 0 ? (
-        videoIds.map((id) => (
+      ) : videoIDs.length > 0 ? (
+        videoIDs.map((id) => (
           <VideoListItem
             videoId={id}
             key={id}

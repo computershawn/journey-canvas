@@ -6,13 +6,13 @@ import { auth, firestore } from '../firebase';
 
 export const useUserVideos = () => {
   const [authUser] = useAuthState(auth);
-  const [videoIds, setVideoIds] = useState<string[]>([]);
+  const [videoIDs, setVideoIDs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!authUser) {
-      setVideoIds([]);
+      setVideoIDs([]);
       setLoading(false);
       return;
     }
@@ -26,9 +26,9 @@ export const useUserVideos = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           // Assume videos is an array of strings in the format the user described
-          setVideoIds(data.videoIDs || []);
+          setVideoIDs(data.videoIDs || []);
         } else {
-          setVideoIds([]);
+          setVideoIDs([]);
         }
         setLoading(false);
       },
@@ -42,5 +42,5 @@ export const useUserVideos = () => {
     return () => unsubscribe();
   }, [authUser]);
 
-  return { videoIds, loading, error };
+  return { videoIDs, loading, error };
 };

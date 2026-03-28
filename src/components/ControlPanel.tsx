@@ -1,9 +1,13 @@
 /*
-  TODO: 1. [DONE] FIX THE DROPDOWN-SELECT, IT'S NOT WORKING
-        2. CREATE AND UPLOAD THUMBNAIL ON VIDEO CREATE
-           ADD VIDEO THUMBNAILS SOMEWHERE IN THE UI
-        3. MAKE RENDER JOB NON-BLOCKING; USER CAN INTERACT
-           WITH THE UI, THEY JUST CAN'T INITIATE A NEW RENDER
+  TODO:
+  1. [DONE] FIX THE DROPDOWN-SELECT, IT'S NOT WORKING
+  2. [DONE] CREATE AND UPLOAD THUMBNAIL ON VIDEO CREATE
+     [DONE] ADD VIDEO THUMBNAILS SOMEWHERE IN THE UI
+  3. [DONE] MAKE RENDER JOB NON-BLOCKING; USER CAN INTERACT
+            WITH THE UI, THEY JUST CAN'T INITIATE A NEW RENDER
+  4. [] ADD ABILITY TO DELETE A VIDEO
+  5. [] ADD ABILITY TO DOWNLOAD A VIDEO
+  6. [] LIMIT USER TO 3 VIDEOS
 */
 
 import { useEffect, useState } from 'react';
@@ -199,7 +203,7 @@ const ControlPanel = ({
 
   return (
     <>
-      <Drawer.Root placement='start' defaultOpen>
+      <Drawer.Root placement='start' trapFocus={false} defaultOpen>
         <Drawer.Trigger asChild>
           <IconButton size='sm' color='black' m={2}>
             <FaSliders />
