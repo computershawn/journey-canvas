@@ -72,7 +72,6 @@ const Composition = ({
   const { balance, diff, geomChecked } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
-  const [jobId, setJobId] = useState<string | null>(null);
   const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
   const [authUser] = useAuthState(auth);
 
@@ -220,7 +219,6 @@ const Composition = ({
       (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
 
     const newJobId = generateId();
-    setJobId(newJobId);
 
     // 2. Upload collection of geometry for every frame
     await uploadAnimationData(
@@ -335,7 +333,7 @@ const Composition = ({
             {isUploadingOrRendering && (
               <HStack>
                 <Text textStyle='sm' color='white'>
-                  Rendering video-{jobId}.mp4
+                  Rendering your video…
                 </Text>
                 <Spinner color='white' size='xs' />
               </HStack>

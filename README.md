@@ -8,12 +8,15 @@ TODO:
 [x] Make render job non-blocking; user can interact with the UI
 [x] Add ability to delete a video
 [x] Add ability to download a video
-[ ] Limit user to 3 videos
 [x] Remove redundant menu from logged-in 'render video' button.
     The 'View your recent video' functionality has been moved to
     the controls drawer
 [ ] Show 'Rendering your video' status in VideoList if applicable
+[ ] Open preview dialog when user clicks the video thumbnail
 [ ] Prevent new video renders if one is in progress
+[ ] Limit user to 5 videos. Inform the user that they need to delete
+    a video before creating a new one.
+[ ] Cancel render if user navigates away from the page
 ```
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

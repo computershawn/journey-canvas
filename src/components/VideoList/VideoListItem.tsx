@@ -4,17 +4,13 @@ import {
   Flex,
   HStack,
   IconButton,
-  Spinner,
   Text,
-  VStack,
 } from '@chakra-ui/react';
 import { FaCheck, FaDownload, FaPlay, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useEffect, useState } from 'react';
 import { getDownloadURL, ref, deleteObject } from 'firebase/storage';
 import { doc, updateDoc, arrayRemove } from 'firebase/firestore';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, storage, firestore } from '../firebase';
-import { useUserVideos } from '../hooks/useUserVideos';
+import { storage, firestore } from '../../firebase';
 
 const placeholderThumbnail = './image-not-found.png';
 
@@ -197,36 +193,4 @@ const VideoListItem = ({
   );
 };
 
-const VideoList = () => {
-  const { videoIDs, loading } = useUserVideos();
-  const [authUser] = useAuthState(auth);
-  const [videoIdToDelete, setVideoIdToDelete] = useState<string | null>(null);
-
-  if (!authUser) return null;
-
-  return (
-    <VStack width='full' align='flex-start' gap={2} mt={4}>
-      <Text textStyle='sm'>My Videos</Text>
-
-      {loading ? (
-        <Spinner size='sm' color='black' />
-      ) : videoIDs.length > 0 ? (
-        videoIDs.map((id) => (
-          <VideoListItem
-            videoId={id}
-            key={id}
-            uid={authUser.uid}
-            videoIdToDelete={videoIdToDelete}
-            setVideoIdToDelete={setVideoIdToDelete}
-          />
-        ))
-      ) : (
-        <Text fontSize='sm' color='gray.600'>
-          No videos to show
-        </Text>
-      )}
-    </VStack>
-  );
-};
-
-export default VideoList;
+export default VideoListItem;
