@@ -5,14 +5,15 @@ TODO:
 [x] Fix the dropdown-select, it's not working
 [x] Create and upload thumbnail on video create
 [x] Add video thumbnails somewhere in the UI
-[x] Make render job non-blocking; user can interact
-    with the UI, they just can't initiate a new render
+[x] Make render job non-blocking; user can interact with the UI
 [x] Add ability to delete a video
 [x] Add ability to download a video
 [ ] Limit user to 3 videos
-[ ] Remove menu from logged-in 'render video' button.
-    The 'View your recent video' functionality has been
-    moved to the controls drawer
+[x] Remove redundant menu from logged-in 'render video' button.
+    The 'View your recent video' functionality has been moved to
+    the controls drawer
+[ ] Show 'Rendering your video' status in VideoList if applicable
+[ ] Prevent new video renders if one is in progress
 ```
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

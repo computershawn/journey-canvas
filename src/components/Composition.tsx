@@ -26,7 +26,6 @@ import { ColorArray, Point } from '../types';
 import { generateId } from '../utils/generateId';
 import { loggy, mapTo } from '../utils/helpers';
 import AuthDialog from './AuthDialog';
-// import Coverlay from './Coverlay';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
 import VideoPreviewModal from './VideoPreviewModal';
@@ -256,10 +255,8 @@ const Composition = ({
               {authUser ? (
                 <VideoGen
                   exportToVideo={exportToVideo}
-                  openPreviewModal={() => setIsVideoPreviewOpen(true)}
                   isUploading={isUploading}
                   isRendering={isRendering}
-                  videoUrl={videoUrl}
                 />
               ) : (
                 <AuthDialog />
