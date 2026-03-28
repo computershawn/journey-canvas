@@ -20,3 +20,5 @@ export const PREVIEW_VIDEO_DIMS = {
 };
 
 export const MAGENTA = '#ff008c';
+
+export const MAX_VIDEOS = 5;

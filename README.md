@@ -11,12 +11,17 @@ TODO:
 [x] Remove redundant menu from logged-in 'render video' button.
     The 'View your recent video' functionality has been moved to
     the controls drawer
+[ ] Limit user to 5 videos. Inform the user that they need to delete
+    a video before creating a new one.
 [ ] Show 'Rendering your video' status in VideoList if applicable
 [ ] Open preview dialog when user clicks the video thumbnail
 [ ] Prevent new video renders if one is in progress
-[ ] Limit user to 5 videos. Inform the user that they need to delete
-    a video before creating a new one.
-[ ] Cancel render if user navigates away from the page
+[ ] The user can navigate away from the page while their video is
+    rendering. We can either cancel the render or allow it to complete
+    in the background. If we allow the render to complete in the
+    background and the user returns to the page, we probably still need
+    to prevent new renders and display the in-progress spinner.
+    store the job ID in the user's document in Firestore?
 ```
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
