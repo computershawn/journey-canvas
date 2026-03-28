@@ -12,7 +12,6 @@ const Artboard = ({
   bgChecked,
   colorChecked,
   compIndex,
-  isWide,
   palette,
   setBeziCtrlPts,
 }: {
@@ -21,7 +20,6 @@ const Artboard = ({
   bgChecked: boolean;
   colorChecked: boolean;
   compIndex: number;
-  isWide: boolean;
   palette: ColorArray;
   setBeziCtrlPts: (points: CtrlPoint[]) => void;
 }) => {
@@ -31,7 +29,7 @@ const Artboard = ({
       p1: CtrlPoint,
       p2: CtrlPoint,
       p3: CtrlPoint,
-      num: number
+      num: number,
     ) => {
       const temp = [];
       for (let i = 0; i <= num; i++) {
@@ -91,7 +89,6 @@ const Artboard = ({
       />
       <BeziControls
         comp={comp}
-        isWide={isWide}
         points={beziCtrlPts}
         setBeziCtrlPts={setBeziCtrlPts}
       />

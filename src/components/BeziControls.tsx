@@ -17,7 +17,7 @@ const getBezierSegmentPoints = (
   p1: CtrlPoint,
   p2: CtrlPoint,
   p3: CtrlPoint,
-  num: number
+  num: number,
 ) => {
   const temp = [];
   for (let i = 0; i <= num; i++) {
@@ -59,12 +59,10 @@ const getBezierSplinePoints = (points: CtrlPoint[]) => {
 
 const BeziControls = ({
   comp,
-  isWide,
   points,
   setBeziCtrlPts,
 }: {
   comp: CompValues | null;
-  isWide: boolean;
   points: CtrlPoint[];
   setBeziCtrlPts: (pts: CtrlPoint[]) => void;
 }) => {
@@ -290,7 +288,7 @@ const BeziControls = ({
     setDragIndex(-1);
   };
 
-  const left = isWide ? 308 : 224;
+  const left = 60;
 
   return (
     <canvas

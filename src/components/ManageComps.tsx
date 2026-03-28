@@ -80,7 +80,7 @@ const ManageComps = ({
                         <ButtonGroup variant='outline' size='xs'>
                           {idToDelete === comp.id ? (
                             <HStack>
-                              <Text color='red'>Delete?</Text>
+                              <Text color='red' mr={1}>Delete?</Text>
                               <IconButton
                                 aria-label='Confirm'
                                 rounded='full'

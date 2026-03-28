@@ -12,7 +12,7 @@ const Tagline = () => (
         _focus={{ outlineWidth: 1, outlineColor: 'rgb(255,255,255,0.25)' }}
         variant='plain'
         href={MY_LINK}
-        opacity={0.625}
+        opacity={0.5}
         target='_blank'
         color='#000'
         transition={'opacity 0.2s ease-in-out'}
