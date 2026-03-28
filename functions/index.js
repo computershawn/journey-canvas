@@ -52,12 +52,19 @@ async function verifyAuth(authHeader) {
 /**
  * Parse polygons JSON stream, render frames to a Canvas, and pipe to FFmpeg
  */
-function processFramesToStream(meta, polygonsTmpPath, inputStream) {
+function processFramesToStream(
+  meta,
+  polygonsTmpPath,
+  inputStream,
+  thumbTmpPath = null,
+) {
   return new Promise((resolve, reject) => {
     const canvas = createCanvas(WIDTH, HEIGHT);
     const ctx = canvas.getContext('2d');
     const fileStream = fs.createReadStream(polygonsTmpPath);
     const parser = JSONStream.parse([true]);
+
+    let frameCount = 0;
 
     parser.on('end', () => {
       console.log('Finished parsing polygons. Closing input stream.');
@@ -95,6 +102,22 @@ function processFramesToStream(meta, polygonsTmpPath, inputStream) {
         ctx.stroke();
         ctx.fill();
       }
+
+      if (frameCount === 0 && thumbTmpPath) {
+        const thumbWidth = 160;
+        const thumbHeight = Math.round(HEIGHT * (thumbWidth / WIDTH));
+        const thumbCanvas = createCanvas(thumbWidth, thumbHeight);
+        const thumbCtx = thumbCanvas.getContext('2d');
+        thumbCtx.drawImage(canvas, 0, 0, thumbWidth, thumbHeight);
+        const thumbBuffer = thumbCanvas.toBuffer('image/png');
+        try {
+          fs.writeFileSync(thumbTmpPath, thumbBuffer);
+          console.log('Thumbnail successfully extracted to', thumbTmpPath);
+        } catch (err) {
+          console.error('Failed to write thumbnail:', err);
+        }
+      }
+      frameCount++;
 
       const buffer = canvas.toBuffer('image/jpeg');
 
@@ -155,6 +178,7 @@ exports.generateVideo = onRequest(
       const metaTmpPath = path.join(os.tmpdir(), `meta-${jobId}.json`);
       const polygonsTmpPath = path.join(os.tmpdir(), `polygons-${jobId}.json`);
       const outputVideo = path.join(os.tmpdir(), `output-${jobId}.mp4`);
+      const thumbTmpPath = path.join(os.tmpdir(), `th-${jobId}.png`);
 
       try {
         // 2. Download files to /tmp
@@ -192,18 +216,51 @@ exports.generateVideo = onRequest(
 
         // 4. Start streaming canvas frames
         console.log('Starting frame generation...');
-        await processFramesToStream(meta, polygonsTmpPath, inputStream);
+        await processFramesToStream(
+          meta,
+          polygonsTmpPath,
+          inputStream,
+          thumbTmpPath,
+        );
 
         // Wait for the video file to finish rendering
         await ffmpegPromise;
 
         // 5. Upload video and send signed URL back
-        console.log('Uploading video to Firebase Storage...');
+        console.log('Uploading video and thumbnail to Firebase Storage...');
         const destFileName = `users/${uid}/videos/video-${jobId}.mp4`;
+        const destThumbName = `users/${uid}/thumbnails/th-${jobId}.png`;
+
+        if (fs.existsSync(thumbTmpPath)) {
+          await bucket.upload(thumbTmpPath, {
+            destination: destThumbName,
+            metadata: { contentType: 'image/png' },
+          });
+          console.log('Thumbnail uploaded to', destThumbName);
+        }
+
         const url = await uploadAndSignUrl(bucket, outputVideo, destFileName);
 
+        // Update the user's videoIDs array in the 'facts' database
+        console.log("Updating user's videoIDs array in facts database...");
+        const {
+          getFirestore,
+          FieldValue,
+        } = require('firebase-admin/firestore');
+        const db = getFirestore(admin.app(), 'facts');
+
+        await db
+          .collection('users')
+          .doc(uid)
+          .set(
+            {
+              videoIDs: FieldValue.arrayUnion(jobId),
+            },
+            { merge: true },
+          );
+
         res.status(200).json({
-          message: `Video created and uploaded successfully.`,
+          message: `Video and thumbnail created and uploaded successfully.`,
           downloadUrl: url,
         });
       } catch (error) {
@@ -214,7 +271,12 @@ exports.generateVideo = onRequest(
       } finally {
         // 6. Cleanup completely
         console.log('Cleaning up /tmp directory...');
-        const filesToClean = [metaTmpPath, polygonsTmpPath, outputVideo];
+        const filesToClean = [
+          metaTmpPath,
+          polygonsTmpPath,
+          outputVideo,
+          thumbTmpPath,
+        ];
 
         for (const file of filesToClean) {
           try {
