@@ -15,8 +15,6 @@ const onErrorCallback = (errMsg) => {
 
 const Signup = () => {
   const [inputs, setInputs] = useState({
-    fullName: '',
-    username: '',
     email: '',
     password: '',
   });
@@ -39,24 +37,6 @@ const Signup = () => {
         value={inputs.email}
         onChange={(e) => {
           setInputs({ ...inputs, email: e.target.value });
-        }}
-      />
-      <Input
-        placeholder='Username'
-        type='text'
-        size='sm'
-        value={inputs.username}
-        onChange={(e) => {
-          setInputs({ ...inputs, username: e.target.value });
-        }}
-      />
-      <Input
-        placeholder='Full Name'
-        type='text'
-        size='sm'
-        value={inputs.fullName}
-        onChange={(e) => {
-          setInputs({ ...inputs, fullName: e.target.value });
         }}
       />
       <InputGroup

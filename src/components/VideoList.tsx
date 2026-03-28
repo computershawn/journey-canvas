@@ -132,7 +132,7 @@ const VideoListItem = ({
           <DownloadTrigger
             data={async () => await fetch(videoUrl).then((r) => r.blob())}
             fileName={`video-${videoId}.mp4`}
-            mimeType="video/mp4"
+            mimeType='video/mp4'
             asChild
           >
             <IconButton
@@ -221,8 +221,8 @@ const VideoList = () => {
           />
         ))
       ) : (
-        <Text fontSize='xs' color='gray.600'>
-          No videos generated yet.
+        <Text fontSize='sm' color='gray.600'>
+          No videos to show
         </Text>
       )}
     </VStack>

@@ -36,14 +36,16 @@ import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
+
+import AuthDialog from './AuthDialog';
 import BgColorSelect from './BgColorSelect';
 import Chips from './Chips';
 import CompSelector from './CompSelector';
-import Slider from './ui/slider';
-import Switch from './ui/switch';
 import NewComp from './CreateComp';
 import EditComps from './ManageComps';
 import Tagline from './Tagline';
+import Slider from './ui/slider';
+import Switch from './ui/switch';
 import UserInfo from './UserInfo';
 import VideoList from './VideoList';
 
@@ -220,15 +222,7 @@ const ControlPanel = ({
                 </Drawer.Title>
               </Drawer.Header>
               <Drawer.Body p={0}>
-                <VStack w='full' p={4} pt={2} gap={6} flex={1}>
-                  <Flex direction='column' w='100%'>
-                    {authUser && (
-                      <UserInfo
-                        userEmail={authUser.email || '[no email address]'}
-                      />
-                    )}
-                  </Flex>
-
+                <VStack w='full' h='100%' p={4} pt={2} gap={6} flex={1}>
                   <CompSelector
                     numComps={comps.length}
                     onChangeComp={handleChangeComp}
@@ -255,7 +249,7 @@ const ControlPanel = ({
                   </VStack>
 
                   <VStack w='full' gap={2} align='flex-start'>
-                    <Flex w='100%' h={8} align='center' justify='space-between'>
+                    <Flex w='full' h={8} align='center' justify='space-between'>
                       <Text textStyle='sm'>Guide Paths</Text>
                       <IconButton
                         size='xs'
@@ -270,7 +264,7 @@ const ControlPanel = ({
                       </IconButton>
                     </Flex>
 
-                    <Flex w='100%' h={8} align='center' justify='space-between'>
+                    <Flex w='full' h={8} align='center' justify='space-between'>
                       <Switch
                         size='sm'
                         checked={colorsLoaded && colorChecked}
@@ -294,7 +288,7 @@ const ControlPanel = ({
                       )}
                     </Flex>
 
-                    <Flex w='100%' h={8} align='center' justify='space-between'>
+                    <Flex w='full' h={8} align='center' justify='space-between'>
                       <Switch
                         size='sm'
                         checked={colorsLoaded && bgChecked}
@@ -313,6 +307,20 @@ const ControlPanel = ({
                     </Flex>
                   </VStack>
                   {authUser && <VideoList />}
+                  <Flex
+                    direction='column'
+                    w='full'
+                    mt='auto'
+                    align='flex-start'
+                  >
+                    {authUser ? (
+                      <UserInfo
+                        userEmail={authUser.email || '[no email address]'}
+                      />
+                    ) : (
+                      <AuthDialog plainTextTrigger />
+                    )}
+                  </Flex>
                 </VStack>
               </Drawer.Body>
               <Drawer.Footer p={0}>
