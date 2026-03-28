@@ -5,7 +5,7 @@
      [DONE] ADD VIDEO THUMBNAILS SOMEWHERE IN THE UI
   3. [DONE] MAKE RENDER JOB NON-BLOCKING; USER CAN INTERACT
             WITH THE UI, THEY JUST CAN'T INITIATE A NEW RENDER
-  4. [] ADD ABILITY TO DELETE A VIDEO
+  4. [DONE] ADD ABILITY TO DELETE A VIDEO
   5. [] ADD ABILITY TO DOWNLOAD A VIDEO
   6. [] LIMIT USER TO 3 VIDEOS
 */
@@ -198,8 +198,6 @@ const ControlPanel = ({
     setPalette(newPalette);
     onChangeComp(i);
   };
-
-  // const panelWidth = 300;
 
   return (
     <>

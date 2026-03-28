@@ -1,5 +1,6 @@
 import {
   Box,
+  DownloadTrigger,
   Flex,
   HStack,
   IconButton,
@@ -36,18 +37,22 @@ const VideoListItem = ({
       // 1. Remove from Firestore array
       const userDocRef = doc(firestore, 'users', uid);
       await updateDoc(userDocRef, {
-        videoIDs: arrayRemove(id)
+        videoIDs: arrayRemove(id),
       });
 
       // 2. Delete the specific files from Storage
       const thumbRef = ref(storage, `users/${uid}/thumbnails/th-${id}.png`);
       const vRef = ref(storage, `users/${uid}/videos/video-${id}.mp4`);
-      
+
       await Promise.all([
-        deleteObject(thumbRef).catch((e) => console.error("Thumbnail delete error:", e)),
-        deleteObject(vRef).catch((e) => console.error("Video delete error:", e))
+        deleteObject(thumbRef).catch((e) =>
+          console.error('Thumbnail delete error:', e),
+        ),
+        deleteObject(vRef).catch((e) =>
+          console.error('Video delete error:', e),
+        ),
       ]);
-      
+
       console.log('Successfully deleted video', id);
     } catch (error) {
       console.error('Error deleting video:', error);
@@ -124,21 +129,23 @@ const VideoListItem = ({
       {/* Download button */}
       <HStack h='45px' gap={1} justify='center'>
         {videoIdToDelete !== videoId && (
-          <IconButton
-            aria-label='Download video'
-            bg='#eee'
-            color='#222'
-            disabled={!videoUrl}
-            onClick={() => {
-              if (videoUrl) {
-                console.log('download video', videoUrl);
-              }
-            }}
-            rounded='full'
-            size='xs'
+          <DownloadTrigger
+            data={async () => await fetch(videoUrl).then((r) => r.blob())}
+            fileName={`video-${videoId}.mp4`}
+            mimeType="video/mp4"
+            asChild
           >
-            <FaDownload />
-          </IconButton>
+            <IconButton
+              aria-label='Download video'
+              bg='#eee'
+              color='#222'
+              disabled={!videoUrl}
+              rounded='full'
+              size='xs'
+            >
+              <FaDownload />
+            </IconButton>
+          </DownloadTrigger>
         )}
 
         {/* Delete button */}
