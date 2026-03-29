@@ -80,14 +80,7 @@ const VideoListItem = ({
   }, [videoId, uid]);
 
   return (
-    <HStack
-      w='full'
-      justify='space-between'
-      borderBottom='1px solid'
-      borderBottomColor='#ccc'
-      _last={{ borderBottomColor: 'transparent' }}
-      pb={2}
-    >
+    <HStack w='full' justify='space-between' pb={2}>
       {/* Video thumbnail */}
       <Box
         w='80px'

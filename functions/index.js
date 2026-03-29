@@ -255,6 +255,7 @@ exports.generateVideo = onRequest(
           .set(
             {
               videoIDs: FieldValue.arrayUnion(jobId),
+              isRendering: false,
             },
             { merge: true },
           );
@@ -265,6 +266,15 @@ exports.generateVideo = onRequest(
         });
       } catch (error) {
         console.error('Process Failed:', error);
+        
+        try {
+          const { getFirestore } = require('firebase-admin/firestore');
+          const db = getFirestore(admin.app(), 'facts');
+          await db.collection('users').doc(uid).set({ isRendering: false }, { merge: true });
+        } catch (dbErr) {
+          console.error('Failed to clear isRendering flag:', dbErr);
+        }
+
         res
           .status(500)
           .json({ error: 'An error occurred while rendering the video.' });
