@@ -3,7 +3,7 @@ import { FaArrowRightFromBracket, FaUserAstronaut } from 'react-icons/fa6';
 import { Flex, IconButton, Text } from '@chakra-ui/react';
 
 import { useLogout } from '../hooks/useLogout';
-import { toaster } from './Toastier';
+import { toaster } from './ui/toaster';
 import { Tooltip } from './ui/tooltip';
 
 const onErrorCallback = (errMsg: string) => {

@@ -1,5 +1,29 @@
 # React + TypeScript + Vite
 
+```
+TODO:
+[x] Fix the dropdown-select, it's not working
+[x] Create and upload thumbnail on video create
+[x] Add video thumbnails somewhere in the UI
+[x] Make render job non-blocking; user can interact with the UI
+[x] Add ability to delete a video
+[x] Add ability to download a video
+[x] Remove redundant menu from logged-in 'render video' button.
+    The 'View your recent video' functionality has been moved to
+    the controls drawer
+[x] Limit user to 5 videos. Inform the user that they need to delete
+    a video before creating a new one.
+[ ] Show 'Rendering your video' status in VideoList if applicable
+[ ] Open preview dialog when user clicks the video thumbnail
+[ ] Prevent new video renders if one is in progress
+[ ] The user can navigate away from the page while their video is
+    rendering. We can either cancel the render or allow it to complete
+    in the background. If we allow the render to complete in the
+    background and the user returns to the page, we probably still need
+    to prevent new renders and display the in-progress spinner.
+    store the job ID in the user's document in Firestore?
+```
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
@@ -28,15 +52,15 @@ export default tseslint.config({
       tsconfigRootDir: import.meta.dirname,
     },
   },
-})
+});
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
 export default tseslint.config({
   plugins: {
@@ -50,5 +74,5 @@ export default tseslint.config({
     ...reactX.configs['recommended-typescript'].rules,
     ...reactDom.configs.recommended.rules,
   },
-})
+});
 ```

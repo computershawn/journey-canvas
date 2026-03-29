@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { HStack } from '@chakra-ui/react';
 
 import Artboard from './components/Artboard';
+import { Toaster } from './components/ui/toaster';
 import ControlPanel from './components/ControlPanel';
 import { ControlsProvider } from './context/ControlsProvider';
 import { useFetchColors } from './hooks/useFetchColors';
@@ -60,6 +61,7 @@ function App() {
           setBeziCtrlPts={setBeziCtrlPts}
         />
       </HStack>
+      <Toaster />
     </ControlsProvider>
   );
 }
