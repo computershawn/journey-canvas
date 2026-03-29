@@ -7,12 +7,11 @@ import VideoListItem from './VideoListItem';
 import RenderingVideo from './RenderingVideo';
 
 const VideoList = () => {
-  const { videoIDs, loading } = useUserVideos();
+  const { videoIDs, loading, isRendering } = useUserVideos();
   const [authUser] = useAuthState(auth);
   const [videoIdToDelete, setVideoIdToDelete] = useState<string | null>(null);
 
   if (!authUser) return null;
-  const rendering = true;
 
   let content;
   switch (true) {
@@ -31,11 +30,11 @@ const VideoList = () => {
               setVideoIdToDelete={setVideoIdToDelete}
             />
           ))}
-          {rendering && <RenderingVideo />}
+          {isRendering && <RenderingVideo />}
         </>
       );
       break;
-    case videoIDs.length === 0 && rendering:
+    case videoIDs.length === 0 && isRendering:
       content = <RenderingVideo />;
       break;
     default:

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-
+import { doc, updateDoc } from 'firebase/firestore';
 import { FaPause, FaPlay } from 'react-icons/fa6';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -26,7 +26,7 @@ import {
   MAX_VIDEOS,
   MINTY,
 } from '../constants';
-import { auth } from '../firebase';
+import { auth, firestore } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
@@ -85,7 +85,7 @@ const Composition = ({
   const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
   const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false);
   const [authUser] = useAuthState(auth);
-  const { videoIDs } = useUserVideos();
+  const { videoIDs, isRendering: isRenderingDbState } = useUserVideos();
 
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
@@ -204,8 +204,12 @@ const Composition = ({
 
   const { isUploading, uploadAnimationData } = useUploadAnimationData();
 
-  const { processVideo, isRendering, videoCreateError, videoUrl } =
-    useProcessVideo();
+  const {
+    processVideo,
+    isRendering: isRenderingLocalState,
+    videoCreateError,
+    videoUrl,
+  } = useProcessVideo();
 
   const exportToVideo = async () => {
     if (videoIDs.length >= MAX_VIDEOS) {
@@ -214,6 +218,15 @@ const Composition = ({
     }
 
     loggy.info('Begin uploading frames…');
+
+    if (authUser?.uid) {
+      try {
+        const userDocRef = doc(firestore, 'users', authUser.uid);
+        await updateDoc(userDocRef, { isRendering: true });
+      } catch (err) {
+        loggy.error('Failed to update rendering status in database.');
+      }
+    }
 
     // 1. Gather data for all of the shapes for each frame of the animation
     const polygons = [];
@@ -237,28 +250,40 @@ const Composition = ({
 
     const newJobId = generateId();
 
-    // 2. Upload collection of geometry for every frame
-    await uploadAnimationData(
-      backgroundColor,
-      polygons,
-      polygonColors,
-      newJobId,
-    );
+    try {
+      // 2. Upload collection of geometry for every frame
+      await uploadAnimationData(
+        backgroundColor,
+        polygons,
+        polygonColors,
+        newJobId,
+      );
 
-    // 3. Wait for backend to generate the video
-    loggy.info('Frames uploaded. Begin rendering video…');
-    await processVideo(newJobId);
+      // 3. Wait for backend to generate the video
+      loggy.info('Frames uploaded. Begin rendering video…');
+      await processVideo(newJobId);
 
-    // 4. Display the newly generated video
-    loggy.info('Video rendered. Showing preview…');
-    setIsVideoPreviewOpen(true);
+      // 4. Display the newly generated video
+      loggy.info('Video rendered. Showing preview…');
+      setIsVideoPreviewOpen(true);
+    } catch (pipelineErr) {
+      loggy.error('Render pipeline encountered an error.');
+      if (authUser?.uid) {
+        const userDocRef = doc(firestore, 'users', authUser.uid);
+        await updateDoc(userDocRef, { isRendering: false }).catch(() => {});
+      }
+    }
   };
 
   if (videoCreateError) {
     loggy.error(videoCreateError);
   }
 
-  const isUploadingOrRendering = isUploading || isRendering;
+  // VideoGen is a button that initiates rendering the animation as video. We
+  // use isUploadingOrRendering to disable the button if a video is currently
+  // being processed.
+  const isUploadingOrRendering =
+    isUploading || isRenderingLocalState || isRenderingDbState;
 
   return (
     <>
@@ -270,8 +295,7 @@ const Composition = ({
               {authUser ? (
                 <VideoGen
                   exportToVideo={exportToVideo}
-                  isUploading={isUploading}
-                  isRendering={isRendering}
+                  isUploadingOrRendering={isUploadingOrRendering}
                 />
               ) : (
                 <AuthDialog />

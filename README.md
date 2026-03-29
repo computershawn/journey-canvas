@@ -13,16 +13,17 @@ TODO:
     the controls drawer
 [x] Limit user to 5 videos. Inform the user that they need to delete
     a video before creating a new one.
-[ ] Show 'Rendering your video' status in VideoList when applicable
-[ ] Open preview dialog when user clicks the video thumbnail
-[ ] Prevent new video renders if one is in progress
-[ ] The user can navigate away from the page while their video is
+[x] Show 'Rendering your video' status in VideoList when applicable
+[x] Prevent new video renders if one is in progress
+[x] The user can navigate away from the page while their video is
     rendering. We can either cancel the render or allow it to complete
     in the background. If we allow the render to complete in the
     background and the user returns to the page, we probably still need
     to prevent new renders and display the in-progress spinner.
-    store the job ID in the user's document in Firestore?
+    Store the job ID in the user's document in Firestore?
+[ ] Open preview dialog when user clicks the video thumbnail
 [ ] Store compositions in user account
+[ ] Create an emergency shutoff if the app exceeds a certain cost threshold
 ```
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
