@@ -11,7 +11,7 @@ TODO:
 [x] Remove redundant menu from logged-in 'render video' button.
     The 'View your recent video' functionality has been moved to
     the controls drawer
-[ ] Limit user to 5 videos. Inform the user that they need to delete
+[x] Limit user to 5 videos. Inform the user that they need to delete
     a video before creating a new one.
 [ ] Show 'Rendering your video' status in VideoList if applicable
 [ ] Open preview dialog when user clicks the video thumbnail
