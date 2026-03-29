@@ -4,6 +4,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
 import { useUserVideos } from '../../hooks/useUserVideos';
 import VideoListItem from './VideoListItem';
+import RenderingVideo from './RenderingVideo';
 
 const VideoList = () => {
   const { videoIDs, loading } = useUserVideos();
@@ -11,15 +12,17 @@ const VideoList = () => {
   const [videoIdToDelete, setVideoIdToDelete] = useState<string | null>(null);
 
   if (!authUser) return null;
+  const rendering = true;
 
-  return (
-    <VStack width='full' align='flex-start' gap={2} mt={4}>
-      <Text textStyle='sm'>My Videos</Text>
-      <Box w='full' maxH='13.5rem' overflowY='auto'>
-        {loading ? (
-          <Spinner size='sm' color='black' />
-        ) : videoIDs.length > 0 ? (
-          videoIDs.map((id) => (
+  let content;
+  switch (true) {
+    case loading:
+      content = <Spinner size='sm' color='black' />;
+      break;
+    case videoIDs.length > 0:
+      content = (
+        <>
+          {videoIDs.map((id) => (
             <VideoListItem
               videoId={id}
               key={id}
@@ -27,12 +30,27 @@ const VideoList = () => {
               videoIdToDelete={videoIdToDelete}
               setVideoIdToDelete={setVideoIdToDelete}
             />
-          ))
-        ) : (
-          <Text fontSize='sm' color='gray.600'>
-            No videos to show
-          </Text>
-        )}
+          ))}
+          {rendering && <RenderingVideo />}
+        </>
+      );
+      break;
+    case videoIDs.length === 0 && rendering:
+      content = <RenderingVideo />;
+      break;
+    default:
+      content = (
+        <Text fontSize='sm' color='gray.600'>
+          No videos to show
+        </Text>
+      );
+  }
+
+  return (
+    <VStack width='full' align='flex-start' gap={2} mt={4}>
+      <Text textStyle='sm'>My Videos</Text>
+      <Box w='full' maxH='13.5rem' overflowY='auto'>
+        {content}
       </Box>
     </VStack>
   );
