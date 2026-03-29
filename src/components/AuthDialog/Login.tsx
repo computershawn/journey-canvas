@@ -1,15 +1,7 @@
 import { useState } from 'react';
 
 import { useLogin } from '../../hooks/useLogin';
-import { toaster } from '../Toastier';
 import { Alert, Button, Input } from '@chakra-ui/react';
-
-const onErrorCallback = (errMsg: string) => {
-  toaster.create({
-    description: errMsg,
-    type: 'error',
-  });
-};
 
 const Login = () => {
   const [inputs, setInputs] = useState({
@@ -20,10 +12,6 @@ const Login = () => {
   const { loading, error, login } = useLogin();
   const doLogin = async () => {
     await login(inputs);
-
-    if (error) {
-      onErrorCallback('Something went wrong. Please try again.');
-    }
   };
 
   // TODO: Getting this warning: Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)

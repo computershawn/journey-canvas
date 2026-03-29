@@ -3,15 +3,6 @@ import { LuEye, LuEyeOff } from 'react-icons/lu';
 import { useState } from 'react';
 
 import { useSignup } from '../../hooks/useSignup';
-import { toaster } from '../Toastier';
-
-// @ts-expect-error Parameter 'errMsg' implicitly has an 'any' type
-const onErrorCallback = (errMsg) => {
-  toaster.create({
-    description: errMsg,
-    type: 'error',
-  });
-};
 
 const Signup = () => {
   const [inputs, setInputs] = useState({
@@ -23,9 +14,6 @@ const Signup = () => {
 
   const doSignUp = async () => {
     await signUp(inputs);
-    if (error) {
-      onErrorCallback('Something went wrong. Please try again.');
-    }
   };
 
   return (

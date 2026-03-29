@@ -5,9 +5,12 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import {
   Box,
+  CloseButton,
+  Dialog,
   Flex,
   HStack,
   IconButton,
+  Portal,
   SliderValueChangeDetails,
   Spinner,
   Text,
@@ -16,12 +19,19 @@ import {
 
 import FanBlade from '../classes/fanBlade';
 import NullElement from '../classes/nullElement';
-import { CANV_HT, CANV_WD, DURATION_FRAMES, MINTY } from '../constants';
+import {
+  CANV_HT,
+  CANV_WD,
+  DURATION_FRAMES,
+  MAX_VIDEOS,
+  MINTY,
+} from '../constants';
 import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { useProcessVideo } from '../hooks/useProcessVideo';
 import { useTimeLoop } from '../hooks/useTimeLoop';
 import { useUploadAnimationData } from '../hooks/useUploadAnimationData';
+import { useUserVideos } from '../hooks/useUserVideos';
 import { ColorArray, Point } from '../types';
 import { generateId } from '../utils/generateId';
 import { loggy, mapTo } from '../utils/helpers';
@@ -73,7 +83,9 @@ const Composition = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
   const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
+  const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false);
   const [authUser] = useAuthState(auth);
+  const { videoIDs } = useUserVideos();
 
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
@@ -196,6 +208,11 @@ const Composition = ({
     useProcessVideo();
 
   const exportToVideo = async () => {
+    if (videoIDs.length >= MAX_VIDEOS) {
+      setIsLimitDialogOpen(true);
+      return;
+    }
+
     loggy.info('Begin uploading frames…');
 
     // 1. Gather data for all of the shapes for each frame of the animation
@@ -350,6 +367,39 @@ const Composition = ({
         setOpen={setIsVideoPreviewOpen}
         videoUrl={videoUrl}
       />
+
+      {/* Dialog for video quota warning */}
+      <Dialog.Root
+        placement='center'
+        size='sm'
+        open={isLimitDialogOpen}
+        onOpenChange={(e) => setIsLimitDialogOpen(e.open)}
+      >
+        <Portal>
+          <Dialog.Backdrop bg='blackAlpha.700' />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Oof!</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body pb={6}>
+                <Text fontSize='sm'>
+                  Your account is limited to {MAX_VIDEOS} videos. To render a
+                  new animation, you'll need to delete one of your existing
+                  videos from the controls panel.{' '}
+                  <Text as='span' color='#6a00ffff'>
+                    Before deleting, you can save the file to your device by
+                    clicking the video's download button.
+                  </Text>
+                </Text>
+              </Dialog.Body>
+              <Dialog.CloseTrigger asChild>
+                <CloseButton size='sm' />
+              </Dialog.CloseTrigger>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </>
   );
 };
