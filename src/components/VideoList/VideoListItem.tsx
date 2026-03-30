@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { getDownloadURL, ref, deleteObject } from 'firebase/storage';
 import { doc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { storage, firestore } from '../../firebase';
+import { toaster } from '../ui/toaster';
 
 const placeholderThumbnail = './image-not-found.png';
 
@@ -96,7 +97,10 @@ const VideoListItem = ({
           if (videoUrl) {
             window.open(videoUrl, '_blank');
           } else {
-            console.log(`Video not yet available for ${videoId}`);
+            toaster.create({
+              description: 'This video is still generating! Check back in a few seconds.',
+              type: 'info',
+            });
           }
         }}
         display='flex'
