@@ -25,6 +25,7 @@ import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
 import { useCompositions } from '../hooks/useCompositions';
+import { useInitialCompLoad } from '../hooks/useInitialCompLoad';
 
 import AuthDialog from './AuthDialog';
 import BgColorSelect from './BgColorSelect';
@@ -80,6 +81,16 @@ const ControlPanel = ({
   } = useControls();
 
   const { saveCompositions } = useCompositions();
+
+  useInitialCompLoad(
+    comps,
+    setBackgroundIndex,
+    setBalance,
+    setDiff,
+    setPalette,
+    setCompId,
+    onChangeComp,
+  );
 
   // Deprecated initial ID hook, rely on the Firebase pipeline now
   const colorsLoaded = allColors.length > 0;
