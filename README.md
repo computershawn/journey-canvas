@@ -25,7 +25,7 @@ TODO:
 [x] Open preview dialog when user clicks the video thumbnail
 [x] See what happens if user does not have any saved comps when they sign
     in. Verify that Composition doesn't re-render.
-[ ] If the user has one or more saved compositions and they sign out, the
+[x] If the user has one or more saved compositions and they sign out, the
     current composition re-renders. Try to prevent the re-render.
 [x] If the user signs in and has saved comps, load the first one in their list.
 [ ] Create an emergency shutoff if the app exceeds a certain cost threshold
