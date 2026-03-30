@@ -3,6 +3,7 @@ import { useState, ReactNode, useEffect } from 'react';
 import { ControlsContext } from './ControlsContext';
 import { CompValues } from '../types';
 import { useCompositions } from '../hooks/useCompositions';
+import VideoPreviewModal from '../components/VideoPreviewModal';
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
   const [comps, setComps] = useState<CompValues[]>([]);
@@ -10,6 +11,7 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
   const [diff, setDiff] = useState(50);
   const [geomChecked, setGeomChecked] = useState(true);
   const [pathsChecked, setPathsChecked] = useState(true);
+  const [previewVideoUrl, setPreviewVideoUrl] = useState<string | null>(null);
 
   const { dbComps, loadingComps } = useCompositions();
 
@@ -37,9 +39,18 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
         setDiff,
         setGeomChecked,
         setPathsChecked,
+        previewVideoUrl,
+        setPreviewVideoUrl,
       }}
     >
       {children}
+      <VideoPreviewModal
+        open={!!previewVideoUrl}
+        setOpen={(open) => {
+          if (!open) setPreviewVideoUrl(null);
+        }}
+        videoUrl={previewVideoUrl || undefined}
+      />
     </ControlsContext.Provider>
   );
 }

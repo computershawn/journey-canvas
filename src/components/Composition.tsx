@@ -38,7 +38,6 @@ import { loggy, mapTo } from '../utils/helpers';
 import AuthDialog from './AuthDialog';
 import Slider from './ui/slider';
 import VideoGen from './VideoGen';
-import VideoPreviewModal from './VideoPreviewModal';
 
 const SCALE = 1;
 const NUM_COLORS = 5;
@@ -79,10 +78,9 @@ const Composition = ({
   renderColors: boolean;
   showBackground: boolean;
 }) => {
-  const { balance, diff, geomChecked } = useControls();
+  const { balance, diff, geomChecked, setPreviewVideoUrl } = useControls();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [manualFrame, setManualFrame] = useState(1);
-  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState(false);
   const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false);
   const [authUser] = useAuthState(auth);
   const { videoIDs, isRendering: isRenderingDbState } = useUserVideos();
@@ -265,7 +263,9 @@ const Composition = ({
 
       // 4. Display the newly generated video
       loggy.info('Video rendered. Showing preview…');
-      setIsVideoPreviewOpen(true);
+      if (videoUrl) {
+        setPreviewVideoUrl(videoUrl);
+      }
     } catch (pipelineErr) {
       loggy.error('Render pipeline encountered an error.');
       if (authUser?.uid) {
@@ -384,13 +384,6 @@ const Composition = ({
       ) : (
         <Box bg='white' w={CANV_WD} h={CANV_HT} mt={2} />
       )}
-
-      {/* Dialog for previewing video */}
-      <VideoPreviewModal
-        open={isVideoPreviewOpen}
-        setOpen={setIsVideoPreviewOpen}
-        videoUrl={videoUrl}
-      />
 
       {/* Dialog for video quota warning */}
       <Dialog.Root

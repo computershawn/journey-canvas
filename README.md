@@ -22,8 +22,15 @@ TODO:
     to prevent new renders and display the in-progress spinner.
     Store the job ID in the user's document in Firestore?
 [x] Store compositions in user account
-[ ] Open preview dialog when user clicks the video thumbnail
+[x] Open preview dialog when user clicks the video thumbnail
+[x] See what happens if user does not have any saved comps when they sign
+    in. Verify that Composition doesn't re-render.
+[x] If the user has one or more saved compositions and they sign out, the
+    current composition re-renders. Try to prevent the re-render.
+[x] If the user signs in and has saved comps, load the first one in their list.
 [ ] Create an emergency shutoff if the app exceeds a certain cost threshold
+[ ] Tickmarks display in the app, but do not persist in the rendered video.
+    Make sure tickmarks get rendered in the shapes in the video.
 ```
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
