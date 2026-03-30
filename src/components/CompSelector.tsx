@@ -1,11 +1,14 @@
 import { useMemo } from 'react';
 
 import {
+  createListCollection,
   ButtonGroup,
+  Flex,
   HStack,
   IconButton,
   Select,
-  createListCollection,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
 
 import { useControls } from '../hooks/useControls';
@@ -49,6 +52,32 @@ const CompSelector = ({
     onChangeComp(index);
   };
 
+  // If user doesn't have any compositions, show a blurb
+  // and a button to create a new composition
+  if (numComps === 0) {
+    return (
+      <VStack w='full' align='flex-start' gap={1.5}>
+        <Flex w='full' align='center' justify='space-between'>
+          <Text textStyle='sm' fontWeight='medium'>
+            Compositions
+          </Text>
+          <Tooltip content='Create a new composition'>
+            <IconButton
+              size='xs'
+              aria-label='Create a new composition'
+              onClick={openCreateModal}
+            >
+              <FaFileCirclePlus color='black' />
+            </IconButton>
+          </Tooltip>
+        </Flex>
+        <Text textStyle='sm' fontStyle='italic' color='gray.500'>
+          Your saved compositions will appear here.
+        </Text>
+      </VStack>
+    );
+  }
+
   return (
     <Select.Root
       collection={compList}
@@ -56,28 +85,25 @@ const CompSelector = ({
       width='full'
       value={compId}
       onValueChange={handleValueChange}
-      disabled={numComps === 0}
     >
       <Select.HiddenSelect />
       <HStack justify='space-between' width='full'>
         <Select.Label>Compositions</Select.Label>
         <ButtonGroup size='xs' gap={0} ml='auto'>
           <FunButton
-            content='Create a new comp'
+            content='Create a new composition'
             icon={<FaFileCirclePlus />}
             onClick={openCreateModal}
           />
           <FunButton
-            content='Update current comp'
+            content='Update current composition'
             icon={<FaArrowsRotate />}
             onClick={handleClickUpdate}
-            disabled={numComps === 0}
           />
           <FunButton
-            content='Edit existing comp'
+            content='Manage existing compositions'
             icon={<FaPen />}
             onClick={openEditModal}
-            disabled={numComps === 0}
           />
         </ButtonGroup>
       </HStack>
@@ -109,18 +135,16 @@ export default CompSelector;
 
 const FunButton = ({
   content,
-  disabled,
   onClick,
   icon,
 }: {
   content: string;
-  disabled?: boolean;
   onClick: () => void;
   icon: React.ReactNode;
 }) => {
   return (
-    <Tooltip content={content} openDelay={500} closeDelay={200}>
-      <IconButton onClick={onClick} bg='#eee' color='black' disabled={disabled}>
+    <Tooltip content={content}>
+      <IconButton onClick={onClick} bg='#eee' color='black'>
         {icon}
       </IconButton>
     </Tooltip>

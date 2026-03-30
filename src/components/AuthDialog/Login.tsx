@@ -1,60 +1,85 @@
 import { useState } from 'react';
+import { LuEye, LuEyeOff } from 'react-icons/lu';
+
+import {
+  Alert,
+  Box,
+  Button,
+  Input,
+  InputGroup,
+  VStack,
+} from '@chakra-ui/react';
 
 import { useLogin } from '../../hooks/useLogin';
-import { Alert, Button, Input } from '@chakra-ui/react';
 
 const Login = () => {
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
   });
-
+  const [showPassword, setShowPassword] = useState(false);
   const { loading, error, login } = useLogin();
   const doLogin = async () => {
     await login(inputs);
   };
 
-  // TODO: Getting this warning: Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-  //       Maybe the input elements should be wrapped in a form element
-
   return (
-    <>
-      <Input
-        placeholder='Email'
-        type='email'
-        size='sm'
-        value={inputs.email}
-        onChange={(e) => {
-          setInputs({ ...inputs, email: e.target.value });
-        }}
-      />
-      <Input
-        placeholder='Password'
-        type='password'
-        size='sm'
-        value={inputs.password}
-        onChange={(e) => {
-          setInputs({ ...inputs, password: e.target.value });
-        }}
-      />
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        doLogin();
+      }}
+    >
+      <VStack gap={4}>
+        <Input
+          placeholder='Email'
+          type='email'
+          size='sm'
+          value={inputs.email}
+          onChange={(e) => {
+            setInputs({ ...inputs, email: e.target.value });
+          }}
+        />
+        <InputGroup
+          endElement={
+            <Box onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? <LuEye /> : <LuEyeOff />}
+            </Box>
+          }
+        >
+          <Input
+            placeholder='Password'
+            type={showPassword ? 'text' : 'password'}
+            size='sm'
+            value={inputs.password}
+            onChange={(e) => {
+              setInputs({ ...inputs, password: e.target.value });
+            }}
+          />
+        </InputGroup>
 
-      {error && (
-        <Alert.Root size='sm' status='error' title='Something went wrong'>
-          <Alert.Indicator />
-          <Alert.Title>Something went wrong</Alert.Title>
-        </Alert.Root>
-      )}
+        {error && (
+          <Alert.Root
+            size='sm'
+            status='error'
+            title='Incorrect email or password'
+          >
+            <Alert.Indicator />
+            <Alert.Title>Incorrect email or password</Alert.Title>
+          </Alert.Root>
+        )}
 
-      <Button
-        w='full'
-        size='sm'
-        loading={loading}
-        onClick={doLogin}
-        variant='outline'
-      >
-        Log in
-      </Button>
-    </>
+        <Button
+          w='full'
+          size='sm'
+          type='submit'
+          loading={loading}
+          variant='outline'
+        >
+          Log in
+        </Button>
+      </VStack>
+    </form>
   );
 };
 

@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   CloseButton,
   Dialog,
@@ -6,7 +7,6 @@ import {
   IconButton,
   Portal,
   Text,
-  VStack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FaCircleInfo, FaCircleUser, FaClapperboard } from 'react-icons/fa6';
@@ -15,20 +15,28 @@ import Signup from './Signup';
 
 const AuthDialog = ({ plainTextTrigger }: { plainTextTrigger?: boolean }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const title = isLogin
-    ? 'Log in to render video'
-    : 'Create an account to render video';
+  const title = isLogin ? 'Log in' : 'Create an account';
 
   return (
     <Dialog.Root placement='center' size='sm'>
       <Dialog.Trigger asChild>
         {plainTextTrigger ? (
-          <Flex h='2.5rem' align='center' gap={1}>
-            <FaCircleUser color='#008caf' />
-            <Text color='#008caf' fontWeight='medium' cursor='pointer' fontSize='sm'>
-              Want to save or render your compositions? Click here to Log in or Sign up
-            </Text>
-          </Flex>
+          <Alert.Root background='#008caf'>
+            <Alert.Indicator>
+              <FaCircleUser color='white' />
+            </Alert.Indicator>
+            <Alert.Title>
+              <Text
+                color='white'
+                fontWeight='medium'
+                cursor='pointer'
+                fontSize='sm'
+              >
+                Want to save a composition or render your animation as a video?
+                Click here to Log in or Sign up.
+              </Text>
+            </Alert.Title>
+          </Alert.Root>
         ) : (
           <Flex
             h='2.5rem'
@@ -63,7 +71,7 @@ const AuthDialog = ({ plainTextTrigger }: { plainTextTrigger?: boolean }) => {
                   You&apos;ll need to log in to render your animation as a video
                 </Text>
               </Flex>
-              <VStack gap={4}>{isLogin ? <Login /> : <Signup />}</VStack>
+              <>{isLogin ? <Login /> : <Signup />}</>
               <Flex mt={2} align='center'>
                 <Text fontSize='sm'>
                   {isLogin
@@ -79,7 +87,7 @@ const AuthDialog = ({ plainTextTrigger }: { plainTextTrigger?: boolean }) => {
                   backgroundColor='transparent'
                   _hover={{ borderColor: 'transparent' }}
                 >
-                  {isLogin ? 'Sign up' : 'Sign in'}
+                  {isLogin ? 'Sign up here.' : 'Log in here.'}
                 </Button>
               </Flex>
             </Dialog.Body>
