@@ -21,8 +21,8 @@ TODO:
     background and the user returns to the page, we probably still need
     to prevent new renders and display the in-progress spinner.
     Store the job ID in the user's document in Firestore?
+[x] Store compositions in user account
 [ ] Open preview dialog when user clicks the video thumbnail
-[ ] Store compositions in user account
 [ ] Create an emergency shutoff if the app exceeds a certain cost threshold
 ```
 

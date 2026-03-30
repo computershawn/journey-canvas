@@ -2,12 +2,7 @@ import { useState, ReactNode, useEffect } from 'react';
 
 import { ControlsContext } from './ControlsContext';
 import { CompValues } from '../types';
-
-const getAllComps = (): CompValues[] => {
-  const savedComps = window.localStorage.getItem('saved_comps');
-
-  return (savedComps ? JSON.parse(savedComps) : []) as CompValues[];
-};
+import { useCompositions } from '../hooks/useCompositions';
 
 export function ControlsProvider({ children }: { children: ReactNode }) {
   const [comps, setComps] = useState<CompValues[]>([]);
@@ -16,15 +11,18 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
   const [geomChecked, setGeomChecked] = useState(true);
   const [pathsChecked, setPathsChecked] = useState(true);
 
+  const { dbComps, loadingComps } = useCompositions();
+
   useEffect(() => {
-    const storedComps = getAllComps();
-    const firstComp = storedComps.length > 0 ? storedComps[0] : null;
-    if (firstComp) {
+    if (!loadingComps && dbComps.length > 0) {
+      const firstComp = dbComps[0];
       setBalance(firstComp.balance);
-      setComps(storedComps);
+      setComps(dbComps);
       setDiff(firstComp.diff);
+    } else if (!loadingComps && dbComps.length === 0) {
+      setComps([]);
     }
-  }, []);
+  }, [dbComps, loadingComps]);
 
   return (
     <ControlsContext.Provider

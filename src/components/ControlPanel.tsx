@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import {
   FaArrowRotateRight,
@@ -24,6 +24,7 @@ import { auth } from '../firebase';
 import { useControls } from '../hooks/useControls';
 import { ColorArray, CtrlPoint } from '../types';
 import { getRandomIndex } from '../utils/helpers';
+import { useCompositions } from '../hooks/useCompositions';
 
 import AuthDialog from './AuthDialog';
 import BgColorSelect from './BgColorSelect';
@@ -78,15 +79,9 @@ const ControlPanel = ({
     setComps,
   } = useControls();
 
-  useEffect(() => {
-    const savedComps = window.localStorage.getItem('saved_comps');
-    if (savedComps) {
-      const parsed = JSON.parse(savedComps);
-      const defaultCompId = parsed?.[0]?.id || '0';
-      setCompId([defaultCompId]);
-    }
-  }, []);
+  const { saveCompositions } = useCompositions();
 
+  // Deprecated initial ID hook, rely on the Firebase pipeline now
   const colorsLoaded = allColors.length > 0;
 
   const pickColors = () => {
@@ -137,10 +132,10 @@ const ControlPanel = ({
       },
     ];
 
-    window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
     setCompId([id]);
     onChangeComp(updated.length - 1);
+    saveCompositions(updated).catch(e => console.error("Failed to save comp to cloud", e));
   };
 
   // Update current composition
@@ -172,8 +167,8 @@ const ControlPanel = ({
       return c;
     });
 
-    window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
+    saveCompositions(updated).catch(e => console.error("Failed to update comp in cloud", e));
   };
 
   // Set index and set slider values based on the newly selected composition
@@ -211,15 +206,17 @@ const ControlPanel = ({
               </Drawer.Header>
               <Drawer.Body p={0}>
                 <VStack w='full' h='100%' p={4} pt={2} gap={6} flex={1}>
-                  <CompSelector
-                    numComps={comps.length}
-                    onChangeComp={handleChangeComp}
-                    compId={compId}
-                    setCompId={setCompId}
-                    openCreateModal={() => setIsCreateCompOpen(true)}
-                    openEditModal={() => setIsEditCompsOpen(true)}
-                    handleClickUpdate={handleClickUpdate}
-                  />
+                  {authUser && (
+                    <CompSelector
+                      numComps={comps.length}
+                      onChangeComp={handleChangeComp}
+                      compId={compId}
+                      setCompId={setCompId}
+                      openCreateModal={() => setIsCreateCompOpen(true)}
+                      openEditModal={() => setIsEditCompsOpen(true)}
+                      handleClickUpdate={handleClickUpdate}
+                    />
+                  )}
 
                   <VStack w='full' gap={4} align='flex-start'>
                     <Slider

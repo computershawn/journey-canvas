@@ -15,6 +15,7 @@ import {
 import { FaCheck, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useControls } from '../hooks/useControls';
 import { CompValues } from '../types';
+import { useCompositions } from '../hooks/useCompositions';
 
 const ManageComps = ({
   open,
@@ -27,11 +28,14 @@ const ManageComps = ({
   const [deleteList, setDeleteList] = useState<string[]>([]);
 
   const { comps, setComps } = useControls();
+  const { saveCompositions } = useCompositions();
 
   const deleteComps = () => {
     const updated = comps.filter((item) => !deleteList.includes(item.id));
-    window.localStorage.setItem('saved_comps', JSON.stringify(updated));
     setComps(updated);
+    saveCompositions(updated).catch((e) =>
+      console.error('Failed to delete comp in cloud', e),
+    );
     setDeleteList([]);
   };
 
@@ -58,7 +62,7 @@ const ManageComps = ({
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>Manage Comps</Dialog.Title>
+              <Dialog.Title>Manage Compositions</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
               {deleteList.length === comps.length ? (
@@ -80,7 +84,9 @@ const ManageComps = ({
                         <ButtonGroup variant='outline' size='xs'>
                           {idToDelete === comp.id ? (
                             <HStack>
-                              <Text color='red' mr={1}>Delete?</Text>
+                              <Text color='red' mr={1}>
+                                Delete?
+                              </Text>
                               <IconButton
                                 aria-label='Confirm'
                                 rounded='full'
