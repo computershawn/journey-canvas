@@ -18,7 +18,11 @@ const AuthDialog = ({ plainTextTrigger }: { plainTextTrigger?: boolean }) => {
   const title = isLogin ? 'Log in' : 'Create an account';
 
   return (
-    <Dialog.Root placement='center' size='sm'>
+    <Dialog.Root
+      placement='center'
+      size='sm'
+      onExitComplete={() => setIsLogin(true)}
+    >
       <Dialog.Trigger asChild>
         {plainTextTrigger ? (
           <Alert.Root background='#008caf'>

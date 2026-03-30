@@ -24,6 +24,19 @@ const Signup = () => {
     await signUp(inputs);
   };
 
+  const getErrorMessage = (errorCode: string) => {
+    switch (errorCode) {
+      case 'auth/email-already-in-use':
+        return 'That email is already registered.';
+      case 'auth/weak-password':
+        return 'Password should be at least 6 characters.';
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      default:
+        return 'Something went wrong. Please try again.';
+    }
+  };
+
   return (
     <form
       onSubmit={(e) => {
@@ -62,7 +75,7 @@ const Signup = () => {
         {error && (
           <Alert.Root size='sm' status='error' title='Something went wrong'>
             <Alert.Indicator />
-            <Alert.Title>Something went wrong</Alert.Title>
+            <Alert.Title>{getErrorMessage(error.code)}</Alert.Title>
           </Alert.Root>
         )}
 
