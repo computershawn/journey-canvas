@@ -25,8 +25,8 @@ const AuthDialog = ({ plainTextTrigger }: { plainTextTrigger?: boolean }) => {
         {plainTextTrigger ? (
           <Flex h='2.5rem' align='center' gap={1}>
             <FaCircleUser color='#008caf' />
-            <Text color='#008caf' fontWeight='medium' cursor='pointer'>
-              Log in or Sign up
+            <Text color='#008caf' fontWeight='medium' cursor='pointer' fontSize='sm'>
+              Want to save or render your compositions? Click here to Log in or Sign up
             </Text>
           </Flex>
         ) : (

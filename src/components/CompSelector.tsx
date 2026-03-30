@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 
 import { useControls } from '../hooks/useControls';
-import { FaFileCirclePlus, FaFloppyDisk, FaPen } from 'react-icons/fa6';
+import { FaArrowsRotate, FaFileCirclePlus, FaPen } from 'react-icons/fa6';
 import { Tooltip } from './ui/tooltip';
 
 const CompSelector = ({
@@ -69,13 +69,15 @@ const CompSelector = ({
           />
           <FunButton
             content='Update current comp'
-            icon={<FaFloppyDisk />}
+            icon={<FaArrowsRotate />}
             onClick={handleClickUpdate}
+            disabled={numComps === 0}
           />
           <FunButton
             content='Edit existing comp'
             icon={<FaPen />}
             onClick={openEditModal}
+            disabled={numComps === 0}
           />
         </ButtonGroup>
       </HStack>
@@ -107,16 +109,18 @@ export default CompSelector;
 
 const FunButton = ({
   content,
+  disabled,
   onClick,
   icon,
 }: {
   content: string;
+  disabled?: boolean;
   onClick: () => void;
   icon: React.ReactNode;
 }) => {
   return (
     <Tooltip content={content} openDelay={500} closeDelay={200}>
-      <IconButton onClick={onClick} bg='#eee' color='black'>
+      <IconButton onClick={onClick} bg='#eee' color='black' disabled={disabled}>
         {icon}
       </IconButton>
     </Tooltip>

@@ -21,14 +21,7 @@ function App() {
   const { allColors } = useFetchColors();
 
   useEffect(() => {
-    const savedComps = window.localStorage.getItem('saved_comps');
-    if (savedComps) {
-      const parsed = JSON.parse(savedComps);
-      const pal = parsed?.[0]?.palette ?? Array(5).fill('#fff');
-      const bgIndex = parsed?.[0].backgroundIndex ?? 0;
-      setBackgroundIndex(bgIndex);
-      setPalette(pal);
-    } else if (allColors.length > 0) {
+    if (allColors.length > 0) {
       const randomIndex = getRandomIndex(allColors.length);
       const pal = allColors[randomIndex];
       setPalette(pal);
