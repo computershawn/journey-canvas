@@ -23,6 +23,9 @@ TODO:
     Store the job ID in the user's document in Firestore?
 [x] Store compositions in user account
 [x] Open preview dialog when user clicks the video thumbnail
+[ ] If user does not have any saved comps when they sign in, set the current
+    keep the current comp settings. If the user has saved comps, load the
+    first one in their list.
 [ ] Create an emergency shutoff if the app exceeds a certain cost threshold
 ```
 

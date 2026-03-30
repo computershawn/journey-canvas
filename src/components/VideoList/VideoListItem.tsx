@@ -12,6 +12,7 @@ import { getDownloadURL, ref, deleteObject } from 'firebase/storage';
 import { doc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { storage, firestore } from '../../firebase';
 import { toaster } from '../ui/toaster';
+import { useControls } from '../../hooks/useControls';
 
 const placeholderThumbnail = './image-not-found.png';
 
@@ -26,6 +27,7 @@ const VideoListItem = ({
   videoIdToDelete: string | null;
   setVideoIdToDelete: (val: string | null) => void;
 }) => {
+  const { setPreviewVideoUrl } = useControls();
   const [thumbUrl, setThumbUrl] = useState<string>(placeholderThumbnail);
   const [videoUrl, setVideoUrl] = useState<string>('');
 
@@ -95,7 +97,7 @@ const VideoListItem = ({
         cursor={videoUrl ? 'pointer' : 'default'}
         onClick={() => {
           if (videoUrl) {
-            window.open(videoUrl, '_blank');
+            setPreviewVideoUrl(videoUrl);
           } else {
             toaster.create({
               description: 'This video is still generating! Check back in a few seconds.',

@@ -15,8 +15,8 @@ export const DURATION_FRAMES = 384;
 export const MINTY = '#a2ffec';
 
 export const PREVIEW_VIDEO_DIMS = {
-  WD: 624,
-  HT: 351,
+  WD: 848,// 624, // 848,
+  HT: 477,// 351, // 477,
 };
 
 export const MAGENTA = '#ff008c';

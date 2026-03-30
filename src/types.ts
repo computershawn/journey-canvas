@@ -39,6 +39,8 @@ export interface ControlsContextType {
   setPathsChecked: (value: boolean) => void;
   comps: CompValues[];
   setComps: (comps: CompValues[]) => void;
+  previewVideoUrl: string | null;
+  setPreviewVideoUrl: (url: string | null) => void;
 }
 
 export type ColorArray = string[];

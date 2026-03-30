@@ -36,7 +36,7 @@ const VideoPreviewModal = ({
       open={open}
       onOpenChange={onOpenChange}
       placement='center'
-      size='lg'
+      size='xl'
     >
       <Portal>
         <Dialog.Backdrop bg='blackAlpha.900' />
