@@ -222,6 +222,12 @@ const Composition = ({
         const userDocRef = doc(firestore, 'users', authUser.uid);
         await updateDoc(userDocRef, { isRendering: true });
       } catch (err) {
+        if (err instanceof Error) {
+          loggy.error(
+            'Failed to update rendering status in database:',
+            err.message,
+          );
+        }
         loggy.error('Failed to update rendering status in database.');
       }
     }
@@ -266,8 +272,9 @@ const Composition = ({
       if (videoUrl) {
         setPreviewVideoUrl(videoUrl);
       }
-    } catch (pipelineErr) {
-      loggy.error('Render pipeline encountered an error.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      loggy.error('Render pipeline encountered an error.', msg);
       if (authUser?.uid) {
         const userDocRef = doc(firestore, 'users', authUser.uid);
         await updateDoc(userDocRef, { isRendering: false }).catch(() => {});

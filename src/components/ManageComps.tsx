@@ -88,20 +88,20 @@ const ManageComps = ({
                                 Delete?
                               </Text>
                               <IconButton
-                                aria-label='Confirm'
-                                rounded='full'
-                                size='xs'
-                                onClick={deleteQueuedComp}
-                              >
-                                <FaCheck />
-                              </IconButton>
-                              <IconButton
                                 aria-label='Cancel'
                                 rounded='full'
                                 size='xs'
                                 onClick={() => setIdToDelete(null)}
                               >
                                 <FaXmark />
+                              </IconButton>
+                              <IconButton
+                                aria-label='Confirm'
+                                rounded='full'
+                                size='xs'
+                                onClick={deleteQueuedComp}
+                              >
+                                <FaCheck />
                               </IconButton>
                             </HStack>
                           ) : (
