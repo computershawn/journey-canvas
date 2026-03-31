@@ -10,6 +10,7 @@ const onErrorCallback = (errMsg: string) => {
   toaster.create({
     description: errMsg,
     type: 'error',
+    duration: 5000,
   });
 };
 

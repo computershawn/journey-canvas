@@ -103,6 +103,7 @@ const VideoListItem = ({
               description:
                 'This video is still generating! Check back in a few seconds.',
               type: 'info',
+              duration: 5000,
             });
           }
         }}

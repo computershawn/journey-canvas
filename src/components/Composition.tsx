@@ -206,7 +206,6 @@ const Composition = ({
     processVideo,
     isRendering: isRenderingLocalState,
     videoCreateError,
-    videoUrl,
   } = useProcessVideo();
 
   const exportToVideo = async () => {
@@ -265,12 +264,12 @@ const Composition = ({
 
       // 3. Wait for backend to generate the video
       loggy.info('Frames uploaded. Begin rendering video…');
-      await processVideo(newJobId);
+      const downloadUrl = await processVideo(newJobId);
 
       // 4. Display the newly generated video
       loggy.info('Video rendered. Showing preview…');
-      if (videoUrl) {
-        setPreviewVideoUrl(videoUrl);
+      if (downloadUrl) {
+        setPreviewVideoUrl(downloadUrl);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
@@ -404,16 +403,16 @@ const Composition = ({
           <Dialog.Positioner>
             <Dialog.Content>
               <Dialog.Header>
-                <Dialog.Title>Oof!</Dialog.Title>
+                <Dialog.Title>You're at your limit!</Dialog.Title>
               </Dialog.Header>
               <Dialog.Body pb={6}>
                 <Text fontSize='sm'>
-                  Your account is limited to {MAX_VIDEOS} videos. To render a
-                  new animation, you'll need to delete one of your existing
-                  videos from the controls panel.{' '}
-                  <Text as='span' color='#6a00ffff'>
-                    Before deleting, you can save the file to your device by
-                    clicking the video's download button.
+                  For now, accounts are limited to {MAX_VIDEOS} videos. To
+                  render a new animation, you'll need to delete one of your
+                  existing videos from the controls panel.{' '}
+                  <Text as='span' color='#6a00ff'>
+                    You can save the file to your device first, by clicking the
+                    video's download button.
                   </Text>
                 </Text>
               </Dialog.Body>

@@ -7,7 +7,6 @@ import { loggy } from '../utils/helpers';
 const cloudFunctionUrl = import.meta.env.VITE_PUBLIC_CLOUD_FUNCTION_URL;
 
 export const useProcessVideo = () => {
-  const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +18,6 @@ export const useProcessVideo = () => {
     
     setLoading(true);
     setError('');
-    setVideoUrl('');
 
     // Check if user is loaded and authenticated
     if (authLoading) {
@@ -77,7 +75,7 @@ export const useProcessVideo = () => {
 
       const data = await response.json();
       if (data.downloadUrl) {
-        setVideoUrl(data.downloadUrl);
+        return data.downloadUrl;
       }
       if (data.message) {
         loggy.info(data.message);
@@ -98,6 +96,5 @@ export const useProcessVideo = () => {
     processVideo,
     isRendering: loading,
     videoCreateError: error,
-    videoUrl,
   };
 };
