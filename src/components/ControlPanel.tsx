@@ -246,7 +246,7 @@ const ControlPanel = ({
 
                   <VStack w='full' gap={2} align='flex-start'>
                     <Flex w='full' h={8} align='center' justify='space-between'>
-                      <Text textStyle='sm'>Guide Paths</Text>
+                      <Text textStyle='sm' fontWeight='medium'>Guide Paths</Text>
                       <IconButton
                         size='xs'
                         aria-label='hide or show path'
