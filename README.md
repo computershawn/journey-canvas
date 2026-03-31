@@ -29,6 +29,8 @@ TODO:
     current composition re-renders. Try to prevent the re-render.
 [x] If the user signs in and has saved comps, load the first one in their list.
 [x] Create an emergency shutoff if the app exceeds a certain cost threshold
+[x] Add a confirmation step to render action in VideoGen
+[x] Fix issue with video preview not opening on render success
 [ ] Tickmarks display in the app, but do not persist in the rendered video.
     Make sure tickmarks get rendered in the shapes in the video.
 ```

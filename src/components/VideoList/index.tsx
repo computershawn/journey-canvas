@@ -47,7 +47,9 @@ const VideoList = () => {
 
   return (
     <VStack width='full' align='flex-start' gap={2} mt={4}>
-      <Text textStyle='sm'>My Videos</Text>
+      <Text textStyle='sm' fontWeight='medium'>
+        My Videos
+      </Text>
       <Box w='full' maxH='13.5rem' overflowY='auto'>
         {content}
       </Box>

@@ -100,8 +100,10 @@ const VideoListItem = ({
             setPreviewVideoUrl(videoUrl);
           } else {
             toaster.create({
-              description: 'This video is still generating! Check back in a few seconds.',
+              description:
+                'This video is still generating! Check back in a few seconds.',
               type: 'info',
+              duration: 5000,
             });
           }
         }}
@@ -150,16 +152,6 @@ const VideoListItem = ({
               Delete?
             </Text>
             <IconButton
-              aria-label='Confirm'
-              bg='#222'
-              color='#eee'
-              onClick={() => deleteQueuedVideo(videoId)}
-              rounded='full'
-              size='xs'
-            >
-              <FaCheck />
-            </IconButton>
-            <IconButton
               aria-label='Cancel'
               bg='#222'
               color='#eee'
@@ -168,6 +160,16 @@ const VideoListItem = ({
               size='xs'
             >
               <FaXmark />
+            </IconButton>
+            <IconButton
+              aria-label='Confirm'
+              bg='#222'
+              color='#eee'
+              onClick={() => deleteQueuedVideo(videoId)}
+              rounded='full'
+              size='xs'
+            >
+              <FaCheck />
             </IconButton>
           </HStack>
         ) : (
