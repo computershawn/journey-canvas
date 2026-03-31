@@ -1,5 +1,6 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable require-jsdoc */
+const { onMessagePublished } = require('firebase-functions/v2/pubsub');
 const admin = require('firebase-admin');
 const cors = require('cors')({
   origin: [
@@ -25,9 +26,6 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const JSONStream = require('JSONStream');
 const { PassThrough } = require('stream');
 const { FPS, HEIGHT, WIDTH } = require('./constants');
-
-// Initialize Firebase Admin once globally
-admin.initializeApp();
 
 /**
  * Authentication Verification
@@ -299,5 +297,68 @@ exports.generateVideo = onRequest(
         }
       }
     });
+  },
+);
+
+// Use parseFloat to ensure we are working with a number
+const BUDGET_THRESHOLD = 0.95;
+
+exports.budgetKillSwitch = onMessagePublished(
+  'budget-alerts',
+  async (event) => {
+    try {
+      // FIX: .json is a property, not a function call ()
+      const data = event.data.message.json;
+
+      if (
+        !data ||
+        typeof data.costAmount !== 'number' ||
+        typeof data.budgetAmount !== 'number'
+      ) {
+        console.error('Invalid budget data received:', data);
+        return;
+      }
+
+      const { costAmount, budgetAmount } = data;
+      console.log(`Current spend: $${costAmount} of $${budgetAmount}`);
+
+      if (costAmount >= budgetAmount * BUDGET_THRESHOLD) {
+        console.log(
+          `⚠️ Budget threshold (${
+            BUDGET_THRESHOLD * 100
+          }%) reached. Locking Firestore...`,
+        );
+
+        const lockedRules = `
+          rules_version = '2';
+          service cloud.firestore {
+            match /databases/{database}/documents {
+              match /{document=**} {
+                allow read, write: if false;
+              }
+            }
+          }
+        `;
+
+        try {
+          if (!admin.apps.length) {
+            admin.initializeApp();
+          }
+          const rules = admin.securityRules();
+          const rulesFile = rules.createRulesFileFromSource(
+            'firestore.rules',
+            lockedRules,
+          );
+          const ruleset = await rules.createRuleset(rulesFile);
+          await rules.releaseRuleset(ruleset, 'cloud.firestore/facts');
+
+          console.log('Firestore has been locked to prevent further costs.');
+        } catch (error) {
+          console.error('Failed to lock Firestore:', error);
+        }
+      }
+    } catch (functionError) {
+      console.error('Budget kill switch function failed:', functionError);
+    }
   },
 );

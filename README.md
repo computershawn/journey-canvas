@@ -28,7 +28,7 @@ TODO:
 [x] If the user has one or more saved compositions and they sign out, the
     current composition re-renders. Try to prevent the re-render.
 [x] If the user signs in and has saved comps, load the first one in their list.
-[ ] Create an emergency shutoff if the app exceeds a certain cost threshold
+[x] Create an emergency shutoff if the app exceeds a certain cost threshold
 [ ] Tickmarks display in the app, but do not persist in the rendered video.
     Make sure tickmarks get rendered in the shapes in the video.
 ```
