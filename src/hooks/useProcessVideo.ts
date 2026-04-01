@@ -15,7 +15,7 @@ export const useProcessVideo = () => {
 
   const processVideo = async (jobId: string) => {
     if (loading) return;
-    
+
     setLoading(true);
     setError('');
 

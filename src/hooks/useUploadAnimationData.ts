@@ -19,6 +19,10 @@ export const useUploadAnimationData = () => {
     backgroundColor: string,
     polygons: number[][][],
     polygonColors: string[],
+    polygonTickmarks: {
+      color: string;
+      tickSpacing: number;
+    }[],
     jobId: string,
   ) => {
     // Check if user is loaded and authenticated
@@ -62,6 +66,7 @@ export const useUploadAnimationData = () => {
       // Prepare meta.json
       const meta = {
         polygonColors,
+        polygonTickmarks,
         backgroundColor,
       };
       const metaBlob = new Blob([JSON.stringify(meta)], {
@@ -86,9 +91,11 @@ export const useUploadAnimationData = () => {
           uploadTask.on(
             'state_changed',
             (snapshot) => {
-              console.info(
-                `${snapshot.bytesTransferred} of ${snapshot.totalBytes} bytes uploaded.`,
-              );
+              if (snapshot.bytesTransferred === snapshot.totalBytes) {
+                console.info(
+                  `${snapshot.bytesTransferred} of ${snapshot.totalBytes} bytes uploaded.`,
+                );
+              }
             },
             (error) => {
               setUploadError('Upload failed: ' + error.message);
@@ -106,8 +113,7 @@ export const useUploadAnimationData = () => {
         uploadBlob(metaRef, metaBlob),
         uploadBlob(polygonsRef, polygonsBlob),
       ]);
-
-      loggy.info('Successfully uploaded meta.json and polygons.json.');
+      // loggy.info('Successfully uploaded meta.json and polygons.json.');
     } catch (error) {
       loggy.error('Error uploading animation data:', error);
       setUploadError(

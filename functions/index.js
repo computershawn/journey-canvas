@@ -25,7 +25,12 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 ffmpeg.setFfmpegPath(ffmpegPath);
 const JSONStream = require('JSONStream');
 const { PassThrough } = require('stream');
-const { FPS, HEIGHT, WIDTH } = require('./constants');
+const { FPS, MAX_TICKS, HEIGHT, WIDTH } = require('./constants');
+
+function mapTo(value, fromMin, fromMax, toMin, toMax) {
+  const amount = value / (fromMax - fromMin);
+  return toMin + amount * (toMax - toMin);
+}
 
 /**
  * Authentication Verification
@@ -44,6 +49,44 @@ async function verifyAuth(authHeader) {
     const err = new Error('Unauthorized: Token verification failed.');
     err.status = 403;
     throw err;
+  }
+}
+
+function drawTickmarks(ctx, poly, color, spacing) {
+  const pt0 = { x: poly[0] / 100, y: poly[1] / 100 };
+  const pt1 = { x: poly[2] / 100, y: poly[3] / 100 };
+  const pt2 = { x: poly[4] / 100, y: poly[5] / 100 };
+  const pt3 = { x: poly[6] / 100, y: poly[7] / 100 };
+  const dx1 = pt0.x - pt1.x;
+  const dy1 = pt0.y - pt1.y;
+  const dx2 = pt2.x - pt3.x;
+  const dy2 = pt2.y - pt3.y;
+  const dist1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+  const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+  const longSide = Math.max(dist1, dist2);
+  let len = longSide;
+  if (longSide < 1) {
+    len = 1;
+  } else if (longSide > 200) {
+    len = 200;
+  }
+
+  const numTicks = Math.round(mapTo(len, 1, 200, 1, MAX_TICKS));
+
+  ctx.strokeStyle = color;
+  for (let j = 1; j < numTicks; j++) {
+    const b = j / numTicks;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(
+      pt0.x + b * spacing * (pt1.x - pt0.x),
+      pt0.y + b * spacing * (pt1.y - pt0.y),
+    );
+    ctx.lineTo(
+      pt3.x + b * spacing * (pt2.x - pt3.x),
+      pt3.y + b * spacing * (pt2.y - pt3.y),
+    );
   }
 }
 
@@ -99,6 +142,10 @@ function processFramesToStream(
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
+
+        // Render tick marks
+        const tickData = meta.polygonTickmarks[j];
+        drawTickmarks(ctx, poly, tickData.color, tickData.tickSpacing);
       }
 
       if (frameCount === 0 && thumbTmpPath) {
@@ -154,6 +201,11 @@ async function uploadAndSignUrl(bucket, localFilePath, destinationPath) {
 exports.generateVideo = onRequest(
   { memory: '2GiB', timeoutSeconds: 540 },
   (req, res) => {
+    // Ensure Firebase Admin is initialized
+    if (!admin.apps.length) {
+      admin.initializeApp();
+    }
+
     cors(req, res, async () => {
       // 1. Authenticate user
       let uid;
@@ -224,6 +276,10 @@ exports.generateVideo = onRequest(
         // Wait for the video file to finish rendering
         await ffmpegPromise;
 
+        // Delete meta and polygons files from Firebase Storage - no longer needed
+        await bucket.file(metaStoragePath).delete().catch(() => {});
+        await bucket.file(polygonsStoragePath).delete().catch(() => {});
+
         // 5. Upload video and send signed URL back
         console.log('Uploading video and thumbnail to Firebase Storage...');
         const destFileName = `users/${uid}/videos/video-${jobId}.mp4`;
@@ -264,11 +320,13 @@ exports.generateVideo = onRequest(
         });
       } catch (error) {
         console.error('Process Failed:', error);
-        
         try {
           const { getFirestore } = require('firebase-admin/firestore');
           const db = getFirestore(admin.app(), 'facts');
-          await db.collection('users').doc(uid).set({ isRendering: false }, { merge: true });
+          await db
+            .collection('users')
+            .doc(uid)
+            .set({ isRendering: false }, { merge: true });
         } catch (dbErr) {
           console.error('Failed to clear isRendering flag:', dbErr);
         }
@@ -306,6 +364,11 @@ const BUDGET_THRESHOLD = 0.95;
 exports.budgetKillSwitch = onMessagePublished(
   'budget-alerts',
   async (event) => {
+    // Ensure Firebase Admin is initialized
+    if (!admin.apps.length) {
+      admin.initializeApp();
+    }
+
     try {
       // FIX: .json is a property, not a function call ()
       const data = event.data.message.json;
@@ -341,9 +404,6 @@ exports.budgetKillSwitch = onMessagePublished(
         `;
 
         try {
-          if (!admin.apps.length) {
-            admin.initializeApp();
-          }
           const rules = admin.securityRules();
           const rulesFile = rules.createRulesFileFromSource(
             'firestore.rules',
