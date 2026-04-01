@@ -31,8 +31,9 @@ TODO:
 [x] Create an emergency shutoff if the app exceeds a certain cost threshold
 [x] Add a confirmation step to render action in VideoGen
 [x] Fix issue with video preview not opening on render success
-[ ] Tickmarks display in the app, but do not persist in the rendered video.
+[x] Tickmarks display in the app, but do not persist in the rendered video.
     Make sure tickmarks get rendered in the shapes in the video.
+[ ] Remove JSON files from animations folder on render complete
 ```
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

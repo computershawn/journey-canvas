@@ -21,7 +21,7 @@ export const PREVIEW_VIDEO_DIMS = {
 
 export const MAGENTA = '#ff008c';
 
-export const MAX_VIDEOS = 5;
+export const MAX_VIDEOS = 6;
 
 export const STOP_RED = '#ff2f00';
 

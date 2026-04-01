@@ -113,7 +113,8 @@ const Composition = ({
         pt3: { x: x0, y: y0 + s },
       };
 
-      const fb = new FanBlade(points, j, NUM_COLORS, Math.random());
+      const tickSpacing = Math.round(Math.random() * 100) / 100;
+      const fb = new FanBlade(points, j, NUM_COLORS, tickSpacing);
       temp.push(fb);
     }
 
@@ -241,12 +242,13 @@ const Composition = ({
       });
 
       updateFanBlades();
-      const ting = fanBlades.map((fb) => fb.details);
-      polygons.push(ting);
+      const poly = fanBlades.map((fb) => fb.polygonVertices);
+      polygons.push(poly);
     }
     const polygonColors = fanBlades.map((fb) =>
       fb.getColor(palette, renderColors),
     );
+    const tickmarks = fanBlades.map((fb) => fb.tickmarkParams(palette));
 
     const backgroundColor =
       (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
@@ -259,6 +261,7 @@ const Composition = ({
         backgroundColor,
         polygons,
         polygonColors,
+        tickmarks,
         newJobId,
       );
 

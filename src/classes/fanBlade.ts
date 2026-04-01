@@ -158,7 +158,14 @@ class FanBlade {
     return coco;
   }
 
-  get details() {
+  tickmarkParams(palette: ColorArray) {
+    return {
+      color: `${palette[this.altColorIndex]}${this.altColorOpacity}`,
+      tickSpacing: this.tickSpacing,
+    };
+  }
+
+  get polygonVertices() {
     return [
       packCoordinate(this.points.pt0.x),
       packCoordinate(this.points.pt0.y),
