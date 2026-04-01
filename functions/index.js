@@ -276,6 +276,10 @@ exports.generateVideo = onRequest(
         // Wait for the video file to finish rendering
         await ffmpegPromise;
 
+        // Delete meta and polygons files from Firebase Storage - no longer needed
+        await bucket.file(metaStoragePath).delete().catch(() => {});
+        await bucket.file(polygonsStoragePath).delete().catch(() => {});
+
         // 5. Upload video and send signed URL back
         console.log('Uploading video and thumbnail to Firebase Storage...');
         const destFileName = `users/${uid}/videos/video-${jobId}.mp4`;
