@@ -1,19 +1,17 @@
 import {
-  Alert,
   Button,
   CloseButton,
   Dialog,
   Flex,
-  IconButton,
   Portal,
   Text,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FaCircleInfo, FaCircleUser, FaClapperboard } from 'react-icons/fa6';
+import { FaCircleInfo } from 'react-icons/fa6';
 import Login from './Login';
 import Signup from './Signup';
 
-const AuthDialog = ({ plainTextTrigger }: { plainTextTrigger?: boolean }) => {
+const AuthDialog = ({ children }: { children: React.ReactNode }) => {
   const [isLogin, setIsLogin] = useState(true);
   const title = isLogin ? 'Log in' : 'Create an account';
 
@@ -23,44 +21,7 @@ const AuthDialog = ({ plainTextTrigger }: { plainTextTrigger?: boolean }) => {
       size='sm'
       onExitComplete={() => setIsLogin(true)}
     >
-      <Dialog.Trigger asChild>
-        {plainTextTrigger ? (
-          <Alert.Root background='#008caf'>
-            <Alert.Indicator>
-              <FaCircleUser color='white' />
-            </Alert.Indicator>
-            <Alert.Title>
-              <Text
-                color='white'
-                fontWeight='medium'
-                cursor='pointer'
-                fontSize='sm'
-              >
-                Want to save a composition or render your animation as a video?
-                Click here to Log in or Sign up.
-              </Text>
-            </Alert.Title>
-          </Alert.Root>
-        ) : (
-          <Flex
-            h='2.5rem'
-            w='2.5rem'
-            outline='1px solid #404040'
-            p={1}
-            borderRadius='sm'
-          >
-            <IconButton
-              aria-label='Create video file'
-              color='#4a4a4a'
-              _hover={{ color: '#252525', transition: 'color .3s ease' }}
-              size='xs'
-              variant='outline'
-            >
-              <FaClapperboard />
-            </IconButton>
-          </Flex>
-        )}
-      </Dialog.Trigger>
+      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
       <Portal>
         <Dialog.Backdrop bg='blackAlpha.700' />
         <Dialog.Positioner>

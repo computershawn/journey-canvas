@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import {
   FaArrowRotateRight,
+  FaCircleUser,
   FaEye,
   FaEyeSlash,
   FaSliders,
@@ -9,6 +10,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  Alert,
   Box,
   CloseButton,
   Drawer,
@@ -39,6 +41,22 @@ import Slider from './ui/slider';
 import Switch from './ui/switch';
 import UserInfo from './UserInfo';
 import VideoList from './VideoList';
+
+const SignInCta = () => (
+  <AuthDialog>
+    <Alert.Root background='#008caf'>
+      <Alert.Indicator>
+        <FaCircleUser color='white' />
+      </Alert.Indicator>
+      <Alert.Title>
+        <Text color='white' fontWeight='medium' cursor='pointer' fontSize='sm'>
+          Want to save a composition or render your animation as a video? Click
+          here to Log in or Sign up.
+        </Text>
+      </Alert.Title>
+    </Alert.Root>
+  </AuthDialog>
+);
 
 const ControlPanel = ({
   allColors,
@@ -206,7 +224,7 @@ const ControlPanel = ({
       <UserInfo userEmail={authUser.email || '[no email address]'} />
     );
   } else if (!authLoading) {
-    footerAuthContent = <AuthDialog plainTextTrigger />;
+    footerAuthContent = <SignInCta />;
   }
 
   return (
