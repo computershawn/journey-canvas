@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 
+import palettes from 'nice-color-palettes/200';
+
 import { HStack } from '@chakra-ui/react';
 
 import Artboard from './components/Artboard';
 import { Toaster } from './components/ui/toaster';
 import ControlPanel from './components/ControlPanel';
 import { ControlsProvider } from './context/ControlsProvider';
-import { useFetchColors } from './hooks/useFetchColors';
 import { ColorArray, CtrlPoint } from './types';
 import { getRandomIndex } from './utils/helpers';
 
@@ -18,7 +19,7 @@ function App() {
   const [compIndex, setCompIndex] = useState(0);
   const [palette, setPalette] = useState<ColorArray>([]);
 
-  const { allColors } = useFetchColors();
+  const allColors = palettes as ColorArray[];
 
   useEffect(() => {
     if (allColors.length > 0) {

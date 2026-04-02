@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
-import { FaPause, FaPlay } from 'react-icons/fa6';
+import { FaClapperboard, FaPause, FaPlay } from 'react-icons/fa6';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import {
@@ -307,7 +307,28 @@ const Composition = ({
                   isUploadingOrRendering={isUploadingOrRendering}
                 />
               ) : (
-                <AuthDialog />
+                <AuthDialog>
+                  <Flex
+                    h='2.5rem'
+                    w='2.5rem'
+                    outline='1px solid #404040'
+                    p={1}
+                    borderRadius='sm'
+                  >
+                    <IconButton
+                      aria-label='Create video file'
+                      color='#4a4a4a'
+                      _hover={{
+                        color: '#252525',
+                        transition: 'color .3s ease',
+                      }}
+                      size='xs'
+                      variant='outline'
+                    >
+                      <FaClapperboard />
+                    </IconButton>
+                  </Flex>
+                </AuthDialog>
               )}
 
               {/* TODO: Can this animation progress bar be made into a separate component? */}

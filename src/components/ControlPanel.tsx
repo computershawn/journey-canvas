@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import {
   FaArrowRotateRight,
+  FaCircleUser,
   FaEye,
   FaEyeSlash,
   FaSliders,
@@ -9,6 +10,8 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  Alert,
+  Box,
   CloseButton,
   Drawer,
   Flex,
@@ -67,7 +70,7 @@ const ControlPanel = ({
   const [compId, setCompId] = useState<string[]>(['-']);
   const [isCreateCompOpen, setIsCreateCompOpen] = useState(false);
   const [isEditCompsOpen, setIsEditCompsOpen] = useState(false);
-  const [authUser] = useAuthState(auth);
+  const [authUser, authLoading] = useAuthState(auth);
 
   const {
     balance,
@@ -146,7 +149,9 @@ const ControlPanel = ({
     setComps(updated);
     setCompId([id]);
     onChangeComp(updated.length - 1);
-    saveCompositions(updated).catch(e => console.error("Failed to save comp to cloud", e));
+    saveCompositions(updated).catch((e) =>
+      console.error('Failed to save comp to cloud', e),
+    );
   };
 
   // Update current composition
@@ -179,7 +184,9 @@ const ControlPanel = ({
     });
 
     setComps(updated);
-    saveCompositions(updated).catch(e => console.error("Failed to update comp in cloud", e));
+    saveCompositions(updated).catch((e) =>
+      console.error('Failed to update comp in cloud', e),
+    );
   };
 
   // Set index and set slider values based on the newly selected composition
@@ -194,6 +201,31 @@ const ControlPanel = ({
     setPalette(newPalette);
     onChangeComp(i);
   };
+
+  const footerAuthContent = authUser ? (
+    // Show user's email address if they're logged in
+    <UserInfo userEmail={authUser.email || '[no email address]'} />
+  ) : (
+    // Show the Log in / Sign up CTA if they're not logged in
+    <AuthDialog>
+      <Alert.Root background='#008caf'>
+        <Alert.Indicator>
+          <FaCircleUser color='white' />
+        </Alert.Indicator>
+        <Alert.Title>
+          <Text
+            color='white'
+            fontWeight='medium'
+            cursor='pointer'
+            fontSize='sm'
+          >
+            Want to save a composition or render your animation as a video?
+            Click here to Log in or Sign up.
+          </Text>
+        </Alert.Title>
+      </Alert.Root>
+    </AuthDialog>
+  );
 
   return (
     <>
@@ -217,7 +249,7 @@ const ControlPanel = ({
               </Drawer.Header>
               <Drawer.Body p={0}>
                 <VStack w='full' h='100%' p={4} pt={2} gap={6} flex={1}>
-                  {authUser && (
+                  {!authLoading && authUser && (
                     <CompSelector
                       numComps={comps.length}
                       onChangeComp={handleChangeComp}
@@ -246,7 +278,9 @@ const ControlPanel = ({
 
                   <VStack w='full' gap={2} align='flex-start'>
                     <Flex w='full' h={8} align='center' justify='space-between'>
-                      <Text textStyle='sm' fontWeight='medium'>Guide Paths</Text>
+                      <Text textStyle='sm' fontWeight='medium'>
+                        Guide Paths
+                      </Text>
                       <IconButton
                         size='xs'
                         aria-label='hide or show path'
@@ -302,21 +336,10 @@ const ControlPanel = ({
                       )}
                     </Flex>
                   </VStack>
-                  {authUser && <VideoList />}
-                  <Flex
-                    direction='column'
-                    w='full'
-                    mt='auto'
-                    align='flex-start'
-                  >
-                    {authUser ? (
-                      <UserInfo
-                        userEmail={authUser.email || '[no email address]'}
-                      />
-                    ) : (
-                      <AuthDialog plainTextTrigger />
-                    )}
-                  </Flex>
+                  {!authLoading && authUser && <VideoList />}
+                  <Box w='full' mt='auto'>
+                    {authLoading ? null : footerAuthContent}
+                  </Box>
                 </VStack>
               </Drawer.Body>
               <Drawer.Footer p={0}>

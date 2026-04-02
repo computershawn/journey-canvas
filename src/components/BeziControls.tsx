@@ -67,6 +67,7 @@ const BeziControls = ({
   setBeziCtrlPts: (pts: CtrlPoint[]) => void;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const prevCompIdRef = useRef<string | null | undefined>(undefined);
   const [offsets, setOffsets] = useState({ x: 0, y: 0 });
   const [dragIndex, setDragIndex] = useState(-1);
   const [hoverIndex, setHoverIndex] = useState(-1);
@@ -96,28 +97,35 @@ const BeziControls = ({
   }, []);
 
   useEffect(() => {
-    if (comp?.curveSetPoints) {
-      const csp = comp.curveSetPoints;
-      setBeziCtrlPts([
-        { x: csp.pt1.x, y: csp.pt1.y, child: chIdx[0] },
-        { x: csp.pt4.x, y: csp.pt4.y, child: chIdx[1] },
-        { x: csp.pt5.x, y: csp.pt5.y, child: chIdx[2] },
-        { x: csp.pt2.x, y: csp.pt2.y, child: chIdx[3] },
-        { x: csp.pt6.x, y: csp.pt6.y, child: chIdx[4] },
-        { x: csp.pt3.x, y: csp.pt3.y, child: chIdx[5] },
-      ]);
-      return;
-    }
+    // Only load composition points when the composition ID actually changes
+    const currentCompId = comp?.id || null;
 
-    if (points.length === 0) {
-      const randPts = chIdx.map((c) => ({
-        x: Math.random() * CANV_WD,
-        y: Math.random() * CANV_HT,
-        child: c,
-      }));
-      setBeziCtrlPts(randPts);
+    if (currentCompId !== prevCompIdRef.current) {
+      prevCompIdRef.current = currentCompId;
+
+      if (comp?.curveSetPoints) {
+        const csp = comp.curveSetPoints;
+        setBeziCtrlPts([
+          { x: csp.pt1.x, y: csp.pt1.y, child: chIdx[0] },
+          { x: csp.pt4.x, y: csp.pt4.y, child: chIdx[1] },
+          { x: csp.pt5.x, y: csp.pt5.y, child: chIdx[2] },
+          { x: csp.pt2.x, y: csp.pt2.y, child: chIdx[3] },
+          { x: csp.pt6.x, y: csp.pt6.y, child: chIdx[4] },
+          { x: csp.pt3.x, y: csp.pt3.y, child: chIdx[5] },
+        ]);
+        return;
+      }
+
+      if (points.length === 0) {
+        const randPts = chIdx.map((c) => ({
+          x: Math.random() * CANV_WD,
+          y: Math.random() * CANV_HT,
+          child: c,
+        }));
+        setBeziCtrlPts(randPts);
+      }
     }
-  }, [comp?.curveSetPoints, setBeziCtrlPts, points.length]);
+  }, [comp?.id, comp?.curveSetPoints, setBeziCtrlPts, points.length]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

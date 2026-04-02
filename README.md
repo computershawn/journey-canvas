@@ -34,10 +34,15 @@ TODO:
 [x] Tickmarks display in the app, but do not persist in the rendered video.
     Make sure tickmarks get rendered in the shapes in the video.
 [x] Remove JSON files from animations folder on render complete
-[ ] After clicking to confirm render, if the user has saved any comps, the points
+[x] After clicking to confirm render, if the user has saved any comps, the points
     jump to one of the saved positions; The points should stay where they are.
-[ ] Try clicking to confirm render while not having any saved comps. Verify that
+[x] Try clicking to confirm render while not having any saved comps. Verify that
     the points do not jump to random positions.
+[x] Log-in CTA appears in a flash if browser is refreshed while user is already
+    signed-in
+[ ] If user is signed-in and has saved comps, and they refresh the browser,
+    the random comp will flash first before loading the first comp in ther list.
+    See if we can avoid the flash of random comp.
 ```
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
