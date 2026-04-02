@@ -42,22 +42,6 @@ import Switch from './ui/switch';
 import UserInfo from './UserInfo';
 import VideoList from './VideoList';
 
-const SignInCta = () => (
-  <AuthDialog>
-    <Alert.Root background='#008caf'>
-      <Alert.Indicator>
-        <FaCircleUser color='white' />
-      </Alert.Indicator>
-      <Alert.Title>
-        <Text color='white' fontWeight='medium' cursor='pointer' fontSize='sm'>
-          Want to save a composition or render your animation as a video? Click
-          here to Log in or Sign up.
-        </Text>
-      </Alert.Title>
-    </Alert.Root>
-  </AuthDialog>
-);
-
 const ControlPanel = ({
   allColors,
   backgroundIndex,
@@ -218,14 +202,30 @@ const ControlPanel = ({
     onChangeComp(i);
   };
 
-  let footerAuthContent: React.ReactNode = null;
-  if (!authLoading && authUser) {
-    footerAuthContent = (
-      <UserInfo userEmail={authUser.email || '[no email address]'} />
-    );
-  } else if (!authLoading) {
-    footerAuthContent = <SignInCta />;
-  }
+  const footerAuthContent = authUser ? (
+    // Show user's email address if they're logged in
+    <UserInfo userEmail={authUser.email || '[no email address]'} />
+  ) : (
+    // Show the Log in / Sign up CTA if they're not logged in
+    <AuthDialog>
+      <Alert.Root background='#008caf'>
+        <Alert.Indicator>
+          <FaCircleUser color='white' />
+        </Alert.Indicator>
+        <Alert.Title>
+          <Text
+            color='white'
+            fontWeight='medium'
+            cursor='pointer'
+            fontSize='sm'
+          >
+            Want to save a composition or render your animation as a video?
+            Click here to Log in or Sign up.
+          </Text>
+        </Alert.Title>
+      </Alert.Root>
+    </AuthDialog>
+  );
 
   return (
     <>
@@ -338,7 +338,7 @@ const ControlPanel = ({
                   </VStack>
                   {!authLoading && authUser && <VideoList />}
                   <Box w='full' mt='auto'>
-                    {footerAuthContent}
+                    {authLoading ? null : footerAuthContent}
                   </Box>
                 </VStack>
               </Drawer.Body>
