@@ -15,6 +15,7 @@
     "firebase": "^12.1.0",
     "nanoid": "^5.1.7",
     "next-themes": "^0.4.6",
+    "nice-color-palettes": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-firebase-hooks": "^5.1.1",
