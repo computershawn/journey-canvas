@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import palettes from 'nice-color-palettes/200';
 
@@ -9,7 +9,6 @@ import { Toaster } from './components/ui/toaster';
 import ControlPanel from './components/ControlPanel';
 import { ControlsProvider } from './context/ControlsProvider';
 import { ColorArray, CtrlPoint } from './types';
-import { getRandomIndex } from './utils/helpers';
 
 function App() {
   const [backgroundIndex, setBackgroundIndex] = useState(0);
@@ -20,14 +19,6 @@ function App() {
   const [palette, setPalette] = useState<ColorArray>([]);
 
   const allColors = palettes as ColorArray[];
-
-  useEffect(() => {
-    if (allColors.length > 0) {
-      const randomIndex = getRandomIndex(allColors.length);
-      const pal = allColors[randomIndex];
-      setPalette(pal);
-    }
-  }, [allColors]);
 
   return (
     <ControlsProvider>

@@ -52,6 +52,7 @@ const TRACK_HT = 6;
 const BAR_HT = 2.5;
 const TOP = `${(BAR_HT * 16) / 2 - 3}px`;
 const LEFT = `${PAD + PLAY_BTN_WD + GAP}px`;
+const FALLBACK_CANVAS_BG = '#191919';
 
 // Get the device pixel ratio, falling back to 1.
 const dpr = window.devicePixelRatio || 1;
@@ -171,7 +172,8 @@ const Composition = ({
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle =
-        (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
+        (showBackground && renderColors && palette[backgroundIndex]) ||
+        FALLBACK_CANVAS_BG;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       fanBlades.forEach((fb) => {
         fb.render(ctx, palette, renderColors);
@@ -251,7 +253,8 @@ const Composition = ({
     const tickmarks = fanBlades.map((fb) => fb.tickmarkParams(palette));
 
     const backgroundColor =
-      (showBackground && renderColors && palette[backgroundIndex]) || '#fff';
+      (showBackground && renderColors && palette[backgroundIndex]) ||
+      FALLBACK_CANVAS_BG;
 
     const newJobId = generateId();
 

@@ -39,6 +39,9 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
         setDiff,
         setGeomChecked,
         setPathsChecked,
+        // Keep loadingComps true until comps is actually synced from dbComps,
+        // preventing a one-render gap where loadingComps=false but comps=[].
+        loadingComps: loadingComps || (dbComps.length > 0 && comps.length === 0),
         previewVideoUrl,
         setPreviewVideoUrl,
       }}

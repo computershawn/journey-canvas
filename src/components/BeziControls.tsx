@@ -72,7 +72,7 @@ const BeziControls = ({
   const [dragIndex, setDragIndex] = useState(-1);
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [childDeltas, setChildDeltas] = useState({ x: 0, y: 0 });
-  const { pathsChecked } = useControls();
+  const { comps, loadingComps, pathsChecked } = useControls();
 
   const drawBezier = (pts: Point[]) => {
     const canvas = canvasRef.current;
@@ -96,8 +96,10 @@ const BeziControls = ({
     }
   }, []);
 
+  const userHasNoComps = !loadingComps && comps.length === 0;
+
+  // Load control points from the saved composition when the selected comp changes.
   useEffect(() => {
-    // Only load composition points when the composition ID actually changes
     const currentCompId = comp?.id || null;
 
     if (currentCompId !== prevCompIdRef.current) {
@@ -113,19 +115,23 @@ const BeziControls = ({
           { x: csp.pt6.x, y: csp.pt6.y, child: chIdx[4] },
           { x: csp.pt3.x, y: csp.pt3.y, child: chIdx[5] },
         ]);
-        return;
-      }
-
-      if (points.length === 0) {
-        const randPts = chIdx.map((c) => ({
-          x: Math.random() * CANV_WD,
-          y: Math.random() * CANV_HT,
-          child: c,
-        }));
-        setBeziCtrlPts(randPts);
       }
     }
-  }, [comp?.id, comp?.curveSetPoints, setBeziCtrlPts, points.length]);
+  }, [comp?.id, comp?.curveSetPoints, setBeziCtrlPts]);
+
+  // Seed random control points once loading is resolved and there are no saved
+  // comps and no points have been set yet (covers signed-out users and
+  // signed-in users who have deleted all their compositions).
+  useEffect(() => {
+    if (userHasNoComps && points.length === 0) {
+      const randPts = chIdx.map((c) => ({
+        x: Math.random() * CANV_WD,
+        y: Math.random() * CANV_HT,
+        child: c,
+      }));
+      setBeziCtrlPts(randPts);
+    }
+  }, [userHasNoComps, points.length, setBeziCtrlPts]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

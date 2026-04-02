@@ -40,7 +40,7 @@ TODO:
     the points do not jump to random positions.
 [x] Log-in CTA appears in a flash if browser is refreshed while user is already
     signed-in
-[ ] If user is signed-in and has saved comps, and they refresh the browser,
+[x] If user is signed-in and has saved comps, and they refresh the browser,
     the random comp will flash first before loading the first comp in ther list.
     See if we can avoid the flash of random comp.
 ```
