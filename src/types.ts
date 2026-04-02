@@ -39,6 +39,7 @@ export interface ControlsContextType {
   setPathsChecked: (value: boolean) => void;
   comps: CompValues[];
   setComps: (comps: CompValues[]) => void;
+  loadingComps: boolean;
   previewVideoUrl: string | null;
   setPreviewVideoUrl: (url: string | null) => void;
 }

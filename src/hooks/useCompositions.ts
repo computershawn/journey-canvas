@@ -5,12 +5,14 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, firestore } from '../firebase';
 
 export const useCompositions = () => {
-  const [authUser] = useAuthState(auth);
+  const [authUser, authLoading] = useAuthState(auth);
   // We use `any[]` here to smoothly accept the UI's composition object schema
   const [dbComps, setDbComps] = useState<any[]>([]);
   const [loadingComps, setLoadingComps] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!authUser) {
       setDbComps([]);
       setLoadingComps(false);
@@ -37,7 +39,7 @@ export const useCompositions = () => {
     );
 
     return () => unsubscribe();
-  }, [authUser]);
+  }, [authUser, authLoading]);
 
   const saveCompositions = async (newComps: any[]) => {
     if (!authUser) return;

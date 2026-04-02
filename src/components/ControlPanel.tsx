@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import {
   FaArrowRotateRight,
@@ -81,6 +81,7 @@ const ControlPanel = ({
     setPathsChecked,
     comps,
     setComps,
+    loadingComps,
   } = useControls();
 
   const { saveCompositions } = useCompositions();
@@ -95,15 +96,27 @@ const ControlPanel = ({
     onChangeComp,
   );
 
-  // Deprecated initial ID hook, rely on the Firebase pipeline now
-  const colorsLoaded = allColors.length > 0;
+  // Seed a random palette once auth + comp loading is resolved and there are no
+  // saved comps to pull a palette from (covers both signed-out users and
+  // signed-in users who have deleted all their compositions).
+  useEffect(() => {
+    if (authLoading || loadingComps || comps.length > 0 || palette.length > 0) {
+      return;
+    }
+    const randomIndex = getRandomIndex(allColors.length);
+    setPalette(allColors[randomIndex]);
+  }, [
+    authLoading,
+    loadingComps,
+    comps.length,
+    palette.length,
+    allColors,
+    setPalette,
+  ]);
 
   const pickColors = () => {
-    if (colorsLoaded) {
-      const randomIndex = getRandomIndex(allColors.length);
-      const pal = allColors[randomIndex];
-      setPalette(pal);
-    }
+    const randomIndex = getRandomIndex(allColors.length);
+    setPalette(allColors[randomIndex]);
   };
 
   const updateBalance = (details: SliderValueChangeDetails) => {
@@ -236,7 +249,7 @@ const ControlPanel = ({
           </IconButton>
         </Drawer.Trigger>
         <Portal>
-          <Drawer.Backdrop />
+          <Drawer.Backdrop bg='blackAlpha.300' />
           <Drawer.Positioner>
             <Drawer.Content bg='#eee'>
               <Drawer.Header p={4} pb={2}>
@@ -297,9 +310,8 @@ const ControlPanel = ({
                     <Flex w='full' h={8} align='center' justify='space-between'>
                       <Switch
                         size='sm'
-                        checked={colorsLoaded && colorChecked}
+                        checked={colorChecked}
                         onCheckedChange={(e) => setColorChecked(e.checked)}
-                        disabled={!colorsLoaded}
                       >
                         Colors
                       </Switch>
@@ -309,7 +321,7 @@ const ControlPanel = ({
                           <IconButton
                             size='xs'
                             aria-label='Pick random palette'
-                            disabled={!colorChecked || !colorsLoaded}
+                            disabled={!colorChecked}
                             onClick={pickColors}
                           >
                             <FaArrowRotateRight color='black' />
@@ -321,9 +333,9 @@ const ControlPanel = ({
                     <Flex w='full' h={8} align='center' justify='space-between'>
                       <Switch
                         size='sm'
-                        checked={colorsLoaded && bgChecked}
+                        checked={bgChecked}
                         onCheckedChange={(e) => setBgChecked(e.checked)}
-                        disabled={!colorsLoaded || !colorChecked}
+                        disabled={!colorChecked}
                       >
                         Background
                       </Switch>

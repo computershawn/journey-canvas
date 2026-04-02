@@ -12,6 +12,7 @@ export const ControlsContext = createContext<ControlsContextType>({
   setGeomChecked: () => {},
   pathsChecked: true,
   setPathsChecked: () => {},
+  loadingComps: false,
   previewVideoUrl: null,
   setPreviewVideoUrl: () => {},
 });
