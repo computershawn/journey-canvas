@@ -250,7 +250,9 @@ const Composition = ({
     const polygonColors = fanBlades.map((fb) =>
       fb.getColor(palette, renderColors),
     );
-    const tickmarks = fanBlades.map((fb) => fb.tickmarkParams(palette));
+    const tickmarks = fanBlades.map((fb) =>
+      fb.tickmarkParams(palette, renderColors),
+    );
 
     const backgroundColor =
       (showBackground && renderColors && palette[backgroundIndex]) ||

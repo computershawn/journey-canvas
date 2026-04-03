@@ -99,7 +99,11 @@ class FanBlade {
     ctx.fill();
   }
 
-  drawTickMarks(ctx: CanvasRenderingContext2D, palette: ColorArray) {
+  drawTickMarks(
+    ctx: CanvasRenderingContext2D,
+    palette: ColorArray,
+    showColor: boolean,
+  ) {
     const { pt0, pt1, pt2, pt3 } = this.points;
     const dx1 = pt0.x - pt1.x;
     const dy1 = pt0.y - pt1.y;
@@ -118,7 +122,9 @@ class FanBlade {
 
     const numTicks = Math.round(mapTo(len, 1, 200, 1, MAX_TICKS));
 
-    ctx.strokeStyle = `${palette[this.altColorIndex]}${this.altColorOpacity}`;
+    ctx.strokeStyle = showColor
+      ? `${palette[this.altColorIndex]}${this.altColorOpacity}`
+      : '#000000';
     for (let j = 1; j < numTicks; j++) {
       const b = j / numTicks;
       ctx.stroke();
@@ -143,8 +149,8 @@ class FanBlade {
     this.renderPolygon(ctx, palette, showColor);
 
     // Render tick marks
-    if (this.isOpaque && showColor) {
-      this.drawTickMarks(ctx, palette);
+    if (this.isOpaque) {
+      this.drawTickMarks(ctx, palette, showColor);
     }
   }
 
@@ -158,9 +164,12 @@ class FanBlade {
     return coco;
   }
 
-  tickmarkParams(palette: ColorArray) {
+  tickmarkParams(palette: ColorArray, showColor: boolean) {
     return {
-      color: `${palette[this.altColorIndex]}${this.altColorOpacity}`,
+      color:
+        this.isOpaque && showColor && palette.length
+          ? `${palette[this.altColorIndex]}${this.altColorOpacity}`
+          : '#000000',
       tickSpacing: this.tickSpacing,
     };
   }

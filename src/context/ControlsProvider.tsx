@@ -17,10 +17,7 @@ export function ControlsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!loadingComps && dbComps.length > 0) {
-      const firstComp = dbComps[0];
-      setBalance(firstComp.balance);
       setComps(dbComps);
-      setDiff(firstComp.diff);
     } else if (!loadingComps && dbComps.length === 0) {
       setComps([]);
     }
