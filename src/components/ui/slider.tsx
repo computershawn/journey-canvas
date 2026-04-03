@@ -29,8 +29,8 @@ const Slider = ({
   size = 'md',
   value,
 }: SliderProps) => {
-  const minValue = min || 0;
-  const maxValue = max || 100;
+  const minValue = min ?? 0;
+  const maxValue = max ?? 100;
 
   return (
     <ChakraSlider.Root
@@ -39,7 +39,7 @@ const Slider = ({
       min={minValue}
       max={maxValue}
       size={size}
-      value={value ? [value] : undefined}
+      value={value !== undefined ? [value] : undefined}
       onValueChange={onValueChange}
       onValueChangeEnd={onValueChangeEnd}
     >
